@@ -78,6 +78,7 @@ if st.button("Calculate Impacts"):
         state_code=personal_inputs["state_code"],
         filing_status=personal_inputs["filing_status"],
         employment_income=personal_inputs["employment_income"],
+        spouse_income=personal_inputs["spouse_income"],
         head_age=personal_inputs["head_age"],
         is_married=personal_inputs["is_married"],
         spouse_age=personal_inputs["spouse_age"],
