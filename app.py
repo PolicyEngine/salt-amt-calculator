@@ -1,9 +1,9 @@
-# app.py
 import streamlit as st
 from situation import create_situation
 from calculator import calculate_impacts
 from inputs import create_personal_inputs
 from policy_parameters import create_policy_inputs
+from chart import create_reform_comparison_graph, initialize_results_tracking, update_results
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT Cap Policy Impact Calculator", page_icon="📊", layout="wide")
@@ -67,6 +67,11 @@ for i, (col, reform_idx) in enumerate(zip(reform_cols, st.session_state.reform_i
         # Create reform parameters using the imported function
         reform_params_dict[f"reform_{i+1}"] = create_policy_inputs(new_name)
 
+# Initialize results tracking in session state if not exists
+if 'results_df' not in st.session_state:
+    st.session_state.results_df, st.session_state.summary_results = initialize_results_tracking()
+
+
 if st.button("Calculate Impacts"):
     # Create situation based on inputs
     situation = create_situation(
@@ -84,27 +89,58 @@ if st.button("Calculate Impacts"):
         short_term_capital_gains=personal_inputs["short_term_capital_gains"],
     )
     
+    # Display results in a nice format
+    st.markdown("### Results")
+
+    # Create placeholder for chart at the top of results section
+    chart_placeholder = st.empty()
+
     # Calculate and display results for all reforms
     results = calculate_impacts(situation, reform_params_dict)
     
-    # Display results in a nice format
-    st.markdown("### Results")
+
     
-    # Create columns for results - baseline plus all reforms
+    # Update baseline results
+    st.session_state.results_df, st.session_state.summary_results = update_results(
+        st.session_state.results_df,
+        st.session_state.summary_results,
+        "Baseline",
+        results['baseline']
+    )
+    
+    # Display initial chart with baseline
+    fig = create_reform_comparison_graph(st.session_state.summary_results)
+    chart_placeholder.plotly_chart(fig, use_container_width=True)
+    
+    # Create columns for detailed results
     cols = st.columns(len(st.session_state.reform_indexes) + 1)
     
-    # Display baseline
+    # Display baseline details
     with cols[0]:
         st.markdown("#### Baseline")
         st.markdown(f"Household income: **${results['baseline']:,.2f}**")
     
-    # Display each reform
+    # Display each reform and update chart
     for i, reform_idx in enumerate(st.session_state.reform_indexes):
+        reform_name = st.session_state.reform_names[reform_idx]
         with cols[i + 1]:
-            st.markdown(f"#### {st.session_state.reform_names[reform_idx]}")
+            st.markdown(f"#### {reform_name}")
             reform_impact = results[f'reform_{i+1}_impact']
             new_income = results['baseline'] + reform_impact
             
+            # Update results tracking
+            st.session_state.results_df, st.session_state.summary_results = update_results(
+                st.session_state.results_df,
+                st.session_state.summary_results,
+                reform_name,
+                new_income
+            )
+            
+            # Update chart with new reform
+            fig = create_reform_comparison_graph(st.session_state.summary_results)
+            chart_placeholder.plotly_chart(fig, use_container_width=True)
+            
+            # Display detailed results
             st.markdown(f"New household income: **${new_income:,.2f}**")
             st.markdown(f"Change from baseline: **${reform_impact:,.2f}**")
             
@@ -112,3 +148,6 @@ if st.button("Calculate Impacts"):
                 st.success("This reform would increase household income")
             elif reform_impact < 0:
                 st.error("This reform would decrease household income")
+
+    # Store the final results
+    st.session_state.final_results = st.session_state.results_df.copy()
