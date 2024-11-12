@@ -100,6 +100,14 @@ def create_personal_inputs():
             value=5000,
             step=1000,
         )
+
+        real_estate_taxes = st.number_input(
+            "Real Estate Taxes ($)",
+            min_value=0,
+            max_value=100000,
+            value=5000,
+            step=1000,
+        )
     
     return {
         "is_married": is_married,
@@ -114,4 +122,5 @@ def create_personal_inputs():
         "qualified_dividend_income": qualified_dividend_income,
         "long_term_capital_gains": long_term_capital_gains,
         "short_term_capital_gains": short_term_capital_gains,
+        "real_estate_taxes": real_estate_taxes,
     }

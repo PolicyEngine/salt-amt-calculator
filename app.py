@@ -87,6 +87,7 @@ if st.button("Calculate Impacts"):
         qualified_dividend_income=personal_inputs["qualified_dividend_income"],
         long_term_capital_gains=personal_inputs["long_term_capital_gains"],
         short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+        real_estate_taxes=personal_inputs["real_estate_taxes"]
     )
     
     # Display results in a nice format

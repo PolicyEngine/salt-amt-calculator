@@ -11,6 +11,7 @@ def create_situation(
     qualified_dividend_income,
     long_term_capital_gains,
     short_term_capital_gains,
+    real_estate_taxes,
 ):
     """Creates a situation dictionary based on user inputs"""
     situation = {
@@ -21,6 +22,7 @@ def create_situation(
                 "qualified_dividend_income": {"2025": qualified_dividend_income},
                 "long_term_capital_gains": {"2025": long_term_capital_gains},
                 "short_term_capital_gains": {"2025": short_term_capital_gains},
+                "real_estate_taxes": {"2025": real_estate_taxes},
             }
         },
         "households": {
