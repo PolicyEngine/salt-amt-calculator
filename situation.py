@@ -7,7 +7,10 @@ def create_situation(
     spouse_age,
     num_children,
     child_ages,
-    salt_payment=20_000,
+    state_and_local_sales_or_income_tax,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
 ):
     """Creates a situation dictionary based on user inputs"""
     situation = {
@@ -15,6 +18,9 @@ def create_situation(
             "head": {
                 "age": {"2025": head_age},
                 "employment_income": {"2025": employment_income},
+                "qualified_dividend_income": {"2025": qualified_dividend_income},
+                "long_term_capital_gains": {"2025": long_term_capital_gains},
+                "short_term_capital_gains": {"2025": short_term_capital_gains},
             }
         },
         "households": {
@@ -27,7 +33,7 @@ def create_situation(
             "tax_unit": {
                 "members": ["head"],
                 "filing_status": {"2025": filing_status},
-                "state_and_local_sales_or_income_tax": {"2025": salt_payment},
+                "state_and_local_sales_or_income_tax": {"2025": state_and_local_sales_or_income_tax},
             }
         },
         "families": {"family": {"members": ["head"]}},
