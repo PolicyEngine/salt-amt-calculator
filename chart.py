@@ -27,6 +27,16 @@ def format_fig(fig):
 
 def create_reform_comparison_graph(summary_results):
     """Create a bar chart comparing household income across reforms"""
+    if not summary_results:  # If no results, return empty figure
+        fig = go.Figure()
+        fig.update_layout(
+            title="Household Income by Reform",
+            yaxis_title="Household Income",
+            showlegend=False,
+            height=400,
+        )
+        return format_fig(fig)
+    
     fig = go.Figure()
     
     fig.add_trace(go.Bar(
@@ -54,8 +64,12 @@ def initialize_results_tracking():
     """Initialize empty DataFrame and dictionary for tracking results"""
     return pd.DataFrame(columns=["Household Income"]), {}
 
+def reset_results():
+    """Reset results tracking to empty state"""
+    st.session_state.results_df, st.session_state.summary_results = initialize_results_tracking()
+
 def update_results(df, summary_results, reform_name, income_value):
     """Update both the DataFrame and summary results dictionary with new values"""
-    df.loc[reform_name] = [income_value]
+    df.loc[reform_name] = income_value
     summary_results[reform_name] = income_value
     return df, summary_results
