@@ -22,30 +22,50 @@ personal_inputs = create_personal_inputs()
 st.markdown("### Policy Parameters")
 
 # Initialize session state for tracking reforms if it doesn't exist
-if 'num_reforms' not in st.session_state:
-    st.session_state.num_reforms = 2  # Start with 2 reforms
+if 'reform_indexes' not in st.session_state:
+    st.session_state.reform_indexes = [0, 1]  # Start with 2 reforms
 
-# Add/Remove reform buttons in a row
-col1, col2 = st.columns([4, 1])
-with col2:
-    # Add reform button
-    if st.button("Add Reform") and st.session_state.num_reforms < 5:
-        st.session_state.num_reforms += 1
-    
-    # Remove reform button
-    if st.button("Remove Reform") and st.session_state.num_reforms > 1:
-        st.session_state.num_reforms -= 1
+# Initialize reform names if they don't exist
+if 'reform_names' not in st.session_state:
+    st.session_state.reform_names = {idx: f"Reform {idx+1}" for idx in st.session_state.reform_indexes}
 
-# Create tabs for all reforms
-reform_tabs = st.tabs([f"Reform Scenario {i+1}" for i in range(st.session_state.num_reforms)])
+# Add reform button right under the Policy Parameters header, left-aligned
+col1, col2 = st.columns([1, 8])
+with col1:
+    if len(st.session_state.reform_indexes) < 5:
+        if st.button("Add Reform"):
+            next_index = max(st.session_state.reform_indexes) + 1
+            st.session_state.reform_indexes.append(next_index)
+            st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
+            st.rerun()
 
-# Dictionary to store all reform parameters
+# Create columns for reforms based on how many we have
+reform_cols = st.columns(len(st.session_state.reform_indexes))
 reform_params_dict = {}
 
-# Create inputs for each reform
-for i, tab in enumerate(reform_tabs):
-    with tab:
-        reform_params_dict[f"reform_{i+1}"] = create_policy_inputs(f"Reform {i+1}")
+# Create inputs for each reform in columns
+for i, (col, reform_idx) in enumerate(zip(reform_cols, st.session_state.reform_indexes)):
+    with col:
+        # Create a single row for name and remove button
+        cols = st.columns([6, 1])
+        with cols[0]:
+            new_name = st.text_input(
+                "Reform Name",
+                value=st.session_state.reform_names[reform_idx],
+                key=f"name_{reform_idx}",
+                label_visibility="collapsed"
+            )
+            st.session_state.reform_names[reform_idx] = new_name
+        
+        with cols[1]:
+            if len(st.session_state.reform_indexes) > 1:
+                if st.button("✕", key=f"remove_{reform_idx}", help="Remove this reform"):
+                    st.session_state.reform_indexes.remove(reform_idx)
+                    del st.session_state.reform_names[reform_idx]
+                    st.rerun()
+        
+        # Create reform parameters using the imported function
+        reform_params_dict[f"reform_{i+1}"] = create_policy_inputs(new_name)
 
 if st.button("Calculate Impacts"):
     # Create situation based on inputs
@@ -71,7 +91,7 @@ if st.button("Calculate Impacts"):
     st.markdown("### Results")
     
     # Create columns for results - baseline plus all reforms
-    cols = st.columns(st.session_state.num_reforms + 1)
+    cols = st.columns(len(st.session_state.reform_indexes) + 1)
     
     # Display baseline
     with cols[0]:
@@ -79,9 +99,9 @@ if st.button("Calculate Impacts"):
         st.markdown(f"Household income: **${results['baseline']:,.2f}**")
     
     # Display each reform
-    for i in range(st.session_state.num_reforms):
+    for i, reform_idx in enumerate(st.session_state.reform_indexes):
         with cols[i + 1]:
-            st.markdown(f"#### Reform Scenario {i+1}")
+            st.markdown(f"#### {st.session_state.reform_names[reform_idx]}")
             reform_impact = results[f'reform_{i+1}_impact']
             new_income = results['baseline'] + reform_impact
             
