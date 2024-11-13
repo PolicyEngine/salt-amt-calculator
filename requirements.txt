@@ -3,3 +3,4 @@ policyengine_us
 numpy
 pyyaml
 pandas
+black

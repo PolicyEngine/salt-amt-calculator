@@ -36,23 +36,25 @@ def create_situation(
             "tax_unit": {
                 "members": ["head"],
                 "filing_status": {"2026": filing_status},
-                "state_and_local_sales_or_income_tax": {"2026": state_and_local_sales_or_income_tax},
+                "state_and_local_sales_or_income_tax": {
+                    "2026": state_and_local_sales_or_income_tax
+                },
             }
         },
         "families": {"family": {"members": ["head"]}},
         "marital_units": {"marital_unit": {"members": ["head"]}},
     }
-    
+
     # Add spouse if married
     if is_married:
         situation["people"]["spouse"] = {
             "age": {"2026": spouse_age},
-            "employment_income": {"2026": spouse_income},  
+            "employment_income": {"2026": spouse_income},
         }
         # Add spouse to all units
         for unit in ["households", "tax_units", "families", "marital_units"]:
             situation[unit][list(situation[unit].keys())[0]]["members"].append("spouse")
-    
+
     # Add children
     for i in range(num_children):
         child_id = f"child_{i}"
@@ -62,5 +64,5 @@ def create_situation(
         # Add child to relevant units
         for unit in ["households", "tax_units", "families"]:
             situation[unit][list(situation[unit].keys())[0]]["members"].append(child_id)
-    
+
     return situation

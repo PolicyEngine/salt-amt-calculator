@@ -1,48 +1,108 @@
 import streamlit as st
 
+
 def create_personal_inputs():
     """Create inputs for personal information"""
-    
+
     # Create two main columns for Personal and Income Information
     personal_col, income_col = st.columns(2)
-    
+
     # Personal Information Section
     with personal_col:
         st.markdown("### Personal Information")
-        
+
         # Marriage checkbox first
         is_married = st.checkbox("Married")
-        
+
         # Ages side by side
         age_cols = st.columns(2)
         with age_cols[0]:
-            head_age = st.number_input("Age of Household Head", min_value=18, max_value=100, value=35)
-        
+            head_age = st.number_input(
+                "Age of Household Head", min_value=18, max_value=100, value=35
+            )
+
         # Spouse age (only shown if married)
         spouse_age = None
         if is_married:
             with age_cols[1]:
-                spouse_age = st.number_input("Age of Spouse", min_value=18, max_value=100, value=35)
-        
+                spouse_age = st.number_input(
+                    "Age of Spouse", min_value=18, max_value=100, value=35
+                )
+
         # State and filing status side by side
         state_col, filing_col = st.columns(2)
         with state_col:
             state_codes = [
-                "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-                "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-                "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-                "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-                "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY",
             ]
-            state_code = st.selectbox("State", state_codes, index=state_codes.index("CA"))
-        
+            state_code = st.selectbox(
+                "State", state_codes, index=state_codes.index("CA")
+            )
+
         with filing_col:
-            filing_statuses = ["SINGLE", "HEAD_OF_HOUSEHOLD", "JOINT", "SEPARATE", "SURVIVING_SPOUSE"]
+            filing_statuses = [
+                "SINGLE",
+                "HEAD_OF_HOUSEHOLD",
+                "JOINT",
+                "SEPARATE",
+                "SURVIVING_SPOUSE",
+            ]
             filing_status = st.selectbox("Filing Status", filing_statuses)
-        
+
         # Number of children
-        num_children = st.number_input("Number of Children", min_value=0, max_value=10, value=0)
-        
+        num_children = st.number_input(
+            "Number of Children", min_value=0, max_value=10, value=0
+        )
+
         # Inputs for child ages
         child_ages = []
         if num_children > 0:
@@ -60,11 +120,11 @@ def create_personal_inputs():
                                 key=f"child_{i+j}",
                             )
                             child_ages.append(age)
-    
+
     # Income Information Section
     with income_col:
         st.markdown("### Income Information")
-        
+
         # Employment income side by side
         income_cols = st.columns(2)
         with income_cols[0]:
@@ -75,7 +135,7 @@ def create_personal_inputs():
                 value=50000,
                 step=1000,
             )
-        
+
         # Spouse income (only shown if married)
         spouse_income = 0
         if is_married:
@@ -87,10 +147,10 @@ def create_personal_inputs():
                     value=0,
                     step=1000,
                 )
-                        
+
         # Two columns for other income inputs
         left_col, right_col = st.columns(2)
-        
+
         # Left column inputs
         with left_col:
             state_and_local_sales_or_income_tax = st.number_input(
@@ -108,7 +168,7 @@ def create_personal_inputs():
                 value=5000,
                 step=1000,
             )
-        
+
         # Right column inputs
         with right_col:
             qualified_dividend_income = st.number_input(
@@ -134,7 +194,7 @@ def create_personal_inputs():
                 value=5000,
                 step=1000,
             )
-    
+
     return {
         "is_married": is_married,
         "state_code": state_code,
