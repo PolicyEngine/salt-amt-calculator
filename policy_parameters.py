@@ -18,17 +18,47 @@ def create_policy_inputs(prefix):
             st.session_state.expander_states[f"{prefix}_{section}_expanded"] = False
     
     for param in ['joint', 'other']:
-        for param_type in ['salt', 'amt_ex', 'amt_po']:
-            if f"{prefix}_{param_type}_{param}_unlimited" not in st.session_state:
-                st.session_state[f"{prefix}_{param_type}_{param}_unlimited"] = True
+        # Set SALT caps as unlimited by default, but AMT parameters as limited
+        if f"{prefix}_salt_{param}_unlimited" not in st.session_state:
+            st.session_state[f"{prefix}_salt_{param}_unlimited"] = True
+            
+        if f"{prefix}_amt_ex_{param}_unlimited" not in st.session_state:
+            st.session_state[f"{prefix}_amt_ex_{param}_unlimited"] = False
+            
+        if f"{prefix}_amt_po_{param}_unlimited" not in st.session_state:
+            st.session_state[f"{prefix}_amt_po_{param}_unlimited"] = False
             
         # Initialize default values
         if f"{prefix}_salt_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_salt_{param}"] = 20_000 if param == 'joint' else 10_000
+            st.session_state[f"{prefix}_salt_{param}"] = 10_000 if param == 'joint' else 10_000
         if f"{prefix}_amt_ex_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_amt_ex_{param}"] = 126_500 if param == 'joint' else 81_300
+            st.session_state[f"{prefix}_amt_ex_{param}"] = 109_700 if param == 'joint' else 70_500
         if f"{prefix}_amt_po_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_amt_po_{param}"] = 1_156_300 if param == 'joint' else 578_150
+            st.session_state[f"{prefix}_amt_po_{param}"] = 209_000 if param == 'joint' else 156_700
+    
+    def set_current_policy():
+        # Set SALT caps
+        st.session_state[f"{prefix}_salt_joint_unlimited"] = False
+        st.session_state[f"{prefix}_salt_other_unlimited"] = False
+        st.session_state[f"{prefix}_salt_joint"] = 10_000
+        st.session_state[f"{prefix}_salt_other"] = 10_000
+        
+        # Set AMT exemptions
+        st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
+        st.session_state[f"{prefix}_amt_ex_other_unlimited"] = False
+        st.session_state[f"{prefix}_amt_ex_joint"] = 140_565
+        st.session_state[f"{prefix}_amt_ex_other"] = 90_394
+        
+        # Set AMT phase-outs
+        st.session_state[f"{prefix}_amt_po_joint_unlimited"] = False
+        st.session_state[f"{prefix}_amt_po_other_unlimited"] = False
+        st.session_state[f"{prefix}_amt_po_joint"] = 1_285_409
+        st.session_state[f"{prefix}_amt_po_other"] = 642_705
+        
+        # Ensure expanders stay open
+        st.session_state.expander_states[f"{prefix}_salt_expanded"] = True
+        st.session_state.expander_states[f"{prefix}_amt_expanded"] = True
+        st.session_state.expander_states[f"{prefix}_phase_expanded"] = True
     
     # Custom CSS for styling
     st.markdown("""
@@ -121,6 +151,8 @@ def create_policy_inputs(prefix):
         
         return value
 
+    # Add Current Policy button at the top
+    st.button("Current Policy", key=f"{prefix}_current_policy", on_click=set_current_policy)
 
     # SALT Cap Parameters
     with st.expander("SALT Caps", expanded=st.session_state.expander_states[f"{prefix}_salt_expanded"]):
@@ -142,7 +174,6 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded"
             )
 
-    # Rest of the code remains the same...
     # AMT Exemption Parameters
     with st.expander("AMT Exemptions", expanded=st.session_state.expander_states[f"{prefix}_amt_expanded"]):
         col1, col2 = st.columns(2)
