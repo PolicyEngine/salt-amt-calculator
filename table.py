@@ -16,13 +16,13 @@ def create_summary_table(baseline_income, st_session_state, reform_params_dict):
         {
             "Reform": "Baseline",
             "Policy Parameters": (
-                "SALT Cap: $10,000 (all filers)<br>"
+                "SALT Cap: Unlimited <br>"
                 "AMT Exemption:<br>"
-                "• Joint: $140,565<br>"
-                "• Other: $90,394<br>"
+                "• Joint: $109,700<br>"
+                "• Other: $70,500<br>"
                 "AMT Phase-out:<br>"
-                "• Joint: $1,285,409<br>"
-                "• Other: $642,705"
+                "• Joint: $209,000<br>"
+                "• Other: $156,700"
             ),
             "Household Income": f"${baseline_income:,.2f}",
             "Change from Baseline": "$0",
