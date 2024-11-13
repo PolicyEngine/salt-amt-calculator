@@ -2,3 +2,4 @@ streamlit
 policyengine_us
 numpy
 pyyaml
+pandas

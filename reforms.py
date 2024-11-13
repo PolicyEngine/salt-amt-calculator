@@ -11,7 +11,7 @@ class PolicyReforms:
         # SALT caps
         for status in salt_caps:
             reform_dict[f"gov.irs.deductions.itemized.salt_and_real_estate.cap.{status}"] = {
-                "2025-01-01.2100-12-31": salt_caps[status]
+                "2026-01-01.2100-12-31": salt_caps[status]
             }
             
         # AMT exemptions

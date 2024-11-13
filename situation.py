@@ -18,25 +18,25 @@ def create_situation(
     situation = {
         "people": {
             "head": {
-                "age": {"2025": head_age},
-                "employment_income": {"2025": employment_income},
-                "qualified_dividend_income": {"2025": qualified_dividend_income},
-                "long_term_capital_gains": {"2025": long_term_capital_gains},
-                "short_term_capital_gains": {"2025": short_term_capital_gains},
-                "real_estate_taxes": {"2025": real_estate_taxes},
+                "age": {"2026": head_age},
+                "employment_income": {"2026": employment_income},
+                "qualified_dividend_income": {"2026": qualified_dividend_income},
+                "long_term_capital_gains": {"2026": long_term_capital_gains},
+                "short_term_capital_gains": {"2026": short_term_capital_gains},
+                "real_estate_taxes": {"2026": real_estate_taxes},
             }
         },
         "households": {
             "household": {
                 "members": ["head"],
-                "state_code": {"2025": state_code},
+                "state_code": {"2026": state_code},
             }
         },
         "tax_units": {
             "tax_unit": {
                 "members": ["head"],
-                "filing_status": {"2025": filing_status},
-                "state_and_local_sales_or_income_tax": {"2025": state_and_local_sales_or_income_tax},
+                "filing_status": {"2026": filing_status},
+                "state_and_local_sales_or_income_tax": {"2026": state_and_local_sales_or_income_tax},
             }
         },
         "families": {"family": {"members": ["head"]}},
@@ -46,8 +46,8 @@ def create_situation(
     # Add spouse if married
     if is_married:
         situation["people"]["spouse"] = {
-            "age": {"2025": spouse_age},
-            "employment_income": {"2025": spouse_income},  
+            "age": {"2026": spouse_age},
+            "employment_income": {"2026": spouse_income},  
         }
         # Add spouse to all units
         for unit in ["households", "tax_units", "families", "marital_units"]:
@@ -57,7 +57,7 @@ def create_situation(
     for i in range(num_children):
         child_id = f"child_{i}"
         situation["people"][child_id] = {
-            "age": {"2025": child_ages[i]},
+            "age": {"2026": child_ages[i]},
         }
         # Add child to relevant units
         for unit in ["households", "tax_units", "families"]:
