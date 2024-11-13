@@ -104,19 +104,26 @@ if calculate_clicked:
     # Display results in a nice format
     st.markdown("### Results")
 
-    # Create placeholder for chart at the top of results section
+    # Create placeholder for chart and status message
     chart_placeholder = st.empty()
-
-    # Calculate and display results for all reforms
-    results = calculate_impacts(situation, reform_params_dict)
+    status_placeholder = st.empty()
     
-    # Update baseline results first
+    # Calculate baseline first
+    status_placeholder.info("Calculating baseline...")
+    results = calculate_impacts(situation, {})
+    baseline_income = results['baseline']
+    
+    # Update baseline results
     st.session_state.results_df, st.session_state.summary_results = update_results(
         st.session_state.results_df,
         st.session_state.summary_results,
         "Baseline",
-        results['baseline']
+        baseline_income
     )
+    
+    # Update chart with baseline
+    fig = create_reform_comparison_graph(st.session_state.summary_results)
+    chart_placeholder.plotly_chart(fig, use_container_width=True)
     
     # Create columns for detailed results
     cols = st.columns(len(st.session_state.reform_indexes) + 1)
@@ -124,25 +131,33 @@ if calculate_clicked:
     # Display baseline details
     with cols[0]:
         st.markdown("#### Baseline")
-        st.markdown(f"Household income: **${results['baseline']:,.2f}**")
+        st.markdown(f"Household income: **${baseline_income:,.2f}**")
     
-    # Display each reform and update chart
+    # Calculate and display each reform sequentially
     for i, reform_idx in enumerate(st.session_state.reform_indexes):
         reform_name = st.session_state.reform_names[reform_idx]
+        status_placeholder.info(f"Calculating {reform_name}...")
+        
+        # Calculate single reform
+        reform_results = calculate_impacts(situation, {f"reform_{i+1}": reform_params_dict[f"reform_{i+1}"]})
+        reform_impact = reform_results[f'reform_{i+1}_impact']
+        new_income = baseline_income + reform_impact
+        
+        # Update results tracking
+        st.session_state.results_df, st.session_state.summary_results = update_results(
+            st.session_state.results_df,
+            st.session_state.summary_results,
+            reform_name,
+            new_income
+        )
+        
+        # Update chart after each reform
+        fig = create_reform_comparison_graph(st.session_state.summary_results)
+        chart_placeholder.plotly_chart(fig, use_container_width=True)
+        
+        # Display detailed results for this reform
         with cols[i + 1]:
             st.markdown(f"#### {reform_name}")
-            reform_impact = results[f'reform_{i+1}_impact']
-            new_income = results['baseline'] + reform_impact
-            
-            # Update results tracking
-            st.session_state.results_df, st.session_state.summary_results = update_results(
-                st.session_state.results_df,
-                st.session_state.summary_results,
-                reform_name,
-                new_income
-            )
-            
-            # Display detailed results
             st.markdown(f"New household income: **${new_income:,.2f}**")
             st.markdown(f"Change from baseline: **${reform_impact:,.2f}**")
             
@@ -151,6 +166,5 @@ if calculate_clicked:
             elif reform_impact < 0:
                 st.error("This reform would decrease household income")
     
-    # Update chart with final results
-    fig = create_reform_comparison_graph(st.session_state.summary_results)
-    chart_placeholder.plotly_chart(fig, use_container_width=True)
+    # Clear status message when complete
+    status_placeholder.empty()
