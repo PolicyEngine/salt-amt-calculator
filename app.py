@@ -74,7 +74,12 @@ for i, (col, reform_idx) in enumerate(zip(reform_cols, st.session_state.reform_i
 if 'results_df' not in st.session_state:
     st.session_state.results_df, st.session_state.summary_results = initialize_results_tracking()
 
-if st.button("Calculate Impacts"):
+# Create columns for calculate button alignment
+calc_col1, calc_col2 = st.columns([1, 8])
+with calc_col1:
+    calculate_clicked = st.button("Calculate Impacts", use_container_width=True)
+
+if calculate_clicked:
     # Reset results to start fresh
     reset_results()
     

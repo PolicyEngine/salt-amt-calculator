@@ -1,4 +1,3 @@
-# policy_parameters.py
 import streamlit as st
 import numpy as np
 
@@ -34,6 +33,7 @@ def create_policy_inputs(prefix):
     # Custom CSS for styling
     st.markdown("""
         <style>
+        /* Button styling */
         .stButton>button {
             padding: 0.25rem 0.5rem;
             font-size: 0.7rem;
@@ -43,11 +43,31 @@ def create_policy_inputs(prefix):
             min-height: 1.5rem;
         }
         
-        .element-container div[data-testid="stNumberInput"] input {
-            padding: 0.25rem;
-            height: 1.5rem;
+        /* Number input styling for policy parameters only */
+        .policy-input [data-testid="stNumberInput"] {
+            width: 100%;
         }
         
+        .policy-input [data-testid="stNumberInput"] input {
+            padding: 0.25rem !important;
+            height: 1.5rem !important;
+            min-height: 1.5rem !important;
+            line-height: 1 !important;
+            text-align: center !important;
+        }
+        
+        /* Hide step buttons for policy parameters only */
+        .policy-input [data-testid="stNumberInput"] button {
+            display: none !important;
+        }
+        
+        /* Remove padding for hidden buttons in policy parameters */
+        .policy-input [data-testid="stNumberInput"] div.css-1n76uvr {
+            width: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Container spacing */
         div[data-testid="column"] {
             padding: 0 0.5rem !important;
         }
@@ -72,8 +92,10 @@ def create_policy_inputs(prefix):
     """, unsafe_allow_html=True)
 
     def create_parameter_input(label, param_key, unlimited_key, max_value=None, expander_key=None):
-        """Helper function to create a parameter input without nested columns"""
+        """Helper function to create a parameter input"""
         if not st.session_state[unlimited_key]:
+            # Wrap the number input in a div with the policy-input class
+            st.markdown('<div class="policy-input">', unsafe_allow_html=True)
             value = st.number_input(
                 label,
                 min_value=0,
@@ -81,8 +103,9 @@ def create_policy_inputs(prefix):
                 value=st.session_state[param_key],
                 step=1_000,
                 label_visibility="collapsed",
-                key=param_key
+                key=param_key,
             )
+            st.markdown('</div>', unsafe_allow_html=True)
         else:
             value = np.inf
             st.write("Unlimited")
@@ -97,6 +120,7 @@ def create_policy_inputs(prefix):
             st.rerun()
         
         return value
+
 
     # SALT Cap Parameters
     with st.expander("SALT Caps", expanded=st.session_state.expander_states[f"{prefix}_salt_expanded"]):
@@ -118,6 +142,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded"
             )
 
+    # Rest of the code remains the same...
     # AMT Exemption Parameters
     with st.expander("AMT Exemptions", expanded=st.session_state.expander_states[f"{prefix}_amt_expanded"]):
         col1, col2 = st.columns(2)
