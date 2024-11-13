@@ -63,6 +63,31 @@ def create_policy_inputs(prefix):
         st.session_state.expander_states[f"{prefix}_amt_expanded"] = True
         st.session_state.expander_states[f"{prefix}_phase_expanded"] = True
 
+    def set_current_law():
+        # Set SALT caps as unlimited
+        st.session_state[f"{prefix}_salt_joint_unlimited"] = True
+        st.session_state[f"{prefix}_salt_other_unlimited"] = True
+        st.session_state[f"{prefix}_salt_joint"] = 10_000
+        st.session_state[f"{prefix}_salt_other"] = 10_000
+
+        # Set AMT exemptions to default values
+        st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
+        st.session_state[f"{prefix}_amt_ex_other_unlimited"] = False
+        st.session_state[f"{prefix}_amt_ex_joint"] = 109_700
+        st.session_state[f"{prefix}_amt_ex_other"] = 70_500
+
+        # Set AMT phase-outs to default values
+        st.session_state[f"{prefix}_amt_po_joint_unlimited"] = False
+        st.session_state[f"{prefix}_amt_po_other_unlimited"] = False
+        st.session_state[f"{prefix}_amt_po_joint"] = 209_000
+        st.session_state[f"{prefix}_amt_po_other"] = 156_700
+
+        # Ensure expanders stay open
+        st.session_state.expander_states[f"{prefix}_salt_expanded"] = True
+        st.session_state.expander_states[f"{prefix}_amt_expanded"] = True
+        st.session_state.expander_states[f"{prefix}_phase_expanded"] = True
+
+
     # Custom CSS for styling
     st.markdown(
         """
@@ -159,10 +184,22 @@ def create_policy_inputs(prefix):
 
         return value
 
-    # Add Current Policy button at the top
-    st.button(
-        "Current Policy", key=f"{prefix}_current_policy", on_click=set_current_policy
-    )
+    # Add Current Policy and Current Law buttons at the top in two columns
+    col1, col2 = st.columns(2)
+    with col1:
+        st.button(
+            "Current Policy", 
+            key=f"{prefix}_current_policy", 
+            on_click=set_current_policy,
+            use_container_width=True
+        )
+    with col2:
+        st.button(
+            "Current Law", 
+            key=f"{prefix}_current_law", 
+            on_click=set_current_law,
+            use_container_width=True
+        )
 
     # SALT Cap Parameters
     with st.expander(
@@ -248,6 +285,7 @@ def create_policy_inputs(prefix):
                 1_000_000,
                 expander_key=f"{prefix}_phase_expanded",
             )
+
 
     # Set reform parameters
     reform_params["salt_caps"].update(
