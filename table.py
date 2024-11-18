@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+
 def create_summary_table(baseline_income, st_session_state, reform_params_dict):
     """
     Creates and displays a summary table of all reforms and their impacts.
@@ -36,7 +37,7 @@ def create_summary_table(baseline_income, st_session_state, reform_params_dict):
         reform_params = reform_params_dict[f"reform_{i+1}"]
 
         policy_text = _format_policy_parameters(reform_params)
-        
+
         # Get reform outcome from summary results
         reform_income = st_session_state.summary_results[reform_name]
         reform_impact = reform_income - baseline_income
@@ -53,6 +54,7 @@ def create_summary_table(baseline_income, st_session_state, reform_params_dict):
 
     # Create and display the table
     _display_formatted_table(table_data)
+
 
 def _format_policy_parameters(reform_params):
     """
@@ -105,6 +107,7 @@ def _format_policy_parameters(reform_params):
         f"• Joint: {amt_po_joint}<br>"
         f"• Other: {amt_po_other}"
     )
+
 
 def _display_formatted_table(table_data):
     """

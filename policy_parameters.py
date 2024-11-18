@@ -87,7 +87,6 @@ def create_policy_inputs(prefix):
         st.session_state.expander_states[f"{prefix}_amt_expanded"] = True
         st.session_state.expander_states[f"{prefix}_phase_expanded"] = True
 
-
     # Custom CSS for styling
     st.markdown(
         """
@@ -188,17 +187,17 @@ def create_policy_inputs(prefix):
     col1, col2 = st.columns(2)
     with col1:
         st.button(
-            "Current Policy", 
-            key=f"{prefix}_current_policy", 
+            "Current Policy",
+            key=f"{prefix}_current_policy",
             on_click=set_current_policy,
-            use_container_width=True
+            use_container_width=True,
         )
     with col2:
         st.button(
-            "Current Law", 
-            key=f"{prefix}_current_law", 
+            "Current Law",
+            key=f"{prefix}_current_law",
             on_click=set_current_law,
-            use_container_width=True
+            use_container_width=True,
         )
 
     # SALT Cap Parameters
@@ -285,7 +284,6 @@ def create_policy_inputs(prefix):
                 1_000_000,
                 expander_key=f"{prefix}_phase_expanded",
             )
-
 
     # Set reform parameters
     reform_params["salt_caps"].update(
