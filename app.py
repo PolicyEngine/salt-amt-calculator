@@ -21,7 +21,7 @@ st.set_page_config(
 st.title("SALT / AMT Policy Impact Calculator")
 st.markdown(
     """
-This calculator compares different SALT cap and AMT reform scenarios against the baseline. 
+This calculator compares different SALT cap and AMT reform scenarios against the SALT Cap: Unlimited. 
 Input your household characteristics and the parameters for each reform below.
 """
 )
@@ -34,7 +34,7 @@ st.markdown("### Policy Parameters")
 
 # Initialize session state for tracking reforms if it doesn't exist
 if "reform_indexes" not in st.session_state:
-    st.session_state.reform_indexes = [0, 1]  # Start with 2 reforms
+    st.session_state.reform_indexes = [0]  # Start with 1 custom reform
 
 # Initialize reform names if they don't exist
 if "reform_names" not in st.session_state:
@@ -42,10 +42,10 @@ if "reform_names" not in st.session_state:
         idx: f"Reform {idx+1}" for idx in st.session_state.reform_indexes
     }
 
-# Add reform button right under the Policy Parameters header, left-aligned
+# Modify the Add Reform button condition to limit to 3 custom reforms
 col1, col2 = st.columns([1, 8])
 with col1:
-    if len(st.session_state.reform_indexes) < 5:
+    if len(st.session_state.reform_indexes) < 3:  # Changed from 5 to 3
         if st.button("Add Reform"):
             next_index = max(st.session_state.reform_indexes) + 1
             st.session_state.reform_indexes.append(next_index)
@@ -127,30 +127,80 @@ if calculate_clicked:
     chart_placeholder = st.empty()
     status_placeholder = st.empty()
 
-    # Calculate baseline first
-    status_placeholder.info("Calculating baseline...")
+    # Calculate current law first
+    status_placeholder.info("Calculating current law...")
     results = calculate_impacts(situation, {})
-    baseline_income = results["baseline"]
+    current_law_income = results["current_law"]
 
-    # Update baseline results
+    # Update current law results
     st.session_state.results_df, st.session_state.summary_results = update_results(
         st.session_state.results_df,
         st.session_state.summary_results,
-        "Baseline",
-        baseline_income,
+        "Current Law",
+        current_law_income,
     )
 
-    # Update chart with baseline
+    # Calculate current policy
+    status_placeholder.info("Calculating current policy...")
+    current_policy_params = {
+        "reform_current_policy": {
+            "salt_caps": {
+                "JOINT": 10_000,
+                "SEPARATE": 5_000,
+                "SINGLE": 10_000,
+                "HEAD_OF_HOUSEHOLD": 10_000,
+                "SURVIVING_SPOUSE": 10_000,
+            },
+            "amt_exemptions": {
+                "JOINT": 140_565,
+                "SEPARATE": 70_283,
+                "SINGLE": 90_394,
+                "HEAD_OF_HOUSEHOLD": 90_394,
+                "SURVIVING_SPOUSE": 90_394,
+            },
+            "amt_phase_outs": {
+                "JOINT": 1_285_409,
+                "SEPARATE": 642_705,
+                "SINGLE": 642_705,
+                "HEAD_OF_HOUSEHOLD": 642_705,
+                "SURVIVING_SPOUSE": 642_705,
+            },
+        }
+    }
+
+    current_policy_results = calculate_impacts(situation, current_policy_params)
+    current_policy_income = current_law_income + current_policy_results["reform_current_policy_impact"]
+
+    # Update current policy results
+    st.session_state.results_df, st.session_state.summary_results = update_results(
+        st.session_state.results_df,
+        st.session_state.summary_results,
+        "Current Policy",
+        current_policy_income
+    )
+
+    # Update chart with both current law and policy
     fig = create_reform_comparison_graph(st.session_state.summary_results)
     chart_placeholder.plotly_chart(fig, use_container_width=True)
 
-    # Create columns for detailed results
-    cols = st.columns(len(st.session_state.reform_indexes) + 1)
+    # Create columns for detailed results (Current Law, Current Policy, and reforms)
+    cols = st.columns(len(st.session_state.reform_indexes) + 2)  # +2 for Current Law and Policy
 
-    # Display baseline details
+    # Display current law details
     with cols[0]:
-        st.markdown("#### Baseline")
-        st.markdown(f"Household income: **${baseline_income:,.2f}**")
+        st.markdown("#### Current Law")
+        st.markdown(f"Household income: **${current_law_income:,.2f}**")
+
+    # Display current policy details
+    with cols[1]:
+        st.markdown("#### Current Policy")
+        st.markdown(f"Household income: **${current_policy_income:,.2f}**")
+        current_policy_impact = current_policy_income - current_law_income
+        st.markdown(f"Change from Current Law: **${current_policy_impact:,.2f}**")
+        if current_policy_impact > 0:
+            st.success("Higher than Current Law")
+        elif current_policy_impact < 0:
+            st.error("Lower than Current Law")
 
     # Calculate and display each reform sequentially
     for i, reform_idx in enumerate(st.session_state.reform_indexes):
@@ -162,7 +212,7 @@ if calculate_clicked:
             situation, {f"reform_{i+1}": reform_params_dict[f"reform_{i+1}"]}
         )
         reform_impact = reform_results[f"reform_{i+1}_impact"]
-        new_income = baseline_income + reform_impact
+        new_income = current_law_income + reform_impact
 
         # Update results tracking
         st.session_state.results_df, st.session_state.summary_results = update_results(
@@ -177,10 +227,10 @@ if calculate_clicked:
         chart_placeholder.plotly_chart(fig, use_container_width=True)
 
         # Display detailed results for this reform
-        with cols[i + 1]:
+        with cols[i + 2]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
             st.markdown(f"#### {reform_name}")
             st.markdown(f"New household income: **${new_income:,.2f}**")
-            st.markdown(f"Change from baseline: **${reform_impact:,.2f}**")
+            st.markdown(f"Change from Current Law: **${reform_impact:,.2f}**")
 
             if reform_impact > 0:
                 st.success("This reform would increase household income")
@@ -191,4 +241,4 @@ if calculate_clicked:
     status_placeholder.empty()
 
     # Create summary table
-    create_summary_table(baseline_income, st.session_state, reform_params_dict)
+    create_summary_table(current_law_income, st.session_state, reform_params_dict)

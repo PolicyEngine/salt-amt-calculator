@@ -3,19 +3,17 @@ import pandas as pd
 import numpy as np
 
 
-def create_summary_table(baseline_income, st_session_state, reform_params_dict):
-    """
-    Creates and displays a summary table of all reforms and their impacts.
-    """
+def create_summary_table(current_law_income, st_session_state, reform_params_dict):
+    """Creates and displays a summary table of all reforms and their impacts."""
     st.markdown("### Detailed Summary")
 
     # Initialize lists for DataFrame
     table_data = []
 
-    # Add baseline
+    # Add current law
     table_data.append(
         {
-            "Reform": "Baseline",
+            "Reform": "Current Law",
             "Policy Parameters": (
                 "SALT Cap: Unlimited <br>"
                 "AMT Exemption:<br>"
@@ -25,9 +23,33 @@ def create_summary_table(baseline_income, st_session_state, reform_params_dict):
                 "• Joint: $209,000<br>"
                 "• Other: $156,700"
             ),
-            "Household Income": f"${baseline_income:,.2f}",
-            "Change from Baseline": "$0",
+            "Household Income": f"${current_law_income:,.2f}",
+            "Change from Current Law": "$0",
             "Percent Change": "0%",
+        }
+    )
+
+    # Add current policy
+    current_policy_income = st_session_state.summary_results["Current Policy"]
+    current_policy_impact = current_policy_income - current_law_income
+    
+    table_data.append(
+        {
+            "Reform": "Current Policy",
+            "Policy Parameters": (
+                "SALT Cap:<br>"
+                "• Joint: $10,000<br>"
+                "• Other: $10,000<br>"
+                "AMT Exemption:<br>"
+                "• Joint: $140,565<br>"
+                "• Other: $90,394<br>"
+                "AMT Phase-out:<br>"
+                "• Joint: $1,285,409<br>"
+                "• Other: $642,705"
+            ),
+            "Household Income": f"${current_policy_income:,.2f}",
+            "Change from Current Law": f"${current_policy_impact:,.2f}",
+            "Percent Change": f"{current_policy_impact/current_law_income:,.1%}",
         }
     )
 
@@ -40,15 +62,15 @@ def create_summary_table(baseline_income, st_session_state, reform_params_dict):
 
         # Get reform outcome from summary results
         reform_income = st_session_state.summary_results[reform_name]
-        reform_impact = reform_income - baseline_income
+        reform_impact = reform_income - current_law_income
 
         table_data.append(
             {
                 "Reform": reform_name,
                 "Policy Parameters": policy_text,
                 "Household Income": f"${reform_income:,.2f}",
-                "Change from Baseline": f"${reform_impact:,.2f}",
-                "Percent Change": f"{reform_impact/baseline_income:,.1%}",
+                "Change from Current Law": f"${reform_impact:,.2f}",
+                "Percent Change": f"{reform_impact/current_law_income:,.1%}",
             }
         )
 

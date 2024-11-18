@@ -6,11 +6,11 @@ from reforms import PolicyReforms
 def calculate_impacts(situation, reform_params_dict):
     """Calculate the impacts of multiple reform scenarios"""
     # Set up baseline simulation
-    baseline = Simulation(situation=situation)
-    baseline_income = baseline.calculate("household_net_income", "2026")[0]
+    current_law = Simulation(situation=situation)
+    current_law_income = current_law.calculate("household_net_income", "2026")[0]
 
     # Initialize results dictionary with baseline
-    results = {"baseline": baseline_income}
+    results = {"current_law": current_law_income}
 
     # Calculate each reform
     for reform_key, reform_params in reform_params_dict.items():
@@ -20,6 +20,6 @@ def calculate_impacts(situation, reform_params_dict):
         reform_income = reform_sim.calculate("household_net_income", "2026")[0]
 
         # Store the impact
-        results[f"{reform_key}_impact"] = reform_income - baseline_income
+        results[f"{reform_key}_impact"] = reform_income - current_law_income
 
     return results
