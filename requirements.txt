@@ -4,4 +4,3 @@ numpy
 pyyaml
 pandas
 black
-distutils
