@@ -14,7 +14,7 @@ from table import create_summary_table
 
 # Set up the Streamlit page
 st.set_page_config(
-    page_title="SALT Cap Policy Impact Calculator", page_icon="📊", layout="wide"
+    page_title="SALT Cap Policy Impact Calculator", layout="wide"
 )
 
 # Title and description
