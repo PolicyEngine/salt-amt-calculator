@@ -33,56 +33,11 @@ def create_personal_inputs():
         state_col, filing_col = st.columns(2)
         with state_col:
             state_codes = [
-                "AL",
-                "AK",
-                "AZ",
-                "AR",
-                "CA",
-                "CO",
-                "CT",
-                "DE",
-                "FL",
-                "GA",
-                "HI",
-                "ID",
-                "IL",
-                "IN",
-                "IA",
-                "KS",
-                "KY",
-                "LA",
-                "ME",
-                "MD",
-                "MA",
-                "MI",
-                "MN",
-                "MS",
-                "MO",
-                "MT",
-                "NE",
-                "NV",
-                "NH",
-                "NJ",
-                "NM",
-                "NY",
-                "NC",
-                "ND",
-                "OH",
-                "OK",
-                "OR",
-                "PA",
-                "RI",
-                "SC",
-                "SD",
-                "TN",
-                "TX",
-                "UT",
-                "VT",
-                "VA",
-                "WA",
-                "WV",
-                "WI",
-                "WY",
+                "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+                "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+                "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+                "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+                "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
             ]
             state_code = st.selectbox(
                 "State", state_codes, index=state_codes.index("CA")
@@ -92,9 +47,9 @@ def create_personal_inputs():
             filing_statuses = [
                 "SINGLE",
                 "HEAD_OF_HOUSEHOLD",
-                "JOINT",
+                "JOINT", 
                 "SEPARATE",
-                "SURVIVING_SPOUSE",
+                "SURVIVING_SPOUSE"
             ]
             filing_status = st.selectbox("Filing Status", filing_statuses)
 
@@ -102,24 +57,6 @@ def create_personal_inputs():
         num_children = st.number_input(
             "Number of Children", min_value=0, max_value=10, value=0
         )
-
-        # Child ages in a grid
-        child_ages = []
-        if num_children > 0:
-            st.write("Enter children's ages:")
-            for i in range(0, num_children, 3):  # Show 3 inputs per row
-                cols = st.columns(3)
-                for j, col in enumerate(cols):
-                    if i + j < num_children:
-                        with col:
-                            age = st.number_input(
-                                f"Child {i+j+1}",
-                                min_value=0,
-                                max_value=18,
-                                value=5,
-                                key=f"child_{i+j}",
-                            )
-                            child_ages.append(age)
 
     # Income Information Section
     with income_col:
@@ -192,6 +129,9 @@ def create_personal_inputs():
                 value=5000,
                 step=1000,
             )
+
+    # Create a list of child ages (all 10 years old)
+    child_ages = [10] * num_children if num_children > 0 else []
 
     return {
         "is_married": is_married,

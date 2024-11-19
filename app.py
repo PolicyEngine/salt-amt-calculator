@@ -242,3 +242,14 @@ if calculate_clicked:
 
     # Create summary table
     create_summary_table(current_law_income, st.session_state, reform_params_dict)
+
+# Add Notes section at the bottom
+st.markdown("---")  # Add a horizontal line for visual separation
+with st.expander("Notes"):
+    st.markdown("""
+    - For calculation purposes, all children are assumed to be 10 years old
+    - The calculator uses tax year 2026 for all calculations
+    - Current Policy represents the tax provisions that will be in effect for 2026 under current law
+    - Current Law represents the tax provisions that were in effect before the Tax Cuts and Jobs Act
+    """)
+    
