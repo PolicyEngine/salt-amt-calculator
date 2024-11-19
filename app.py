@@ -140,7 +140,7 @@ if calculate_clicked:
         current_law_income,
     )
 
-    # Calculate current policy
+# Calculate current policy
     status_placeholder.info("Calculating current policy...")
     current_policy_params = {
         "reform_current_policy": {
@@ -165,8 +165,12 @@ if calculate_clicked:
                 "HEAD_OF_HOUSEHOLD": 642_705,
                 "SURVIVING_SPOUSE": 642_705,
             },
+            # Add the new SALT phase-out parameters
+            "salt_phase_out_rate": 0,
+            "salt_phase_out_threshold": 0,
         }
     }
+
 
     current_policy_results = calculate_impacts(situation, current_policy_params)
     current_policy_income = current_law_income + current_policy_results["reform_current_policy_impact"]

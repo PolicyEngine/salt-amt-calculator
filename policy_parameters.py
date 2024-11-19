@@ -31,19 +31,7 @@ def create_policy_inputs(prefix):
         if f"{prefix}_amt_po_{param}_unlimited" not in st.session_state:
             st.session_state[f"{prefix}_amt_po_{param}_unlimited"] = False
 
-        # Initialize default values
-        if f"{prefix}_salt_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_salt_{param}"] = 10_000
-        if f"{prefix}_amt_ex_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_amt_ex_{param}"] = (
-                109_700 if param == "joint" else 70_500
-            )
-        if f"{prefix}_amt_po_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_amt_po_{param}"] = (
-                209_000 if param == "joint" else 156_700
-            )
-
-    # Initialize SALT phase out parameters
+    # Initialize default values for SALT phase out parameters
     if f"{prefix}_salt_phase_out_rate" not in st.session_state:
         st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
     if f"{prefix}_salt_phase_out_threshold" not in st.session_state:
@@ -147,15 +135,20 @@ def create_policy_inputs(prefix):
         st.markdown("#### SALT Phase-out")
         phase_cols = st.columns(2)
         with phase_cols[0]:
-            salt_phase_out_rate = st.number_input(
-                "Phase-out Rate",
-                min_value=0.0,
-                max_value=1.0,
-                value=float(st.session_state[f"{prefix}_salt_phase_out_rate"]),
-                step=0.01,
-                format="%.2f",
-                key=f"{prefix}_salt_phase_out_rate",
+            # Input as whole number percentage
+            salt_phase_out_rate_pct = st.number_input(
+                "Phase-out Rate (%)",
+                min_value=0,
+                max_value=100,
+                value=int(st.session_state[f"{prefix}_salt_phase_out_rate"] * 100),
+                step=1,
+                key=f"{prefix}_salt_phase_out_rate_pct",
             )
+            # Convert to decimal for backend
+            salt_phase_out_rate = salt_phase_out_rate_pct / 100.0
+            # Update session state
+            st.session_state[f"{prefix}_salt_phase_out_rate"] = salt_phase_out_rate
+
         with phase_cols[1]:
             salt_phase_out_threshold = st.number_input(
                 "Phase-out Threshold ($)",
