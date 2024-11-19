@@ -20,22 +20,28 @@ def create_policy_inputs(prefix):
         if f"{prefix}_{section}_expanded" not in st.session_state.expander_states:
             st.session_state.expander_states[f"{prefix}_{section}_expanded"] = False
 
-    for param in ["joint", "other"]:
-        # Set SALT caps as unlimited by default, but AMT parameters as limited
-        if f"{prefix}_salt_{param}_unlimited" not in st.session_state:
-            st.session_state[f"{prefix}_salt_{param}_unlimited"] = True
+    # Initialize all session state variables
+    defaults = {
+        f"{prefix}_salt_joint": 10_000,
+        f"{prefix}_salt_other": 10_000,
+        f"{prefix}_salt_joint_unlimited": True,
+        f"{prefix}_salt_other_unlimited": True,
+        f"{prefix}_salt_phase_out_rate": 0,
+        f"{prefix}_salt_phase_out_threshold": 0,
+        f"{prefix}_amt_ex_joint": 109_700,
+        f"{prefix}_amt_ex_other": 70_500,
+        f"{prefix}_amt_ex_joint_unlimited": False,
+        f"{prefix}_amt_ex_other_unlimited": False,
+        f"{prefix}_amt_po_joint": 209_000,
+        f"{prefix}_amt_po_other": 156_700,
+        f"{prefix}_amt_po_joint_unlimited": False,
+        f"{prefix}_amt_po_other_unlimited": False,
+    }
 
-        if f"{prefix}_amt_ex_{param}_unlimited" not in st.session_state:
-            st.session_state[f"{prefix}_amt_ex_{param}_unlimited"] = False
-
-        if f"{prefix}_amt_po_{param}_unlimited" not in st.session_state:
-            st.session_state[f"{prefix}_amt_po_{param}_unlimited"] = False
-
-    # Initialize default values for SALT phase out parameters
-    if f"{prefix}_salt_phase_out_rate" not in st.session_state:
-        st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
-    if f"{prefix}_salt_phase_out_threshold" not in st.session_state:
-        st.session_state[f"{prefix}_salt_phase_out_threshold"] = 0
+    # Initialize any missing session state variables with default values
+    for key, default_value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
 
     def set_current_policy():
         # Set SALT caps
