@@ -1,16 +1,22 @@
 import streamlit as st
 import numpy as np
 
-
 def create_policy_inputs(prefix):
     """Create inputs for all policy parameters with a streamlined interface"""
-    reform_params = {"salt_caps": {}, "amt_exemptions": {}, "amt_phase_outs": {}}
+    reform_params = {
+        "salt_caps": {},
+        "salt_phase_out_rate": 0,
+        "salt_phase_out_threshold": 0,
+        "amt_exemptions": {},
+        "amt_phase_outs": {},
+        "salt_phase_out_in_effect": True  # Always true, not a user input
+    }
 
     # Initialize session state variables
     if "expander_states" not in st.session_state:
         st.session_state.expander_states = {}
 
-    for section in ["salt", "amt", "phase"]:
+    for section in ["salt", "amt"]:
         if f"{prefix}_{section}_expanded" not in st.session_state.expander_states:
             st.session_state.expander_states[f"{prefix}_{section}_expanded"] = False
 
@@ -27,9 +33,7 @@ def create_policy_inputs(prefix):
 
         # Initialize default values
         if f"{prefix}_salt_{param}" not in st.session_state:
-            st.session_state[f"{prefix}_salt_{param}"] = (
-                10_000 if param == "joint" else 10_000
-            )
+            st.session_state[f"{prefix}_salt_{param}"] = 10_000
         if f"{prefix}_amt_ex_{param}" not in st.session_state:
             st.session_state[f"{prefix}_amt_ex_{param}"] = (
                 109_700 if param == "joint" else 70_500
@@ -39,12 +43,22 @@ def create_policy_inputs(prefix):
                 209_000 if param == "joint" else 156_700
             )
 
+    # Initialize SALT phase out parameters
+    if f"{prefix}_salt_phase_out_rate" not in st.session_state:
+        st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
+    if f"{prefix}_salt_phase_out_threshold" not in st.session_state:
+        st.session_state[f"{prefix}_salt_phase_out_threshold"] = 0
+
     def set_current_policy():
         # Set SALT caps
         st.session_state[f"{prefix}_salt_joint_unlimited"] = False
         st.session_state[f"{prefix}_salt_other_unlimited"] = False
         st.session_state[f"{prefix}_salt_joint"] = 10_000
         st.session_state[f"{prefix}_salt_other"] = 10_000
+        
+        # Set SALT phase out parameters
+        st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_threshold"] = 0
 
         # Set AMT exemptions
         st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
@@ -61,7 +75,6 @@ def create_policy_inputs(prefix):
         # Ensure expanders stay open
         st.session_state.expander_states[f"{prefix}_salt_expanded"] = True
         st.session_state.expander_states[f"{prefix}_amt_expanded"] = True
-        st.session_state.expander_states[f"{prefix}_phase_expanded"] = True
 
     def set_current_law():
         # Set SALT caps as unlimited
@@ -69,6 +82,10 @@ def create_policy_inputs(prefix):
         st.session_state[f"{prefix}_salt_other_unlimited"] = True
         st.session_state[f"{prefix}_salt_joint"] = 10_000
         st.session_state[f"{prefix}_salt_other"] = 10_000
+        
+        # Set SALT phase out parameters
+        st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_threshold"] = 0
 
         # Set AMT exemptions to default values
         st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
@@ -85,103 +102,6 @@ def create_policy_inputs(prefix):
         # Ensure expanders stay open
         st.session_state.expander_states[f"{prefix}_salt_expanded"] = True
         st.session_state.expander_states[f"{prefix}_amt_expanded"] = True
-        st.session_state.expander_states[f"{prefix}_phase_expanded"] = True
-
-    # Custom CSS for styling
-    st.markdown(
-        """
-        <style>
-        /* Button styling */
-        .stButton>button {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.7rem;
-            line-height: 1;
-            height: 1.5rem;
-            width: 100%;
-            min-height: 1.5rem;
-        }
-        
-        /* Number input styling for policy parameters only */
-        .policy-input [data-testid="stNumberInput"] {
-            width: 100%;
-        }
-        
-        .policy-input [data-testid="stNumberInput"] input {
-            padding: 0.25rem !important;
-            height: 1.5rem !important;
-            min-height: 1.5rem !important;
-            line-height: 1 !important;
-            text-align: center !important;
-        }
-        
-        /* Hide step buttons for policy parameters only */
-        .policy-input [data-testid="stNumberInput"] button {
-            display: none !important;
-        }
-        
-        /* Remove padding for hidden buttons in policy parameters */
-        .policy-input [data-testid="stNumberInput"] div.css-1n76uvr {
-            width: 0 !important;
-            padding: 0 !important;
-        }
-        
-        /* Container spacing */
-        div[data-testid="column"] {
-            padding: 0 0.5rem !important;
-        }
-        
-        .streamlit-expanderHeader {
-            padding: 0.25rem;
-        }
-        
-        .streamlit-expanderContent {
-            padding: 0.5rem 0 !important;
-        }
-        
-        .filer-label {
-            font-weight: 500;
-            padding: 0.25rem 0;
-        }
-        
-        div.row-widget.stButton, div.row-widget.stNumberInput {
-            margin-bottom: 0;
-        }
-        </style>
-    """,
-        unsafe_allow_html=True,
-    )
-
-    def create_parameter_input(
-        label, param_key, unlimited_key, max_value=None, expander_key=None
-    ):
-        """Helper function to create a parameter input"""
-        if not st.session_state[unlimited_key]:
-            # Wrap the number input in a div with the policy-input class
-            st.markdown('<div class="policy-input">', unsafe_allow_html=True)
-            value = st.number_input(
-                label,
-                min_value=0,
-                max_value=max_value if max_value else None,
-                value=st.session_state[param_key],
-                step=1_000,
-                label_visibility="collapsed",
-                key=param_key,
-            )
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            value = np.inf
-            st.write("Unlimited")
-
-        if st.button(
-            "Limited" if st.session_state[unlimited_key] else "Unlimited",
-            key=f"toggle_{param_key}",
-        ):
-            st.session_state[unlimited_key] = not st.session_state[unlimited_key]
-            if expander_key and expander_key in st.session_state.expander_states:
-                st.session_state.expander_states[expander_key] = True
-            st.rerun()
-
-        return value
 
     # Add Current Policy and Current Law buttons at the top in two columns
     col1, col2 = st.columns(2)
@@ -200,16 +120,15 @@ def create_policy_inputs(prefix):
             use_container_width=True,
         )
 
-    # SALT Cap Parameters
+    # SALT Parameters (Caps and Phase-out)
     with st.expander(
-        "SALT Caps",
+        "SALT Parameters",
         expanded=st.session_state.expander_states[f"{prefix}_salt_expanded"],
     ):
+        st.markdown("#### SALT Caps")
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(
-                '<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
             joint_salt = create_parameter_input(
                 "Joint Filer",
                 f"{prefix}_salt_joint",
@@ -217,9 +136,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded",
             )
         with col2:
-            st.markdown(
-                '<div class="filer-label">Other Filers</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
             other_salt = create_parameter_input(
                 "Other Filers",
                 f"{prefix}_salt_other",
@@ -227,16 +144,37 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded",
             )
 
-    # AMT Exemption Parameters
+        st.markdown("#### SALT Phase-out")
+        phase_cols = st.columns(2)
+        with phase_cols[0]:
+            salt_phase_out_rate = st.number_input(
+                "Phase-out Rate",
+                min_value=0.0,
+                max_value=1.0,
+                value=float(st.session_state[f"{prefix}_salt_phase_out_rate"]),
+                step=0.01,
+                format="%.2f",
+                key=f"{prefix}_salt_phase_out_rate",
+            )
+        with phase_cols[1]:
+            salt_phase_out_threshold = st.number_input(
+                "Phase-out Threshold ($)",
+                min_value=0,
+                max_value=1_000_000,
+                value=int(st.session_state[f"{prefix}_salt_phase_out_threshold"]),
+                step=1_000,
+                key=f"{prefix}_salt_phase_out_threshold",
+            )
+
+    # AMT Parameters
     with st.expander(
-        "AMT Exemptions",
+        "AMT Parameters",
         expanded=st.session_state.expander_states[f"{prefix}_amt_expanded"],
     ):
+        st.markdown("#### AMT Exemptions")
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(
-                '<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
             joint_amt = create_parameter_input(
                 "Joint Filer",
                 f"{prefix}_amt_ex_joint",
@@ -245,9 +183,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_amt_expanded",
             )
         with col2:
-            st.markdown(
-                '<div class="filer-label">Other Filers</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
             other_amt = create_parameter_input(
                 "Other Filers",
                 f"{prefix}_amt_ex_other",
@@ -256,64 +192,82 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_amt_expanded",
             )
 
-    # AMT Phase-out Parameters
-    with st.expander(
-        "Phase-out Start",
-        expanded=st.session_state.expander_states[f"{prefix}_phase_expanded"],
-    ):
+        st.markdown("#### AMT Phase-outs")
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(
-                '<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
             joint_phase = create_parameter_input(
                 "Joint Filer",
                 f"{prefix}_amt_po_joint",
                 f"{prefix}_amt_po_joint_unlimited",
                 2_000_000,
-                expander_key=f"{prefix}_phase_expanded",
+                expander_key=f"{prefix}_amt_expanded",
             )
         with col2:
-            st.markdown(
-                '<div class="filer-label">Other Filers</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
             other_phase = create_parameter_input(
                 "Other Filers",
                 f"{prefix}_amt_po_other",
                 f"{prefix}_amt_po_other_unlimited",
                 1_000_000,
-                expander_key=f"{prefix}_phase_expanded",
+                expander_key=f"{prefix}_amt_expanded",
             )
 
     # Set reform parameters
-    reform_params["salt_caps"].update(
-        {
-            "JOINT": joint_salt,
-            "SEPARATE": joint_salt / 2 if joint_salt != np.inf else np.inf,
-            "SINGLE": other_salt,
-            "HEAD_OF_HOUSEHOLD": other_salt,
-            "SURVIVING_SPOUSE": other_salt,
-        }
-    )
+    reform_params["salt_caps"].update({
+        "JOINT": joint_salt,
+        "SEPARATE": joint_salt / 2 if joint_salt != np.inf else np.inf,
+        "SINGLE": other_salt,
+        "HEAD_OF_HOUSEHOLD": other_salt,
+        "SURVIVING_SPOUSE": other_salt,
+    })
 
-    reform_params["amt_exemptions"].update(
-        {
-            "JOINT": joint_amt,
-            "SEPARATE": joint_amt / 2 if joint_amt != np.inf else np.inf,
-            "SINGLE": other_amt,
-            "HEAD_OF_HOUSEHOLD": other_amt,
-            "SURVIVING_SPOUSE": other_amt,
-        }
-    )
+    reform_params["salt_phase_out_rate"] = salt_phase_out_rate
+    reform_params["salt_phase_out_threshold"] = salt_phase_out_threshold
 
-    reform_params["amt_phase_outs"].update(
-        {
-            "JOINT": joint_phase,
-            "SEPARATE": joint_phase / 2 if joint_phase != np.inf else np.inf,
-            "SINGLE": other_phase,
-            "HEAD_OF_HOUSEHOLD": other_phase,
-            "SURVIVING_SPOUSE": other_phase,
-        }
-    )
+    reform_params["amt_exemptions"].update({
+        "JOINT": joint_amt,
+        "SEPARATE": joint_amt / 2 if joint_amt != np.inf else np.inf,
+        "SINGLE": other_amt,
+        "HEAD_OF_HOUSEHOLD": other_amt,
+        "SURVIVING_SPOUSE": other_amt,
+    })
+
+    reform_params["amt_phase_outs"].update({
+        "JOINT": joint_phase,
+        "SEPARATE": joint_phase / 2 if joint_phase != np.inf else np.inf,
+        "SINGLE": other_phase,
+        "HEAD_OF_HOUSEHOLD": other_phase,
+        "SURVIVING_SPOUSE": other_phase,
+    })
 
     return reform_params
+
+def create_parameter_input(label, param_key, unlimited_key, max_value=None, expander_key=None):
+    """Helper function to create a parameter input"""
+    if not st.session_state[unlimited_key]:
+        st.markdown('<div class="policy-input">', unsafe_allow_html=True)
+        value = st.number_input(
+            label,
+            min_value=0,
+            max_value=max_value if max_value else None,
+            value=st.session_state[param_key],
+            step=1_000,
+            label_visibility="collapsed",
+            key=param_key,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        value = np.inf
+        st.write("Unlimited")
+
+    if st.button(
+        "Limited" if st.session_state[unlimited_key] else "Unlimited",
+        key=f"toggle_{param_key}",
+    ):
+        st.session_state[unlimited_key] = not st.session_state[unlimited_key]
+        if expander_key and expander_key in st.session_state.expander_states:
+            st.session_state.expander_states[expander_key] = True
+        st.rerun()
+
+    return value
