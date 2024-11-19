@@ -33,11 +33,56 @@ def create_personal_inputs():
         state_col, filing_col = st.columns(2)
         with state_col:
             state_codes = [
-                "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-                "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-                "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-                "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-                "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY",
             ]
             state_code = st.selectbox(
                 "State", state_codes, index=state_codes.index("CA")
@@ -47,9 +92,9 @@ def create_personal_inputs():
             filing_statuses = [
                 "SINGLE",
                 "HEAD_OF_HOUSEHOLD",
-                "JOINT", 
+                "JOINT",
                 "SEPARATE",
-                "SURVIVING_SPOUSE"
+                "SURVIVING_SPOUSE",
             ]
             filing_status = st.selectbox("Filing Status", filing_statuses)
 

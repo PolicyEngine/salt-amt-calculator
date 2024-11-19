@@ -32,7 +32,7 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
     # Add current policy
     current_policy_income = st_session_state.summary_results["Current Policy"]
     current_policy_impact = current_policy_income - current_law_income
-    
+
     table_data.append(
         {
             "Reform": "Current Policy",
