@@ -71,7 +71,8 @@ for i, (col, reform_idx) in enumerate(
             st.session_state.reform_names[reform_idx] = new_name
 
         with cols[1]:
-            if len(st.session_state.reform_indexes) > 1:
+            # Allow removing the last reform even if it's the only one
+            if len(st.session_state.reform_indexes) > 0:
                 # Ensure unique key for remove button
                 remove_key = f"remove_reform_{reform_idx}_{i}"
                 if st.button("✕", key=remove_key, help="Remove this reform"):
@@ -83,22 +84,30 @@ for i, (col, reform_idx) in enumerate(
         # Create reform parameters using the imported function
         reform_params_dict[f"reform_{i+1}"] = create_policy_inputs(new_name)
 
-# Add Reform button only if under the limit and we have an extra column
+# Add Reform button only if under the limit and either there are no reforms or we have an extra column
 if num_reforms < 3:  # Limit to 3 reforms
-    with reform_cols[-1]:  # Use the last column
-        # Create empty space equivalent to the header space in other columns
-        st.write("")  # Space where reform name would be
+    # If there are no reforms, create a single column for the Add Reform button
+    if num_reforms == 0:
+        if st.button("Add Reform", key="add_reform", use_container_width=True):
+            next_index = max(st.session_state.reform_indexes) + 1 if st.session_state.reform_indexes else 0
+            st.session_state.reform_indexes.append(next_index)
+            st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
+            st.rerun()
+    else:
+        # Use the last column if we have reforms
+        with reform_cols[-1]:
+            # Create empty space equivalent to the header space in other columns
+            st.write("")  # Space where reform name would be
 
-        # Create three columns within the column to center the button
-        left_spacer, button_col, right_spacer = st.columns([1.5, 1, 1.5])
+            # Create three columns within the column to center the button
+            left_spacer, button_col, right_spacer = st.columns([1.5, 1, 1.5])
 
-        with button_col:
-            if st.button("Add Reform", key="add_reform"):
-                next_index = max(st.session_state.reform_indexes) + 1
-                st.session_state.reform_indexes.append(next_index)
-                st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
-                st.rerun()
-
+            with button_col:
+                if st.button("Add Reform", key="add_reform"):
+                    next_index = max(st.session_state.reform_indexes) + 1 if st.session_state.reform_indexes else 0
+                    st.session_state.reform_indexes.append(next_index)
+                    st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
+                    st.rerun()
 
 # Initialize results tracking in session state if not exists
 if "results_df" not in st.session_state:
@@ -204,10 +213,9 @@ if calculate_clicked:
     fig = create_reform_comparison_graph(st.session_state.summary_results)
     chart_placeholder.plotly_chart(fig, use_container_width=True)
 
-    # Create columns for detailed results (Current Law, Current Policy, and reforms)
-    cols = st.columns(
-        len(st.session_state.reform_indexes) + 2
-    )  # +2 for Current Law and Policy
+    # Calculate the number of columns needed (Current Law, Current Policy, and reforms)
+    num_cols = len(st.session_state.reform_indexes) + 2  # +2 for Current Law and Policy
+    cols = st.columns(num_cols)
 
     # Display current law details
     with cols[0]:
@@ -221,37 +229,36 @@ if calculate_clicked:
         current_policy_impact = current_policy_income - current_law_income
         st.markdown(f"Change from Current Law: **${round(current_policy_impact):,}**")
 
-    # Calculate and display each reform sequentially
-    for i, reform_idx in enumerate(st.session_state.reform_indexes):
-        reform_name = st.session_state.reform_names[reform_idx]
-        status_placeholder.info(f"Calculating {reform_name}...")
+    # Calculate and display each reform sequentially (if any exist)
+    if st.session_state.reform_indexes:
+        for i, reform_idx in enumerate(st.session_state.reform_indexes):
+            reform_name = st.session_state.reform_names[reform_idx]
+            status_placeholder.info(f"Calculating {reform_name}...")
 
-        # Calculate single reform
-        reform_results = calculate_impacts(
-            situation, {f"reform_{i+1}": reform_params_dict[f"reform_{i+1}"]}
-        )
-        reform_impact = reform_results[f"reform_{i+1}_impact"]
-        new_income = current_law_income + reform_impact
+            # Calculate single reform
+            reform_results = calculate_impacts(
+                situation, {f"reform_{i+1}": reform_params_dict[f"reform_{i+1}"]}
+            )
+            reform_impact = reform_results[f"reform_{i+1}_impact"]
+            new_income = current_law_income + reform_impact
 
-        # Update results tracking
-        st.session_state.results_df, st.session_state.summary_results = update_results(
-            st.session_state.results_df,
-            st.session_state.summary_results,
-            reform_name,
-            new_income,
-        )
+            # Update results tracking
+            st.session_state.results_df, st.session_state.summary_results = update_results(
+                st.session_state.results_df,
+                st.session_state.summary_results,
+                reform_name,
+                new_income,
+            )
 
-        # Update chart after each reform
-        fig = create_reform_comparison_graph(st.session_state.summary_results)
-        chart_placeholder.plotly_chart(fig, use_container_width=True)
+            # Update chart after each reform
+            fig = create_reform_comparison_graph(st.session_state.summary_results)
+            chart_placeholder.plotly_chart(fig, use_container_width=True)
 
-        # Display detailed results for this reform
-        with cols[
-            i + 2
-        ]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
-            st.markdown(f"#### {reform_name}")
-            st.markdown(f"New household income: **${round(new_income):,}**")
-            st.markdown(f"Change from Current Law: **${round(reform_impact):,}**")
+            # Display detailed results for this reform
+            with cols[i + 2]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
+                st.markdown(f"#### {reform_name}")
+                st.markdown(f"New household income: **${round(new_income):,}**")
+                st.markdown(f"Change from Current Law: **${round(reform_impact):,}**")
 
     # Clear status message when complete
     status_placeholder.empty()

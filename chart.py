@@ -5,8 +5,11 @@ import pandas as pd
 # Define colors
 DARK_GRAY = "#4A4A4A"
 LIGHT_GRAY = "#7C7C7C"
-REFORM_BLUE = "#2C6BFF"
-
+BLUE_SHADES = [
+    "#2C6BFF",  # Original bright blue
+    "#0052CC",  # Darker blue
+    "#003D99",  # Even darker blue
+]
 
 def format_fig(fig):
     """Apply PolicyEngine styling to a Plotly figure"""
@@ -33,7 +36,6 @@ def format_fig(fig):
         ),
     )
     return fig
-
 
 def create_reform_comparison_graph(summary_results):
     """Create a horizontal bar chart comparing household income across reforms"""
@@ -71,6 +73,9 @@ def create_reform_comparison_graph(summary_results):
     # Get baseline (Current Law) value for calculating differences
     baseline_value = summary_results["Current Law"]
 
+    # Counter for custom reforms to assign different shades of blue
+    reform_counter = 0
+
     # Add bars for each reform
     for reform, value in zip(df_sorted["reform"], df_sorted["income"]):
         # Calculate difference from baseline
@@ -86,7 +91,9 @@ def create_reform_comparison_graph(summary_results):
         elif reform == "Current Policy":
             color = LIGHT_GRAY
         else:
-            color = REFORM_BLUE
+            # Assign different shades of blue to custom reforms
+            color = BLUE_SHADES[reform_counter % len(BLUE_SHADES)]
+            reform_counter += 1
 
         # Add bar
         fig.add_trace(
