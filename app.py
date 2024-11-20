@@ -13,10 +13,7 @@ import numpy as np
 from table import create_summary_table
 
 # Set up the Streamlit page
-st.set_page_config(
-    page_title="SALT and AMT Policy Impact Calculator",
-    layout="wide"
-)
+st.set_page_config(page_title="SALT and AMT Policy Impact Calculator", layout="wide")
 
 # Title and description
 st.title("SALT and AMT Reform Impact Calculator")
@@ -48,13 +45,18 @@ if "reform_names" not in st.session_state:
 
 # Create columns for reforms based on current number of reforms
 num_reforms = len(st.session_state.reform_indexes)
-num_columns = num_reforms + (1 if num_reforms < 3 else 0)  # Add extra column only if under limit
+num_columns = num_reforms + (
+    1 if num_reforms < 3 else 0
+)  # Add extra column only if under limit
 reform_cols = st.columns(num_columns)
 reform_params_dict = {}
 
 # Create inputs for each reform in columns
 for i, (col, reform_idx) in enumerate(
-    zip(reform_cols[:len(st.session_state.reform_indexes)], st.session_state.reform_indexes)
+    zip(
+        reform_cols[: len(st.session_state.reform_indexes)],
+        st.session_state.reform_indexes,
+    )
 ):
     with col:
         # Create a single row for name and remove button
@@ -86,10 +88,10 @@ if num_reforms < 3:  # Limit to 3 reforms
     with reform_cols[-1]:  # Use the last column
         # Create empty space equivalent to the header space in other columns
         st.write("")  # Space where reform name would be
-        
+
         # Create three columns within the column to center the button
         left_spacer, button_col, right_spacer = st.columns([1.5, 1, 1.5])
-        
+
         with button_col:
             if st.button("Add Reform", key="add_reform"):
                 next_index = max(st.session_state.reform_indexes) + 1
