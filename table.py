@@ -151,6 +151,7 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
     # Create and display the table
     _display_formatted_table(table_data)
 
+
 def _display_formatted_table(table_data):
     """
     Creates and displays a formatted HTML table from the provided data.

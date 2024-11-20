@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 
+
 def create_policy_inputs(prefix):
     """Create inputs for all policy parameters with a streamlined interface"""
     reform_params = {
@@ -148,7 +149,7 @@ def create_policy_inputs(prefix):
 
         # Add header for phase-out section
         st.markdown("#### Phase-out rate and thresholds")
-        
+
         # Single rate input that affects both joint and other
         salt_phase_out_rate_pct = st.number_input(
             "Phase-out Rate (%)",

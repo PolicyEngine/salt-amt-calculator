@@ -13,10 +13,7 @@ import numpy as np
 from table import create_summary_table
 
 # Set up the Streamlit page
-st.set_page_config(
-    page_title="SALT and AMT Policy Impact Calculator",
-    layout="wide"
-)
+st.set_page_config(page_title="SALT and AMT Policy Impact Calculator", layout="wide")
 
 # Title and description
 st.title("SALT and AMT Reform Impact Calculator")
