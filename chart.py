@@ -11,6 +11,7 @@ BLUE_SHADES = [
     "#003D99",  # Even darker blue
 ]
 
+
 def format_fig(fig):
     """Apply PolicyEngine styling to a Plotly figure"""
     fig.update_layout(
@@ -36,6 +37,7 @@ def format_fig(fig):
         ),
     )
     return fig
+
 
 def create_reform_comparison_graph(summary_results):
     """Create a horizontal bar chart comparing household income across reforms"""

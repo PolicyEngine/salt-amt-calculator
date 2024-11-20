@@ -89,7 +89,11 @@ if num_reforms < 3:  # Limit to 3 reforms
     # If there are no reforms, create a single column for the Add Reform button
     if num_reforms == 0:
         if st.button("Add Reform", key="add_reform", use_container_width=True):
-            next_index = max(st.session_state.reform_indexes) + 1 if st.session_state.reform_indexes else 0
+            next_index = (
+                max(st.session_state.reform_indexes) + 1
+                if st.session_state.reform_indexes
+                else 0
+            )
             st.session_state.reform_indexes.append(next_index)
             st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
             st.rerun()
@@ -104,7 +108,11 @@ if num_reforms < 3:  # Limit to 3 reforms
 
             with button_col:
                 if st.button("Add Reform", key="add_reform"):
-                    next_index = max(st.session_state.reform_indexes) + 1 if st.session_state.reform_indexes else 0
+                    next_index = (
+                        max(st.session_state.reform_indexes) + 1
+                        if st.session_state.reform_indexes
+                        else 0
+                    )
                     st.session_state.reform_indexes.append(next_index)
                     st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
                     st.rerun()
@@ -243,11 +251,13 @@ if calculate_clicked:
             new_income = current_law_income + reform_impact
 
             # Update results tracking
-            st.session_state.results_df, st.session_state.summary_results = update_results(
-                st.session_state.results_df,
-                st.session_state.summary_results,
-                reform_name,
-                new_income,
+            st.session_state.results_df, st.session_state.summary_results = (
+                update_results(
+                    st.session_state.results_df,
+                    st.session_state.summary_results,
+                    reform_name,
+                    new_income,
+                )
             )
 
             # Update chart after each reform
@@ -255,7 +265,9 @@ if calculate_clicked:
             chart_placeholder.plotly_chart(fig, use_container_width=True)
 
             # Display detailed results for this reform
-            with cols[i + 2]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
+            with cols[
+                i + 2
+            ]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
                 st.markdown(f"#### {reform_name}")
                 st.markdown(f"New household income: **${round(new_income):,}**")
                 st.markdown(f"Change from Current Law: **${round(reform_impact):,}**")
