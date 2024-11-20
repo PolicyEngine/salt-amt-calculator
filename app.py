@@ -205,10 +205,6 @@ if calculate_clicked:
         st.markdown(f"Household income: **${current_policy_income:,.2f}**")
         current_policy_impact = current_policy_income - current_law_income
         st.markdown(f"Change from Current Law: **${current_policy_impact:,.2f}**")
-        if current_policy_impact > 0:
-            st.success("Higher than Current Law")
-        elif current_policy_impact < 0:
-            st.error("Lower than Current Law")
 
     # Calculate and display each reform sequentially
     for i, reform_idx in enumerate(st.session_state.reform_indexes):
@@ -241,11 +237,6 @@ if calculate_clicked:
             st.markdown(f"#### {reform_name}")
             st.markdown(f"New household income: **${new_income:,.2f}**")
             st.markdown(f"Change from Current Law: **${reform_impact:,.2f}**")
-
-            if reform_impact > 0:
-                st.success("This reform would increase household income")
-            elif reform_impact < 0:
-                st.error("This reform would decrease household income")
 
     # Clear status message when complete
     status_placeholder.empty()
