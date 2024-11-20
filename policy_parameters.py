@@ -1,7 +1,6 @@
 import streamlit as st
 import numpy as np
 
-
 def create_policy_inputs(prefix):
     """Create inputs for all policy parameters with a streamlined interface"""
     reform_params = {
@@ -119,12 +118,12 @@ def create_policy_inputs(prefix):
             use_container_width=True,
         )
 
-    # SALT Parameters (Caps and Phase-out)
+    # State and Local Tax Parameters (Caps and Phase-out)
     with st.expander(
-        "SALT Parameters",
+        "State and Local Tax Deduction",
         expanded=st.session_state.expander_states[f"{prefix}_salt_expanded"],
     ):
-        st.markdown("#### SALT Caps")
+        st.markdown("#### Deduction Cap")
         col1, col2 = st.columns(2)
         with col1:
             st.markdown(
@@ -147,6 +146,9 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded",
             )
 
+        # Add header for phase-out section
+        st.markdown("#### Phase-out rate and thresholds")
+        
         # Single rate input that affects both joint and other
         salt_phase_out_rate_pct = st.number_input(
             "Phase-out Rate (%)",
@@ -189,12 +191,12 @@ def create_policy_inputs(prefix):
                 key=f"{prefix}_salt_phase_out_threshold_other",
             )
 
-    # AMT Parameters
+    # Alternative Minimum Tax Parameters
     with st.expander(
-        "AMT Parameters",
+        "Alternative Minimum Tax",
         expanded=st.session_state.expander_states[f"{prefix}_amt_expanded"],
     ):
-        st.markdown("#### AMT Exemptions")
+        st.markdown("#### Exemption Amounts")
         col1, col2 = st.columns(2)
         with col1:
             st.markdown(
@@ -219,7 +221,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_amt_expanded",
             )
 
-        st.markdown("#### AMT Phase-outs")
+        st.markdown("#### Phase-out thresholds")
         col1, col2 = st.columns(2)
         with col1:
             st.markdown(
