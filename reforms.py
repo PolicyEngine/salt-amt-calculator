@@ -21,7 +21,7 @@ class PolicyReforms:
         reform_dict["gov.contrib.salt_phase_out.in_effect"] = {
             "2026-01-01.2100-12-31": True
         }
-        
+
         # Single rate applied to both joint and other
         reform_dict["gov.contrib.salt_phase_out.rate.joint[1].rate"] = {
             "2026-01-01.2100-12-31": salt_phase_out_rate
@@ -29,7 +29,7 @@ class PolicyReforms:
         reform_dict["gov.contrib.salt_phase_out.rate.other[1].rate"] = {
             "2026-01-01.2100-12-31": salt_phase_out_rate
         }
-        
+
         # Separate thresholds for joint and other
         reform_dict["gov.contrib.salt_phase_out.rate.joint[1].threshold"] = {
             "2026-01-01.2100-12-31": salt_phase_out_threshold_joint

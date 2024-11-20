@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+
 def _format_policy_parameters(reform_params):
     """
     Formats the policy parameters for a single reform.
@@ -20,8 +21,12 @@ def _format_policy_parameters(reform_params):
 
     # Format SALT phase-out parameters
     salt_phase_out_rate = f"{reform_params['salt_phase_out_rate']*100:.0f}%"
-    salt_phase_out_threshold_joint = f"${reform_params['salt_phase_out_threshold_joint']:,.0f}"
-    salt_phase_out_threshold_other = f"${reform_params['salt_phase_out_threshold_other']:,.0f}"
+    salt_phase_out_threshold_joint = (
+        f"${reform_params['salt_phase_out_threshold_joint']:,.0f}"
+    )
+    salt_phase_out_threshold_other = (
+        f"${reform_params['salt_phase_out_threshold_other']:,.0f}"
+    )
 
     # Format AMT exemptions
     amt_ex_joint = (
@@ -62,6 +67,7 @@ def _format_policy_parameters(reform_params):
         f"• Joint: {amt_po_joint}<br>"
         f"• Other: {amt_po_other}"
     )
+
 
 def create_summary_table(current_law_income, st_session_state, reform_params_dict):
     """Creates and displays a summary table of all reforms and their impacts."""
@@ -144,6 +150,7 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
 
     # Create and display the table
     _display_formatted_table(table_data)
+
 
 def _display_formatted_table(table_data):
     """
