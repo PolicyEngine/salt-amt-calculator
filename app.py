@@ -13,17 +13,19 @@ import numpy as np
 from table import create_summary_table
 
 # Set up the Streamlit page
-st.set_page_config(page_title="SALT Cap Policy Impact Calculator", layout="wide")
+st.set_page_config(
+    page_title="SALT and AMT Policy Impact Calculator",
+    layout="wide"
+)
 
 # Title and description
-st.title("SALT / AMT Policy Impact Calculator")
+st.title("SALT and AMT Reform Impact Calculator")
 st.markdown(
     """
-This calculator compares different SALT cap and AMT reform scenarios against the SALT Cap: Unlimited. 
+This calculator compares different SALT and AMT reform scenarios against Current Law (pre-TCJA provisions) and Current Policy (2026 provisions). 
 Input your household characteristics and the parameters for each reform below.
 """
 )
-
 # Get personal inputs
 personal_inputs = create_personal_inputs()
 
