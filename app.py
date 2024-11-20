@@ -165,7 +165,8 @@ if calculate_clicked:
             },
             # Add the new SALT phase-out parameters
             "salt_phase_out_rate": 0,
-            "salt_phase_out_threshold": 0,
+            "salt_phase_out_threshold_joint": 0,
+            "salt_phase_out_threshold_other": 0,
         }
     }
 

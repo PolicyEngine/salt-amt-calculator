@@ -6,7 +6,8 @@ class PolicyReforms:
         amt_exemptions = reform_params["amt_exemptions"]
         amt_phase_outs = reform_params["amt_phase_outs"]
         salt_phase_out_rate = reform_params["salt_phase_out_rate"]
-        salt_phase_out_threshold = reform_params["salt_phase_out_threshold"]
+        salt_phase_out_threshold_joint = reform_params["salt_phase_out_threshold_joint"]
+        salt_phase_out_threshold_other = reform_params["salt_phase_out_threshold_other"]
 
         reform_dict = {}
 
@@ -20,11 +21,21 @@ class PolicyReforms:
         reform_dict["gov.contrib.salt_phase_out.in_effect"] = {
             "2026-01-01.2100-12-31": True
         }
-        reform_dict["gov.contrib.salt_phase_out.rate[1].rate"] = {
+        
+        # Single rate applied to both joint and other
+        reform_dict["gov.contrib.salt_phase_out.rate.joint[1].rate"] = {
             "2026-01-01.2100-12-31": salt_phase_out_rate
         }
-        reform_dict["gov.contrib.salt_phase_out.rate[0].threshold"] = {
-            "2026-01-01.2100-12-31": salt_phase_out_threshold
+        reform_dict["gov.contrib.salt_phase_out.rate.other[1].rate"] = {
+            "2026-01-01.2100-12-31": salt_phase_out_rate
+        }
+        
+        # Separate thresholds for joint and other
+        reform_dict["gov.contrib.salt_phase_out.rate.joint[1].threshold"] = {
+            "2026-01-01.2100-12-31": salt_phase_out_threshold_joint
+        }
+        reform_dict["gov.contrib.salt_phase_out.rate.other[1].threshold"] = {
+            "2026-01-01.2100-12-31": salt_phase_out_threshold_other
         }
 
         # AMT exemptions

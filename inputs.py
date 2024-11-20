@@ -113,7 +113,7 @@ def create_personal_inputs():
             employment_income = st.number_input(
                 "Household Head Employment Income ($)",
                 min_value=0,
-                max_value=1000000,
+                max_value=10000000,
                 value=50000,
                 step=1000,
             )
@@ -125,7 +125,7 @@ def create_personal_inputs():
                 spouse_income = st.number_input(
                     "Spouse Employment Income ($)",
                     min_value=0,
-                    max_value=1000000,
+                    max_value=10000000,
                     value=0,
                     step=1000,
                 )
@@ -137,7 +137,7 @@ def create_personal_inputs():
             state_and_local_sales_or_income_tax = st.number_input(
                 "State and Local Sales or Income Tax ($)",
                 min_value=0,
-                max_value=100000,
+                max_value=10000000,
                 value=20000,
                 step=1000,
             )
@@ -145,7 +145,7 @@ def create_personal_inputs():
             real_estate_taxes = st.number_input(
                 "Real Estate Taxes ($)",
                 min_value=0,
-                max_value=100000,
+                max_value=10000000,
                 value=5000,
                 step=1000,
             )
@@ -154,7 +154,7 @@ def create_personal_inputs():
             qualified_dividend_income = st.number_input(
                 "Qualified Dividend Income ($)",
                 min_value=0,
-                max_value=100000,
+                max_value=10000000,
                 value=5000,
                 step=1000,
             )
@@ -162,7 +162,7 @@ def create_personal_inputs():
             long_term_capital_gains = st.number_input(
                 "Long Term Capital Gains ($)",
                 min_value=0,
-                max_value=100000,
+                max_value=10000000,
                 value=5000,
                 step=1000,
             )
@@ -170,7 +170,7 @@ def create_personal_inputs():
             short_term_capital_gains = st.number_input(
                 "Short Term Capital Gains ($)",
                 min_value=0,
-                max_value=100000,
+                max_value=10000000,
                 value=5000,
                 step=1000,
             )

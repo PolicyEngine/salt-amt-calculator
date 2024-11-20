@@ -1,16 +1,16 @@
 import streamlit as st
 import numpy as np
 
-
 def create_policy_inputs(prefix):
     """Create inputs for all policy parameters with a streamlined interface"""
     reform_params = {
         "salt_caps": {},
         "salt_phase_out_rate": 0,
-        "salt_phase_out_threshold": 0,
+        "salt_phase_out_threshold_joint": 0,
+        "salt_phase_out_threshold_other": 0,
         "amt_exemptions": {},
         "amt_phase_outs": {},
-        "salt_phase_out_in_effect": True,  # Always true, not a user input
+        "salt_phase_out_in_effect": True  # Always true, not a user input
     }
 
     # Initialize session state variables
@@ -28,7 +28,8 @@ def create_policy_inputs(prefix):
         f"{prefix}_salt_joint_unlimited": True,
         f"{prefix}_salt_other_unlimited": True,
         f"{prefix}_salt_phase_out_rate": 0,
-        f"{prefix}_salt_phase_out_threshold": 0,
+        f"{prefix}_salt_phase_out_threshold_joint": 0,
+        f"{prefix}_salt_phase_out_threshold_other": 0,
         f"{prefix}_amt_ex_joint": 109_700,
         f"{prefix}_amt_ex_other": 70_500,
         f"{prefix}_amt_ex_joint_unlimited": False,
@@ -50,10 +51,11 @@ def create_policy_inputs(prefix):
         st.session_state[f"{prefix}_salt_other_unlimited"] = False
         st.session_state[f"{prefix}_salt_joint"] = 10_000
         st.session_state[f"{prefix}_salt_other"] = 10_000
-
+        
         # Set SALT phase out parameters
         st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
-        st.session_state[f"{prefix}_salt_phase_out_threshold"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_threshold_joint"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_threshold_other"] = 0
 
         # Set AMT exemptions
         st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
@@ -77,10 +79,11 @@ def create_policy_inputs(prefix):
         st.session_state[f"{prefix}_salt_other_unlimited"] = True
         st.session_state[f"{prefix}_salt_joint"] = 10_000
         st.session_state[f"{prefix}_salt_other"] = 10_000
-
+        
         # Set SALT phase out parameters
         st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
-        st.session_state[f"{prefix}_salt_phase_out_threshold"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_threshold_joint"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_threshold_other"] = 0
 
         # Set AMT exemptions to default values
         st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
@@ -123,9 +126,7 @@ def create_policy_inputs(prefix):
         st.markdown("#### SALT Caps")
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(
-                '<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
             joint_salt = create_parameter_input(
                 "Joint Filer",
                 f"{prefix}_salt_joint",
@@ -133,9 +134,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded",
             )
         with col2:
-            st.markdown(
-                '<div class="filer-label">Other Filers</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
             other_salt = create_parameter_input(
                 "Other Filers",
                 f"{prefix}_salt_other",
@@ -143,31 +142,42 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_salt_expanded",
             )
 
-        st.markdown("#### SALT Phase-out")
-        phase_cols = st.columns(2)
-        with phase_cols[0]:
-            # Input as whole number percentage
-            salt_phase_out_rate_pct = st.number_input(
-                "Phase-out Rate (%)",
-                min_value=0,
-                max_value=100,
-                value=int(st.session_state[f"{prefix}_salt_phase_out_rate"] * 100),
-                step=1,
-                key=f"{prefix}_salt_phase_out_rate_pct",
-            )
-            # Convert to decimal for backend
-            salt_phase_out_rate = salt_phase_out_rate_pct / 100.0
-            # Update session state
-            st.session_state[f"{prefix}_salt_phase_out_rate"] = salt_phase_out_rate
+        # Single rate input that affects both joint and other
+        salt_phase_out_rate_pct = st.number_input(
+            "Phase-out Rate (%)",
+            min_value=0,
+            max_value=100,
+            value=int(st.session_state[f"{prefix}_salt_phase_out_rate"] * 100),
+            step=1,
+            key=f"{prefix}_salt_phase_out_rate_pct",
+        )
+        # Convert to decimal for backend
+        salt_phase_out_rate = salt_phase_out_rate_pct / 100.0
+        # Update session state
+        st.session_state[f"{prefix}_salt_phase_out_rate"] = salt_phase_out_rate
 
-        with phase_cols[1]:
-            salt_phase_out_threshold = st.number_input(
-                "Phase-out Threshold ($)",
+        # Separate threshold inputs for joint and other
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
+            salt_phase_out_threshold_joint = st.number_input(
+                "Phase-out Threshold - Joint ($)",
                 min_value=0,
                 max_value=1_000_000,
-                value=int(st.session_state[f"{prefix}_salt_phase_out_threshold"]),
+                value=int(st.session_state[f"{prefix}_salt_phase_out_threshold_joint"]),
                 step=1_000,
-                key=f"{prefix}_salt_phase_out_threshold",
+                key=f"{prefix}_salt_phase_out_threshold_joint",
+            )
+        
+        with col2:
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
+            salt_phase_out_threshold_other = st.number_input(
+                "Phase-out Threshold - Other ($)",
+                min_value=0,
+                max_value=1_000_000,
+                value=int(st.session_state[f"{prefix}_salt_phase_out_threshold_other"]),
+                step=1_000,
+                key=f"{prefix}_salt_phase_out_threshold_other",
             )
 
     # AMT Parameters
@@ -178,9 +188,7 @@ def create_policy_inputs(prefix):
         st.markdown("#### AMT Exemptions")
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(
-                '<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
             joint_amt = create_parameter_input(
                 "Joint Filer",
                 f"{prefix}_amt_ex_joint",
@@ -189,9 +197,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_amt_expanded",
             )
         with col2:
-            st.markdown(
-                '<div class="filer-label">Other Filers</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
             other_amt = create_parameter_input(
                 "Other Filers",
                 f"{prefix}_amt_ex_other",
@@ -203,9 +209,7 @@ def create_policy_inputs(prefix):
         st.markdown("#### AMT Phase-outs")
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(
-                '<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Joint Filer</div>', unsafe_allow_html=True)
             joint_phase = create_parameter_input(
                 "Joint Filer",
                 f"{prefix}_amt_po_joint",
@@ -214,9 +218,7 @@ def create_policy_inputs(prefix):
                 expander_key=f"{prefix}_amt_expanded",
             )
         with col2:
-            st.markdown(
-                '<div class="filer-label">Other Filers</div>', unsafe_allow_html=True
-            )
+            st.markdown('<div class="filer-label">Other Filers</div>', unsafe_allow_html=True)
             other_phase = create_parameter_input(
                 "Other Filers",
                 f"{prefix}_amt_po_other",
@@ -226,45 +228,37 @@ def create_policy_inputs(prefix):
             )
 
     # Set reform parameters
-    reform_params["salt_caps"].update(
-        {
-            "JOINT": joint_salt,
-            "SEPARATE": joint_salt / 2 if joint_salt != np.inf else np.inf,
-            "SINGLE": other_salt,
-            "HEAD_OF_HOUSEHOLD": other_salt,
-            "SURVIVING_SPOUSE": other_salt,
-        }
-    )
+    reform_params["salt_caps"].update({
+        "JOINT": joint_salt,
+        "SEPARATE": joint_salt / 2 if joint_salt != np.inf else np.inf,
+        "SINGLE": other_salt,
+        "HEAD_OF_HOUSEHOLD": other_salt,
+        "SURVIVING_SPOUSE": other_salt,
+    })
 
     reform_params["salt_phase_out_rate"] = salt_phase_out_rate
-    reform_params["salt_phase_out_threshold"] = salt_phase_out_threshold
+    reform_params["salt_phase_out_threshold_joint"] = salt_phase_out_threshold_joint
+    reform_params["salt_phase_out_threshold_other"] = salt_phase_out_threshold_other
 
-    reform_params["amt_exemptions"].update(
-        {
-            "JOINT": joint_amt,
-            "SEPARATE": joint_amt / 2 if joint_amt != np.inf else np.inf,
-            "SINGLE": other_amt,
-            "HEAD_OF_HOUSEHOLD": other_amt,
-            "SURVIVING_SPOUSE": other_amt,
-        }
-    )
+    reform_params["amt_exemptions"].update({
+        "JOINT": joint_amt,
+        "SEPARATE": joint_amt / 2 if joint_amt != np.inf else np.inf,
+        "SINGLE": other_amt,
+        "HEAD_OF_HOUSEHOLD": other_amt,
+        "SURVIVING_SPOUSE": other_amt,
+    })
 
-    reform_params["amt_phase_outs"].update(
-        {
-            "JOINT": joint_phase,
-            "SEPARATE": joint_phase / 2 if joint_phase != np.inf else np.inf,
-            "SINGLE": other_phase,
-            "HEAD_OF_HOUSEHOLD": other_phase,
-            "SURVIVING_SPOUSE": other_phase,
-        }
-    )
+    reform_params["amt_phase_outs"].update({
+        "JOINT": joint_phase,
+        "SEPARATE": joint_phase / 2 if joint_phase != np.inf else np.inf,
+        "SINGLE": other_phase,
+        "HEAD_OF_HOUSEHOLD": other_phase,
+        "SURVIVING_SPOUSE": other_phase,
+    })
 
     return reform_params
 
-
-def create_parameter_input(
-    label, param_key, unlimited_key, max_value=None, expander_key=None
-):
+def create_parameter_input(label, param_key, unlimited_key, max_value=None, expander_key=None):
     """Helper function to create a parameter input"""
     if not st.session_state[unlimited_key]:
         st.markdown('<div class="policy-input">', unsafe_allow_html=True)
