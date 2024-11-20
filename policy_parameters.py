@@ -106,14 +106,14 @@ def create_policy_inputs(prefix):
     col1, col2 = st.columns(2)
     with col1:
         st.button(
-            "Current Policy",
+            "Populate Current Policy",
             key=f"{prefix}_current_policy",
             on_click=set_current_policy,
             use_container_width=True,
         )
     with col2:
         st.button(
-            "Current Law",
+            "Populate Current Law",
             key=f"{prefix}_current_law",
             on_click=set_current_law,
             use_container_width=True,
