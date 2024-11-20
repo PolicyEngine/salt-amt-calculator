@@ -13,10 +13,7 @@ import numpy as np
 from table import create_summary_table
 
 # Set up the Streamlit page
-st.set_page_config(
-    page_title="SALT and AMT Policy Impact Calculator",
-    layout="wide"
-)
+st.set_page_config(page_title="SALT and AMT Policy Impact Calculator", layout="wide")
 
 # Title and description
 st.title("SALT and AMT Reform Impact Calculator")
@@ -197,18 +194,14 @@ if calculate_clicked:
     # Display current law details
     with cols[0]:
         st.markdown("#### Current Law")
-        st.markdown(f"Household income: **${current_law_income:,.2f}**")
+        st.markdown(f"Household income: **${round(current_law_income):,}**")
 
     # Display current policy details
     with cols[1]:
         st.markdown("#### Current Policy")
-        st.markdown(f"Household income: **${current_policy_income:,.2f}**")
+        st.markdown(f"Household income: **${round(current_policy_income):,}**")
         current_policy_impact = current_policy_income - current_law_income
-        st.markdown(f"Change from Current Law: **${current_policy_impact:,.2f}**")
-        if current_policy_impact > 0:
-            st.success("Higher than Current Law")
-        elif current_policy_impact < 0:
-            st.error("Lower than Current Law")
+        st.markdown(f"Change from Current Law: **${round(current_policy_impact):,}**")
 
     # Calculate and display each reform sequentially
     for i, reform_idx in enumerate(st.session_state.reform_indexes):
@@ -239,13 +232,8 @@ if calculate_clicked:
             i + 2
         ]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
             st.markdown(f"#### {reform_name}")
-            st.markdown(f"New household income: **${new_income:,.2f}**")
-            st.markdown(f"Change from Current Law: **${reform_impact:,.2f}**")
-
-            if reform_impact > 0:
-                st.success("This reform would increase household income")
-            elif reform_impact < 0:
-                st.error("This reform would decrease household income")
+            st.markdown(f"New household income: **${round(new_income):,}**")
+            st.markdown(f"Change from Current Law: **${round(reform_impact):,}**")
 
     # Clear status message when complete
     status_placeholder.empty()

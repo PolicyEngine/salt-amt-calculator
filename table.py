@@ -93,7 +93,7 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
                 "• Joint: $209,000<br>"
                 "• Other: $156,700"
             ),
-            "Household Income": f"${current_law_income:,.2f}",
+            "Household Income": f"${round(current_law_income):,}",
             "Change from Current Law": "$0",
             "Percent Change": "0%",
         }
@@ -121,9 +121,9 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
                 "• Joint: $1,285,409<br>"
                 "• Other: $642,705"
             ),
-            "Household Income": f"${current_policy_income:,.2f}",
-            "Change from Current Law": f"${current_policy_impact:,.2f}",
-            "Percent Change": f"{current_policy_impact/current_law_income:,.1%}",
+            "Household Income": f"${round(current_policy_income):,}",
+            "Change from Current Law": f"${round(current_policy_impact):,}",
+            "Percent Change": f"{(current_policy_impact/current_law_income):,.1%}",
         }
     )
 
@@ -142,9 +142,9 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
             {
                 "Reform": reform_name,
                 "Policy Parameters": policy_text,
-                "Household Income": f"${reform_income:,.2f}",
-                "Change from Current Law": f"${reform_impact:,.2f}",
-                "Percent Change": f"{reform_impact/current_law_income:,.1%}",
+                "Household Income": f"${round(reform_income):,}",
+                "Change from Current Law": f"${round(reform_impact):,}",
+                "Percent Change": f"{(reform_impact/current_law_income):,.1%}",
             }
         )
 
