@@ -3,6 +3,72 @@ import pandas as pd
 import numpy as np
 
 
+def _format_policy_parameters(reform_params):
+    """
+    Formats the policy parameters for a single reform.
+    """
+    # Format SALT caps
+    salt_joint = (
+        "Unlimited"
+        if reform_params["salt_caps"]["JOINT"] == np.inf
+        else f"${reform_params['salt_caps']['JOINT']:,.0f}"
+    )
+    salt_other = (
+        "Unlimited"
+        if reform_params["salt_caps"]["SINGLE"] == np.inf
+        else f"${reform_params['salt_caps']['SINGLE']:,.0f}"
+    )
+
+    # Format SALT phase-out parameters
+    salt_phase_out_rate = f"{reform_params['salt_phase_out_rate']*100:.0f}%"
+    salt_phase_out_threshold_joint = (
+        f"${reform_params['salt_phase_out_threshold_joint']:,.0f}"
+    )
+    salt_phase_out_threshold_other = (
+        f"${reform_params['salt_phase_out_threshold_other']:,.0f}"
+    )
+
+    # Format AMT exemptions
+    amt_ex_joint = (
+        "Unlimited"
+        if reform_params["amt_exemptions"]["JOINT"] == np.inf
+        else f"${reform_params['amt_exemptions']['JOINT']:,.0f}"
+    )
+    amt_ex_other = (
+        "Unlimited"
+        if reform_params["amt_exemptions"]["SINGLE"] == np.inf
+        else f"${reform_params['amt_exemptions']['SINGLE']:,.0f}"
+    )
+
+    # Format AMT phase-outs
+    amt_po_joint = (
+        "Unlimited"
+        if reform_params["amt_phase_outs"]["JOINT"] == np.inf
+        else f"${reform_params['amt_phase_outs']['JOINT']:,.0f}"
+    )
+    amt_po_other = (
+        "Unlimited"
+        if reform_params["amt_phase_outs"]["SINGLE"] == np.inf
+        else f"${reform_params['amt_phase_outs']['SINGLE']:,.0f}"
+    )
+
+    return (
+        f"SALT Cap:<br>"
+        f"• Joint: {salt_joint}<br>"
+        f"• Other: {salt_other}<br>"
+        f"SALT Phase-out:<br>"
+        f"• Rate: {salt_phase_out_rate}<br>"
+        f"• Joint Threshold: {salt_phase_out_threshold_joint}<br>"
+        f"• Other Threshold: {salt_phase_out_threshold_other}<br>"
+        f"AMT Exemption:<br>"
+        f"• Joint: {amt_ex_joint}<br>"
+        f"• Other: {amt_ex_other}<br>"
+        f"AMT Phase-out:<br>"
+        f"• Joint: {amt_po_joint}<br>"
+        f"• Other: {amt_po_other}"
+    )
+
+
 def create_summary_table(current_law_income, st_session_state, reform_params_dict):
     """Creates and displays a summary table of all reforms and their impacts."""
     st.markdown("### Detailed Summary")
@@ -15,7 +81,11 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
         {
             "Reform": "Current Law",
             "Policy Parameters": (
-                "SALT Cap: Unlimited <br>"
+                "SALT Cap: Unlimited<br>"
+                "SALT Phase-out:<br>"
+                "• Rate: 0%<br>"
+                "• Joint Threshold: $0<br>"
+                "• Other Threshold: $0<br>"
                 "AMT Exemption:<br>"
                 "• Joint: $109,700<br>"
                 "• Other: $70,500<br>"
@@ -32,7 +102,7 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
     # Add current policy
     current_policy_income = st_session_state.summary_results["Current Policy"]
     current_policy_impact = current_policy_income - current_law_income
-    
+
     table_data.append(
         {
             "Reform": "Current Policy",
@@ -40,6 +110,10 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
                 "SALT Cap:<br>"
                 "• Joint: $10,000<br>"
                 "• Other: $10,000<br>"
+                "SALT Phase-out:<br>"
+                "• Rate: 0%<br>"
+                "• Joint Threshold: $0<br>"
+                "• Other Threshold: $0<br>"
                 "AMT Exemption:<br>"
                 "• Joint: $140,565<br>"
                 "• Other: $90,394<br>"
@@ -76,59 +150,6 @@ def create_summary_table(current_law_income, st_session_state, reform_params_dic
 
     # Create and display the table
     _display_formatted_table(table_data)
-
-
-def _format_policy_parameters(reform_params):
-    """
-    Formats the policy parameters for a single reform.
-    """
-    # Format SALT caps
-    salt_joint = (
-        "Unlimited"
-        if reform_params["salt_caps"]["JOINT"] == np.inf
-        else f"${reform_params['salt_caps']['JOINT']:,.0f}"
-    )
-    salt_other = (
-        "Unlimited"
-        if reform_params["salt_caps"]["SINGLE"] == np.inf
-        else f"${reform_params['salt_caps']['SINGLE']:,.0f}"
-    )
-
-    # Format AMT exemptions
-    amt_ex_joint = (
-        "Unlimited"
-        if reform_params["amt_exemptions"]["JOINT"] == np.inf
-        else f"${reform_params['amt_exemptions']['JOINT']:,.0f}"
-    )
-    amt_ex_other = (
-        "Unlimited"
-        if reform_params["amt_exemptions"]["SINGLE"] == np.inf
-        else f"${reform_params['amt_exemptions']['SINGLE']:,.0f}"
-    )
-
-    # Format AMT phase-outs
-    amt_po_joint = (
-        "Unlimited"
-        if reform_params["amt_phase_outs"]["JOINT"] == np.inf
-        else f"${reform_params['amt_phase_outs']['JOINT']:,.0f}"
-    )
-    amt_po_other = (
-        "Unlimited"
-        if reform_params["amt_phase_outs"]["SINGLE"] == np.inf
-        else f"${reform_params['amt_phase_outs']['SINGLE']:,.0f}"
-    )
-
-    return (
-        f"SALT Cap:<br>"
-        f"• Joint: {salt_joint}<br>"
-        f"• Other: {salt_other}<br>"
-        f"AMT Exemption:<br>"
-        f"• Joint: {amt_ex_joint}<br>"
-        f"• Other: {amt_ex_other}<br>"
-        f"AMT Phase-out:<br>"
-        f"• Joint: {amt_po_joint}<br>"
-        f"• Other: {amt_po_other}"
-    )
 
 
 def _display_formatted_table(table_data):

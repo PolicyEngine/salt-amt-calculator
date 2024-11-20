@@ -14,18 +14,18 @@ from table import create_summary_table
 
 # Set up the Streamlit page
 st.set_page_config(
-    page_title="SALT Cap Policy Impact Calculator", layout="wide"
+    page_title="SALT and AMT Policy Impact Calculator",
+    layout="wide"
 )
 
 # Title and description
-st.title("SALT / AMT Policy Impact Calculator")
+st.title("SALT and AMT Reform Impact Calculator")
 st.markdown(
     """
-This calculator compares different SALT cap and AMT reform scenarios against the SALT Cap: Unlimited. 
+This calculator compares different SALT and AMT reform scenarios against Current Law (pre-TCJA provisions) and Current Policy (2026 provisions). 
 Input your household characteristics and the parameters for each reform below.
 """
 )
-
 # Get personal inputs
 personal_inputs = create_personal_inputs()
 
@@ -165,18 +165,24 @@ if calculate_clicked:
                 "HEAD_OF_HOUSEHOLD": 642_705,
                 "SURVIVING_SPOUSE": 642_705,
             },
+            # Add the new SALT phase-out parameters
+            "salt_phase_out_rate": 0,
+            "salt_phase_out_threshold_joint": 0,
+            "salt_phase_out_threshold_other": 0,
         }
     }
 
     current_policy_results = calculate_impacts(situation, current_policy_params)
-    current_policy_income = current_law_income + current_policy_results["reform_current_policy_impact"]
+    current_policy_income = (
+        current_law_income + current_policy_results["reform_current_policy_impact"]
+    )
 
     # Update current policy results
     st.session_state.results_df, st.session_state.summary_results = update_results(
         st.session_state.results_df,
         st.session_state.summary_results,
         "Current Policy",
-        current_policy_income
+        current_policy_income,
     )
 
     # Update chart with both current law and policy
@@ -184,7 +190,9 @@ if calculate_clicked:
     chart_placeholder.plotly_chart(fig, use_container_width=True)
 
     # Create columns for detailed results (Current Law, Current Policy, and reforms)
-    cols = st.columns(len(st.session_state.reform_indexes) + 2)  # +2 for Current Law and Policy
+    cols = st.columns(
+        len(st.session_state.reform_indexes) + 2
+    )  # +2 for Current Law and Policy
 
     # Display current law details
     with cols[0]:
@@ -227,7 +235,9 @@ if calculate_clicked:
         chart_placeholder.plotly_chart(fig, use_container_width=True)
 
         # Display detailed results for this reform
-        with cols[i + 2]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
+        with cols[
+            i + 2
+        ]:  # +2 because indexes 0 and 1 are used for Current Law and Policy
             st.markdown(f"#### {reform_name}")
             st.markdown(f"New household income: **${new_income:,.2f}**")
             st.markdown(f"Change from Current Law: **${reform_impact:,.2f}**")
@@ -246,10 +256,11 @@ if calculate_clicked:
 # Add Notes section at the bottom
 st.markdown("---")  # Add a horizontal line for visual separation
 with st.expander("Notes"):
-    st.markdown("""
+    st.markdown(
+        """
     - For calculation purposes, all children are assumed to be 10 years old
     - The calculator uses tax year 2026 for all calculations
     - Current Policy represents the tax provisions that will be in effect for 2026 under current law
     - Current Law represents the tax provisions that were in effect before the Tax Cuts and Jobs Act
-    """)
-    
+    """
+    )
