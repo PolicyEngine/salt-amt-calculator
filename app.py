@@ -23,11 +23,15 @@ This calculator compares different SALT and AMT reform scenarios against Current
 Input your household characteristics and the parameters for each reform below.
 """
 )
+
 # Get personal inputs
 personal_inputs = create_personal_inputs()
 
 # Policy Parameters Section
 st.markdown("### Policy Parameters")
+st.markdown(
+    "Compare up to three policy reforms to current law as well as current policy"
+)
 
 # Initialize session state for tracking reforms if it doesn't exist
 if "reform_indexes" not in st.session_state:
@@ -39,23 +43,20 @@ if "reform_names" not in st.session_state:
         idx: f"Reform {idx+1}" for idx in st.session_state.reform_indexes
     }
 
-# Modify the Add Reform button condition to limit to 3 custom reforms
-col1, col2 = st.columns([1, 8])
-with col1:
-    if len(st.session_state.reform_indexes) < 3:  # Changed from 5 to 3
-        if st.button("Add Reform"):
-            next_index = max(st.session_state.reform_indexes) + 1
-            st.session_state.reform_indexes.append(next_index)
-            st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
-            st.rerun()
-
-# Create columns for reforms based on how many we have
-reform_cols = st.columns(len(st.session_state.reform_indexes))
+# Create columns for reforms based on current number of reforms
+num_reforms = len(st.session_state.reform_indexes)
+num_columns = num_reforms + (
+    1 if num_reforms < 3 else 0
+)  # Add extra column only if under limit
+reform_cols = st.columns(num_columns)
 reform_params_dict = {}
 
 # Create inputs for each reform in columns
 for i, (col, reform_idx) in enumerate(
-    zip(reform_cols, st.session_state.reform_indexes)
+    zip(
+        reform_cols[: len(st.session_state.reform_indexes)],
+        st.session_state.reform_indexes,
+    )
 ):
     with col:
         # Create a single row for name and remove button
@@ -81,6 +82,23 @@ for i, (col, reform_idx) in enumerate(
 
         # Create reform parameters using the imported function
         reform_params_dict[f"reform_{i+1}"] = create_policy_inputs(new_name)
+
+# Add Reform button only if under the limit and we have an extra column
+if num_reforms < 3:  # Limit to 3 reforms
+    with reform_cols[-1]:  # Use the last column
+        # Create empty space equivalent to the header space in other columns
+        st.write("")  # Space where reform name would be
+
+        # Create three columns within the column to center the button
+        left_spacer, button_col, right_spacer = st.columns([1.5, 1, 1.5])
+
+        with button_col:
+            if st.button("Add Reform", key="add_reform"):
+                next_index = max(st.session_state.reform_indexes) + 1
+                st.session_state.reform_indexes.append(next_index)
+                st.session_state.reform_names[next_index] = f"Reform {next_index+1}"
+                st.rerun()
+
 
 # Initialize results tracking in session state if not exists
 if "results_df" not in st.session_state:
