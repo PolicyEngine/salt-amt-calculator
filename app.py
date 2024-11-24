@@ -1,16 +1,16 @@
 import streamlit as st
-from situation import create_situation
-from calculator import calculate_impacts
-from inputs import create_personal_inputs
-from policy_parameters import create_policy_inputs
-from chart import (
+from personal_calculator.situation import create_situation
+from personal_calculator.calculator import calculate_impacts
+from personal_calculator.inputs import create_personal_inputs
+from personal_calculator.policy_parameters import create_policy_inputs
+from personal_calculator.chart import (
     create_reform_comparison_graph,
     initialize_results_tracking,
     update_results,
     reset_results,
 )
 import numpy as np
-from table import create_summary_table
+from personal_calculator.table import create_summary_table
 from nationwide_impacts.impacts import NationwideImpacts
 from nationwide_impacts.charts import ImpactCharts
 from nationwide_impacts.tables import ImpactTables
