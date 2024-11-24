@@ -1,0 +1,3 @@
+reform,revenue_impact,poverty_impact,inequality_impact,pct_better_off,pct_worse_off,state_AL,state_AK,state_AZ,...,income_p0_10,income_p10_20,income_p20_30,income_p30_40,income_p40_50,income_p50_60,income_p60_70,income_p70_80,income_p80_90,income_p90_100
+current_policy,-50000000000,-0.2,0.1,0.35,0.65,-100000000,-80000000,-200000000,...,-100,-200,-300,-400,-500,-600,-700,-800,-900,-1000
+salt_unlimited,-100000000000,-0.3,0.2,0.45,0.55,-200000000,-160000000,-400000000,...,-200,-400,-600,-800,-1000,-1200,-1400,-1600,-1800,-2000
