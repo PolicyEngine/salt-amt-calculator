@@ -2,22 +2,22 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 
-# Define colors
-DARK_GRAY = "#4A4A4A"
-LIGHT_GRAY = "#7C7C7C"
+# Define colors - using more neutral shades that work in both modes
+DARK_GRAY = "rgba(74, 74, 74, 0.9)"  # More transparent dark gray
+LIGHT_GRAY = "rgba(124, 124, 124, 0.9)"  # More transparent light gray
 BLUE_SHADES = [
-    "#2C6BFF",  # Original bright blue
-    "#0052CC",  # Darker blue
-    "#003D99",  # Even darker blue
+    "rgba(44, 107, 255, 0.9)",  # Bright blue
+    "rgba(0, 82, 204, 0.9)",    # Darker blue
+    "rgba(0, 61, 153, 0.9)",    # Even darker blue
 ]
 
 
 def format_fig(fig):
-    """Apply PolicyEngine styling to a Plotly figure"""
+    """Apply styling to a Plotly figure that works in both light/dark modes"""
     fig.update_layout(
         font_family="Roboto",
-        plot_bgcolor="white",
-        paper_bgcolor="white",
+        plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent background
+        paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent background
         margin=dict(l=20, r=20, t=40, b=20),
         height=400,
         bargap=0.2,
@@ -27,13 +27,16 @@ def format_fig(fig):
         xaxis=dict(
             title=None,
             tickformat="$,.0f",
-            tickfont=dict(size=14),
-            gridcolor="lightgray",
-            zerolinecolor="lightgray",
+            tickfont=dict(size=14),  # Remove color to inherit from theme
+            gridcolor="rgba(128, 128, 128, 0.2)",
+            zerolinecolor="rgba(128, 128, 128, 0.2)",
+            showgrid=True,
+            gridwidth=1,
         ),
         yaxis=dict(
             title=None,
-            tickfont=dict(size=18),
+            tickfont=dict(size=18),  # Remove color to inherit from theme
+            showgrid=False,
         ),
     )
     return fig
@@ -97,7 +100,7 @@ def create_reform_comparison_graph(summary_results):
             color = BLUE_SHADES[reform_counter % len(BLUE_SHADES)]
             reform_counter += 1
 
-        # Add bar
+        # Add bar with black text for reform names
         fig.add_trace(
             go.Bar(
                 y=[reform],
@@ -112,7 +115,7 @@ def create_reform_comparison_graph(summary_results):
             )
         )
 
-        # Add difference annotation for non-baseline reforms
+        # Add difference annotation in matching bar color for non-baseline reforms
         if reform != "Current Law":
             fig.add_annotation(
                 y=reform,
@@ -122,21 +125,18 @@ def create_reform_comparison_graph(summary_results):
                 xanchor="left",
                 yanchor="middle",
                 xshift=5,
-                font=dict(size=16),
+                font=dict(size=16, color=color),  # Match the bar color
             )
 
-    # Update layout
+    # Update layout without specifying text colors
     fig.update_layout(
         title=dict(
             text="Household Income by Reform",
-            font=dict(size=24),
+            font=dict(size=24),  # Remove color to inherit from theme
         ),
     )
 
-    # Apply PolicyEngine formatting
-    fig = format_fig(fig)
-
-    return fig
+    return format_fig(fig)
 
 
 def initialize_results_tracking():

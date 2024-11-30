@@ -5,20 +5,22 @@ class ImpactTables:
     @staticmethod
     def display_summary_metrics(impact_data, impact_type):
         """Display summary metrics based on impact type"""
-        # All metrics in one row
         col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
+            # Format large numbers in billions
+            revenue_b = impact_data['revenue_impact']/1e9
             st.metric(
                 "Revenue Impact",
-                f"${impact_data['revenue_impact']/1e9:.1f}B",
+                f"${revenue_b:,.1f}B",
                 help="Change in federal revenue"
             )
         
         with col2:
+            # Format percentages with proper precision
             st.metric(
                 "Households Better Off",
-                f"{impact_data['pct_better_off']*100:.1f}%",
+                f"{impact_data['pct_better_off']*100:.2f}%",
                 help="Percentage of households with increased net income"
             )
         

@@ -15,7 +15,9 @@ class ImpactCharts:
         fig.add_trace(go.Bar(
             x=decile_labels,
             y=impact_data.values,
-            name='Average Impact'
+            name='Average Impact',
+            text=[f'${x:,.0f}' for x in impact_data.values],
+            textposition='auto',
         ))
         
         fig.update_layout(
@@ -24,7 +26,8 @@ class ImpactCharts:
             yaxis_title="Impact ($)",
             template="simple_white",
             showlegend=False,
-            height=500
+            height=500,
+            yaxis=dict(tickformat="$,.0f")
         )
         
         return fig

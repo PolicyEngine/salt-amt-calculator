@@ -15,6 +15,7 @@ from nationwide_impacts.impacts import NationwideImpacts
 from nationwide_impacts.charts import ImpactCharts
 from nationwide_impacts.tables import ImpactTables
 import pandas as pd
+from baseline_impacts import display_baseline_impacts
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
@@ -22,7 +23,13 @@ st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
 # Title 
 st.title("SALT and AMT Reform Impact Calculator")
 
-# Create tabs
+# Display baseline impacts section
+display_baseline_impacts()
+
+# Create tabs and store active tab in session state
+if 'active_tab' not in st.session_state:
+    st.session_state.active_tab = 0  # Default to first tab
+
 calculator_tab, nationwide_tab = st.tabs(["Household Calculator", "Nationwide Impacts"])
 
 with calculator_tab:
@@ -307,66 +314,170 @@ with nationwide_tab:
         with st.spinner("Loading impact data..."):
             st.session_state.nationwide_impacts = NationwideImpacts()
     
-    # Reform selection
-    reform_options = st.session_state.nationwide_impacts.get_available_reforms()
-    if not reform_options:
+    # Initialize session state variables if they don't exist
+    if 'amt_select' not in st.session_state:
+        st.session_state.amt_select = "repealed"
+    if 'salt_select' not in st.session_state:
+        st.session_state.salt_select = "tcja_base"
+    if 'tcja_select' not in st.session_state:
+        st.session_state.tcja_select = "extended"
+    if 'behavioral_select' not in st.session_state:
+        st.session_state.behavioral_select = "no"
+    
+    # Callback functions for the buttons
+    def set_current_law():
+        st.session_state.amt_select = "tcja_both"
+        st.session_state.salt_select = "uncapped"
+        st.session_state.tcja_select = "repealed"
+        st.session_state.behavioral_select = "no"
+    
+    def set_current_policy():
+        st.session_state.amt_select = "tcja_both"
+        st.session_state.salt_select = "tcja_base"
+        st.session_state.tcja_select = "repealed"
+        st.session_state.behavioral_select = "no"
+    
+    # Create a container for buttons to be next to each other
+    button_container = st.container()
+    button_col1, button_col2, right_spacer = button_container.columns([1, 1, 8])
+    
+    with button_col1:
+        st.button("Set to Current Law", 
+                 help="Sets parameters to pre-TCJA values",
+                 on_click=set_current_law)
+    
+    with button_col2:
+        st.button("Set to Current Policy", 
+                 help="Sets parameters to current TCJA policy",
+                 on_click=set_current_policy)
+    
+    # Get filter options
+    options = st.session_state.nationwide_impacts.get_filter_options()
+    if not options:
         st.error("No impact data available. Please check data files.")
     else:
-        # Create two columns for selections
-        col1, col2 = st.columns(2)
-        with col1:
-            selected_reform = st.selectbox(
-                "Select Reform", 
-                reform_options,
-                format_func=lambda x: x.replace('_', ' ').title()
-            )
+        # Create columns for all options
+        col1, col2, col3, col4 = st.columns(4)
         
+        with col1:
+            amt_option = st.selectbox(
+                "AMT Configuration",
+                options=[
+                    "repealed",
+                    "pre_tcja_ex_tcja_po",
+                    "tcja_ex_pre_tcja_po",
+                    "tcja_both"
+                ],
+                index=["repealed", "pre_tcja_ex_tcja_po", "tcja_ex_pre_tcja_po", "tcja_both"].index(st.session_state.amt_select),
+                format_func=lambda x: {
+                    "repealed": "Repealed",
+                    "pre_tcja_ex_tcja_po": "Pre-TCJA Exemption, TCJA Phase-out",
+                    "tcja_ex_pre_tcja_po": "TCJA Exemption, Pre-TCJA Phase-out",
+                    "tcja_both": "TCJA Both"
+                }[x],
+                key="amt_select"
+            )
         with col2:
+            salt_option = st.selectbox(
+                "SALT Configuration",
+                options=[
+                    "0_cap",
+                    "tcja_base",
+                    "tcja_base_with_married_bonus",
+                    "tcja_base_with_phaseout",
+                    "tcja_married_bonus_and_phase_out",
+                    "uncapped"
+                ],
+                index=["0_cap", "tcja_base", "tcja_base_with_married_bonus", "tcja_base_with_phaseout", 
+                       "tcja_married_bonus_and_phase_out", "uncapped"].index(st.session_state.salt_select),
+                format_func=lambda x: {
+                    "0_cap": "$0 Cap",
+                    "tcja_base": "TCJA Base ($10k)",
+                    "tcja_base_with_married_bonus": "TCJA with Marriage Bonus ($20k)",
+                    "tcja_base_with_phaseout": "TCJA with Phase-out",
+                    "tcja_married_bonus_and_phase_out": "TCJA Marriage Bonus & Phase-out",
+                    "uncapped": "Uncapped"
+                }[x],
+                key="salt_select"
+            )
+        with col3:
+            tcja_option = st.selectbox(
+                "TCJA Status",
+                options=["extended", "repealed"],
+                index=["extended", "repealed"].index(st.session_state.tcja_select),
+                format_func=lambda x: x.title(),
+                key="tcja_select"
+            )
+        with col4:
+            behavioral_option = st.selectbox(
+                "Behavioral Responses",
+                options=["no", "yes"],
+                index=["no", "yes"].index(st.session_state.behavioral_select),
+                format_func=lambda x: "Include" if x == "yes" else "Exclude",
+                key="behavioral_select"
+            )
+
+        # Construct reform name to match CSV format
+        reform_name = f"salt_{salt_option}_amt_{amt_option}_tcja_{tcja_option}_behavioral_responses_{behavioral_option}"
+        
+        # Filter the data to get the matching row
+        filtered_data = st.session_state.nationwide_impacts.single_year_impacts[
+            st.session_state.nationwide_impacts.single_year_impacts['reform'] == reform_name
+        ]
+        
+        if filtered_data.empty:
+            st.warning("No data available for this combination of options.")
+        else:
+            # Create radio for impact period selection
             impact_type = st.radio(
                 "Select Impact Period",
                 ["single_year", "budget_window"],
                 format_func=lambda x: "2026 Impact" if x == "single_year" else "10-Year Impact",
                 horizontal=True
             )
-        
-        # Get impact data
-        impact_data = st.session_state.nationwide_impacts.get_reform_impact(
-            selected_reform, 
-            impact_type
-        )
-        
-        if impact_data is not None:
-            # Display summary metrics
-            ImpactTables.display_summary_metrics(impact_data, impact_type)
             
-            # Create tabs for different views
-            dist_tab, time_tab = st.tabs([
-                "Distributional Analysis", 
-                "Time Series"
-            ])
+            # Get impact data for the filtered combination
+            impact_data = st.session_state.nationwide_impacts.get_reform_impact(
+                reform_name,  # Use the constructed reform name
+                impact_type
+            )
             
-            with dist_tab:
-                if impact_type == "single_year":
-                    # Get and plot income distribution data
-                    dist_data = st.session_state.nationwide_impacts.get_income_distribution(selected_reform)
-                    if dist_data is not None:
-                        fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                        st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("Distributional analysis only available for single year impacts")
+            if impact_data is not None:
+                # Display summary metrics
+                ImpactTables.display_summary_metrics(impact_data, impact_type)
                 
-            with time_tab:
-                if impact_type == "budget_window":
-                    # Get and plot time series data
-                    time_data = st.session_state.nationwide_impacts.get_time_series(selected_reform)
-                    if time_data is not None:
-                        fig = ImpactCharts.plot_time_series(time_data)
-                        st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("Time series only available for budget window analysis")
-        else:
-            st.error("No impact data available for selected reform.")
-            
+                # Create tabs for different views
+                dist_tab, time_tab = st.tabs([
+                    "Distributional Analysis", 
+                    "Time Series"
+                ])
+                
+                with dist_tab:
+                    if impact_type == "single_year":
+                        # Get and plot income distribution data
+                        dist_data = st.session_state.nationwide_impacts.get_income_distribution(
+                            filtered_data.iloc[0]['reform']
+                        )
+                        if dist_data is not None:
+                            fig = ImpactCharts.plot_distributional_analysis(dist_data)
+                            st.plotly_chart(fig, use_container_width=True)
+                    else:
+                        st.info("Distributional analysis only available for single year impacts")
+                    
+                with time_tab:
+                    if impact_type == "budget_window":
+                        # Get and plot time series data
+                        time_data = st.session_state.nationwide_impacts.get_time_series(
+                            filtered_data.iloc[0]['reform']
+                        )
+                        if time_data is not None:
+                            fig = ImpactCharts.plot_time_series(time_data)
+                            st.plotly_chart(fig, use_container_width=True)
+                    else:
+                        st.info("Time series only available for budget window analysis")
+            else:
+                st.error("No impact data available for this combination.")
+                
     # Add Notes section
     st.markdown("---")
     with st.expander("Notes and Methodology"):

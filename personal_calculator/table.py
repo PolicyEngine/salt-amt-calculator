@@ -159,31 +159,27 @@ def _display_formatted_table(table_data):
     # Create DataFrame
     df = pd.DataFrame(table_data)
 
-    # Custom CSS for table formatting
+    # Custom CSS that works for both light and dark mode
     st.markdown(
         """
         <style>
-        .table-container {
-            margin: 1rem 0;
-        }
         .dataframe {
             width: 100% !important;
+            border-collapse: collapse !important;
         }
         .dataframe td, .dataframe th {
             text-align: left !important;
             padding: 12px !important;
             vertical-align: top !important;
             line-height: 1.4 !important;
+            border: 1px solid rgba(128, 128, 128, 0.3) !important;
         }
         .dataframe th {
-            background-color: #f8f9fa !important;
             font-weight: 600 !important;
-        }
-        .dataframe tr:nth-child(even) {
-            background-color: #f8f9fa !important;
+            border-bottom: 2px solid rgba(128, 128, 128, 0.3) !important;
         }
         .dataframe tr:hover {
-            background-color: #f0f0f0 !important;
+            background-color: rgba(128, 128, 128, 0.1) !important;
         }
         </style>
         """,
@@ -194,6 +190,4 @@ def _display_formatted_table(table_data):
     html_table = df.to_html(escape=False, index=False)
 
     # Display table
-    st.markdown('<div class="table-container">', unsafe_allow_html=True)
     st.markdown(html_table, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
