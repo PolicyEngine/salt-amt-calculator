@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class PolicyReforms:
     @staticmethod
     def policy_reforms(reform_params):
@@ -42,6 +43,7 @@ class PolicyReforms:
 
         return reform_dict
 
+
 def get_reform_params_from_config(config):
     """Convert policy configuration into reform parameters"""
     reform_params = {
@@ -53,9 +55,9 @@ def get_reform_params_from_config(config):
         "amt_phase_outs": {},
         "salt_phase_out_in_effect": True,
     }
-    
+
     # Set SALT caps based on config
-    if config['salt_cap'] == "Uncapped":
+    if config["salt_cap"] == "Uncapped":
         reform_params["salt_caps"] = {
             "JOINT": np.inf,
             "SEPARATE": np.inf,
@@ -63,7 +65,7 @@ def get_reform_params_from_config(config):
             "HEAD_OF_HOUSEHOLD": np.inf,
             "SURVIVING_SPOUSE": np.inf,
         }
-    elif config['salt_cap'] == "$0 Cap":
+    elif config["salt_cap"] == "$0 Cap":
         reform_params["salt_caps"] = {
             "JOINT": 0,
             "SEPARATE": 0,
@@ -72,7 +74,7 @@ def get_reform_params_from_config(config):
             "SURVIVING_SPOUSE": 0,
         }
     else:  # Current Policy
-        if config.get('salt_marriage_bonus'):
+        if config.get("salt_marriage_bonus"):
             reform_params["salt_caps"] = {
                 "JOINT": 20_000,
                 "SEPARATE": 10_000,
@@ -90,18 +92,22 @@ def get_reform_params_from_config(config):
             }
 
     # Set phase-out parameters
-    if config['salt_phaseout'] != "None":
+    if config["salt_phaseout"] != "None":
         reform_params["salt_phase_out_rate"] = 0.1
         reform_params["salt_phase_out_threshold_joint"] = 400_000
         reform_params["salt_phase_out_threshold_other"] = 200_000
-    
+
     # Set AMT parameters
-    if config['amt_repealed']:
-        reform_params["amt_exemptions"] = {k: np.inf for k in reform_params["salt_caps"].keys()}
-        reform_params["amt_phase_outs"] = {k: np.inf for k in reform_params["salt_caps"].keys()}
+    if config["amt_repealed"]:
+        reform_params["amt_exemptions"] = {
+            k: np.inf for k in reform_params["salt_caps"].keys()
+        }
+        reform_params["amt_phase_outs"] = {
+            k: np.inf for k in reform_params["salt_caps"].keys()
+        }
     else:
         # Set AMT exemptions
-        if config['amt_exemption'] == "Current Policy":
+        if config["amt_exemption"] == "Current Policy":
             reform_params["amt_exemptions"] = {
                 "JOINT": 140_565,
                 "SEPARATE": 70_282,
@@ -119,7 +125,7 @@ def get_reform_params_from_config(config):
             }
 
         # Set AMT phase-outs
-        if config['amt_phaseout'] == "Current Policy":
+        if config["amt_phaseout"] == "Current Policy":
             reform_params["amt_phase_outs"] = {
                 "JOINT": 1_285_409,
                 "SEPARATE": 642_704,

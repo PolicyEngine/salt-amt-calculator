@@ -7,8 +7,8 @@ DARK_GRAY = "rgba(74, 74, 74, 0.9)"  # More transparent dark gray
 LIGHT_GRAY = "rgba(124, 124, 124, 0.9)"  # More transparent light gray
 BLUE_SHADES = [
     "rgba(44, 107, 255, 0.9)",  # Bright blue
-    "rgba(0, 82, 204, 0.9)",    # Darker blue
-    "rgba(0, 61, 153, 0.9)",    # Even darker blue
+    "rgba(0, 82, 204, 0.9)",  # Darker blue
+    "rgba(0, 61, 153, 0.9)",  # Even darker blue
 ]
 
 

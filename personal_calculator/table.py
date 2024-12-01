@@ -88,33 +88,35 @@ def create_summary_table(current_law_income, session_state, reform_params_dict):
         "Situation": ["Current Law", "Current Policy", "Selected Policy"],
         "Policy Parameters": [
             "Pre-TCJA provisions",
-            _format_policy_parameters({
-                "salt_caps": {
-                    "JOINT": 10_000,
-                    "SEPARATE": 5_000,
-                    "SINGLE": 10_000,
-                    "HEAD_OF_HOUSEHOLD": 10_000,
-                    "SURVIVING_SPOUSE": 10_000,
-                },
-                "amt_exemptions": {
-                    "JOINT": 140_565,
-                    "SEPARATE": 70_283,
-                    "SINGLE": 90_394,
-                    "HEAD_OF_HOUSEHOLD": 90_394,
-                    "SURVIVING_SPOUSE": 90_394,
-                },
-                "amt_phase_outs": {
-                    "JOINT": 1_285_409,
-                    "SEPARATE": 642_705,
-                    "SINGLE": 642_705,
-                    "HEAD_OF_HOUSEHOLD": 642_705,
-                    "SURVIVING_SPOUSE": 642_705,
-                },
-                "salt_phase_out_rate": 0,
-                "salt_phase_out_threshold_joint": 0,
-                "salt_phase_out_threshold_other": 0,
-            }),
-            _format_policy_parameters(reform_params_dict["selected_reform"])
+            _format_policy_parameters(
+                {
+                    "salt_caps": {
+                        "JOINT": 10_000,
+                        "SEPARATE": 5_000,
+                        "SINGLE": 10_000,
+                        "HEAD_OF_HOUSEHOLD": 10_000,
+                        "SURVIVING_SPOUSE": 10_000,
+                    },
+                    "amt_exemptions": {
+                        "JOINT": 140_565,
+                        "SEPARATE": 70_283,
+                        "SINGLE": 90_394,
+                        "HEAD_OF_HOUSEHOLD": 90_394,
+                        "SURVIVING_SPOUSE": 90_394,
+                    },
+                    "amt_phase_outs": {
+                        "JOINT": 1_285_409,
+                        "SEPARATE": 642_705,
+                        "SINGLE": 642_705,
+                        "HEAD_OF_HOUSEHOLD": 642_705,
+                        "SURVIVING_SPOUSE": 642_705,
+                    },
+                    "salt_phase_out_rate": 0,
+                    "salt_phase_out_threshold_joint": 0,
+                    "salt_phase_out_threshold_other": 0,
+                }
+            ),
+            _format_policy_parameters(reform_params_dict["selected_reform"]),
         ],
         "Household Income": [
             current_law_income,
@@ -127,14 +129,16 @@ def create_summary_table(current_law_income, session_state, reform_params_dict):
             session_state.summary_results["Selected Policy"] - current_law_income,
         ],
         "Change from Current Policy": [
-            session_state.summary_results["Current Law"] - session_state.summary_results["Current Policy"],
+            session_state.summary_results["Current Law"]
+            - session_state.summary_results["Current Policy"],
             0,
-            session_state.summary_results["Selected Policy"] - session_state.summary_results["Current Policy"],
-        ]
+            session_state.summary_results["Selected Policy"]
+            - session_state.summary_results["Current Policy"],
+        ],
     }
-    
+
     df = pd.DataFrame(data)
-    
+
     # Format numeric columns
     df["Household Income"] = df["Household Income"].apply(lambda x: f"${x:,.0f}")
     df["Change from Current Law"] = df["Change from Current Law"].apply(
@@ -143,16 +147,16 @@ def create_summary_table(current_law_income, session_state, reform_params_dict):
     df["Change from Current Policy"] = df["Change from Current Policy"].apply(
         lambda x: f"${x:,.0f}" if x >= 0 else f"-${-x:,.0f}"
     )
-    
+
     # Display table
     st.markdown("### Summary Table")
-    
+
     # Use the full container width
     st.write(
-        df.to_html(escape=False, index=False, classes=['dataframe', 'full-width']),
-        unsafe_allow_html=True
+        df.to_html(escape=False, index=False, classes=["dataframe", "full-width"]),
+        unsafe_allow_html=True,
     )
-    
+
     # Add CSS to make the table full width and improve formatting with dark mode support
     st.markdown(
         """
@@ -200,5 +204,5 @@ def create_summary_table(current_law_income, session_state, reform_params_dict):
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )

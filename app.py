@@ -23,11 +23,11 @@ from nationwide_impacts.charts import ImpactCharts
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
 
-# Title 
+# Title
 st.title("SALT and AMT Reform Impact Calculator")
 
 # Initialize nationwide impacts if not already done
-if 'nationwide_impacts' not in st.session_state:
+if "nationwide_impacts" not in st.session_state:
     try:
         st.session_state.nationwide_impacts = NationwideImpacts()
     except Exception as e:
@@ -41,7 +41,7 @@ st.markdown("---")
 policy_config = display_policy_config()
 
 # Create tabs and store active tab in session state
-if 'active_tab' not in st.session_state:
+if "active_tab" not in st.session_state:
     st.session_state.active_tab = 0  # Default to first tab
 
 st.markdown("---")
@@ -58,22 +58,22 @@ with nationwide_tab:
     """
     )
 
-    if not hasattr(st.session_state, 'nationwide_impacts'):
+    if not hasattr(st.session_state, "nationwide_impacts"):
         st.error("No impact data available. Please check data files.")
     else:
         # Construct reform name to match CSV format based on policy config and baseline
         def get_reform_name(policy_config, baseline):
             """Construct reform name to match CSV format based on policy config and baseline"""
             # Handle SALT cap base option
-            if policy_config['salt_cap'] == "Uncapped":
+            if policy_config["salt_cap"] == "Uncapped":
                 salt_full = "salt_uncapped"
-            elif policy_config['salt_cap'] == "$0 Cap":
+            elif policy_config["salt_cap"] == "$0 Cap":
                 salt_full = "salt_0_cap"
             else:  # Current Policy selected
                 salt_base = "salt_tcja_base"
-                marriage_bonus = policy_config.get('salt_marriage_bonus', False)
-                phase_out = policy_config.get('salt_phaseout') != "None"
-                
+                marriage_bonus = policy_config.get("salt_marriage_bonus", False)
+                phase_out = policy_config.get("salt_phaseout") != "None"
+
                 if marriage_bonus and phase_out:
                     salt_full = "salt_tcja_married_bonus_and_phase_out"
                 elif marriage_bonus:
@@ -82,14 +82,14 @@ with nationwide_tab:
                     salt_full = f"{salt_base}_with_phaseout"
                 else:
                     salt_full = salt_base
-            
+
             # Handle AMT suffix based on configuration
-            if policy_config.get('amt_repealed'):
+            if policy_config.get("amt_repealed"):
                 amt_suffix = "_amt_repealed"
             else:
-                exemption = policy_config.get('amt_exemption')
-                phaseout = policy_config.get('amt_phaseout')
-                
+                exemption = policy_config.get("amt_exemption")
+                phaseout = policy_config.get("amt_phaseout")
+
                 # Map the combinations to their correct suffixes
                 if exemption == "Current Law" and phaseout == "Current Law":
                     amt_suffix = "_amt_tcja_both"
@@ -99,28 +99,36 @@ with nationwide_tab:
                     amt_suffix = "_amt_pre_tcja_ex_pre_tcja_po"
                 elif exemption == "Current Policy" and phaseout == "Current Law":
                     amt_suffix = "_amt_tcja_ex_pre_tcja_po"
-            
+
             # Add behavioral response suffix
-            behavioral_suffix = "_behavioral_responses_yes" if policy_config.get('behavioral_responses') == "Included" else "_behavioral_responses_no"
-            
+            behavioral_suffix = (
+                "_behavioral_responses_yes"
+                if policy_config.get("behavioral_responses") == "Included"
+                else "_behavioral_responses_no"
+            )
+
             # Add baseline suffix
             baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
-            
+
             # Combine all parts
             return f"{salt_full}{amt_suffix}{behavioral_suffix}{baseline_suffix}"
 
-        reform_name = get_reform_name(st.session_state.policy_config, st.session_state.baseline)
-        impacts_data = st.session_state.nationwide_impacts.single_year_impacts  # Access single_year_impacts directly
-        reform_impacts = impacts_data[impacts_data['reform'] == reform_name]
+        reform_name = get_reform_name(
+            st.session_state.policy_config, st.session_state.baseline
+        )
+        impacts_data = (
+            st.session_state.nationwide_impacts.single_year_impacts
+        )  # Access single_year_impacts directly
+        reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
         if reform_impacts.empty:
             st.warning(f"Debug: Looking for reform '{reform_name}'")  # Debug line
-        filtered_impacts = display_summary_metrics(reform_impacts, st.session_state.baseline)
-        
+        filtered_impacts = display_summary_metrics(
+            reform_impacts, st.session_state.baseline
+        )
+
         # Filter the data to get the matching row
-        filtered_data = impacts_data[
-            impacts_data['reform'] == reform_name
-        ]
-        
+        filtered_data = impacts_data[impacts_data["reform"] == reform_name]
+
         if filtered_data.empty:
             st.warning("No data available for this combination of policy options.")
         else:
@@ -128,41 +136,43 @@ with nationwide_tab:
             impact_type = st.radio(
                 "Select Impact Period",
                 ["single_year", "budget_window"],
-                format_func=lambda x: "2026 Impact" if x == "single_year" else "10-Year Impact",
-                horizontal=True
+                format_func=lambda x: (
+                    "2026 Impact" if x == "single_year" else "10-Year Impact"
+                ),
+                horizontal=True,
             )
-            
+
             # Get impact data for the filtered combination
             impact_data = st.session_state.nationwide_impacts.get_reform_impact(
-                reform_name,
-                impact_type
+                reform_name, impact_type
             )
-            
+
             if impact_data is not None:
-                
+
                 # Create tabs for different views
-                dist_tab, time_tab = st.tabs([
-                    "Distributional Analysis", 
-                    "Time Series"
-                ])
-                
+                dist_tab, time_tab = st.tabs(["Distributional Analysis", "Time Series"])
+
                 with dist_tab:
                     if impact_type == "single_year":
                         # Get and plot income distribution data
-                        dist_data = st.session_state.nationwide_impacts.get_income_distribution(
-                            filtered_data.iloc[0]['reform']
+                        dist_data = (
+                            st.session_state.nationwide_impacts.get_income_distribution(
+                                filtered_data.iloc[0]["reform"]
+                            )
                         )
                         if dist_data is not None:
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
                             st.plotly_chart(fig, use_container_width=True)
                     else:
-                        st.info("Distributional analysis only available for single year impacts")
-                    
+                        st.info(
+                            "Distributional analysis only available for single year impacts"
+                        )
+
                 with time_tab:
                     if impact_type == "budget_window":
                         # Get and plot time series data
                         time_data = st.session_state.nationwide_impacts.get_time_series(
-                            filtered_data.iloc[0]['reform']
+                            filtered_data.iloc[0]["reform"]
                         )
                         if time_data is not None:
                             fig = ImpactCharts.plot_time_series(time_data)
@@ -171,7 +181,7 @@ with nationwide_tab:
                         st.info("Time series only available for budget window analysis")
             else:
                 st.error("No impact data available for this combination.")
-                
+
     # Add Notes section
     st.markdown("---")
     with st.expander("Notes and Methodology"):
@@ -297,7 +307,9 @@ with calculator_tab:
         # Calculate selected policy configuration
         status_placeholder.info("Calculating selected policy...")
         reform_params = get_reform_params_from_config(st.session_state.policy_config)
-        reform_results = calculate_impacts(situation, {"selected_reform": reform_params})
+        reform_results = calculate_impacts(
+            situation, {"selected_reform": reform_params}
+        )
         reform_income = current_law_income + reform_results["selected_reform_impact"]
 
         # Update reform results
@@ -314,7 +326,7 @@ with calculator_tab:
 
         # Display detailed results in columns
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
             st.markdown("#### Current Law")
             st.markdown(f"Household income: **${round(current_law_income):,}**")
@@ -323,7 +335,9 @@ with calculator_tab:
             st.markdown("#### Current Policy")
             st.markdown(f"Household income: **${round(current_policy_income):,}**")
             current_policy_impact = current_policy_income - current_law_income
-            st.markdown(f"Change from Current Law: **${round(current_policy_impact):,}**")
+            st.markdown(
+                f"Change from Current Law: **${round(current_policy_impact):,}**"
+            )
 
         with col3:
             st.markdown("#### Selected Policy")
@@ -335,7 +349,9 @@ with calculator_tab:
         status_placeholder.empty()
 
         # Create summary table
-        create_summary_table(current_law_income, st.session_state, {"selected_reform": reform_params})
+        create_summary_table(
+            current_law_income, st.session_state, {"selected_reform": reform_params}
+        )
 
     # Add Notes section at the bottom
     st.markdown("---")  # Add a horizontal line for visual separation

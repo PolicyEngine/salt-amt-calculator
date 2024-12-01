@@ -19,40 +19,97 @@ def create_personal_inputs():
                 "JOINT": "Married Filing Jointly",
                 "SEPARATE": "Married Filing Separately",
                 "HEAD_OF_HOUSEHOLD": "Head of Household",
-                "SURVIVING_SPOUSE": "Qualifying Widow(er)"
+                "SURVIVING_SPOUSE": "Qualifying Widow(er)",
             }
             filing_status = st.selectbox(
                 "Filing Status",
                 options=list(filing_status_options.keys()),
-                format_func=lambda x: filing_status_options[x]
+                format_func=lambda x: filing_status_options[x],
             )
         with status_state_col2:
-            state_codes = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
-                         "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
-                         "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
-                         "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
-                         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
-            state_code = st.selectbox("State", state_codes, index=state_codes.index("CA"))
-        
+            state_codes = [
+                "AL",
+                "AK",
+                "AZ",
+                "AR",
+                "CA",
+                "CO",
+                "CT",
+                "DE",
+                "FL",
+                "GA",
+                "HI",
+                "ID",
+                "IL",
+                "IN",
+                "IA",
+                "KS",
+                "KY",
+                "LA",
+                "ME",
+                "MD",
+                "MA",
+                "MI",
+                "MN",
+                "MS",
+                "MO",
+                "MT",
+                "NE",
+                "NV",
+                "NH",
+                "NJ",
+                "NM",
+                "NY",
+                "NC",
+                "ND",
+                "OH",
+                "OK",
+                "OR",
+                "PA",
+                "RI",
+                "SC",
+                "SD",
+                "TN",
+                "TX",
+                "UT",
+                "VT",
+                "VA",
+                "WA",
+                "WV",
+                "WI",
+                "WY",
+            ]
+            state_code = st.selectbox(
+                "State", state_codes, index=state_codes.index("CA")
+            )
+
         # Marriage status and ages
         is_married = st.checkbox("Married")
         if is_married:
             age_col1, age_col2 = st.columns(2)
             with age_col1:
-                head_age = st.number_input("Age of Household Head", min_value=18, max_value=100, value=35)
+                head_age = st.number_input(
+                    "Age of Household Head", min_value=18, max_value=100, value=35
+                )
             with age_col2:
-                spouse_age = st.number_input("Age of Spouse", min_value=18, max_value=100, value=35)
+                spouse_age = st.number_input(
+                    "Age of Spouse", min_value=18, max_value=100, value=35
+                )
         else:
-            head_age = st.number_input("Age of Household Head", min_value=18, max_value=100, value=35)
+            head_age = st.number_input(
+                "Age of Household Head", min_value=18, max_value=100, value=35
+            )
             spouse_age = None
-        
+
         # Children information
-        num_children = st.number_input("Number of Children", min_value=0, max_value=10, value=0)
+        num_children = st.number_input(
+            "Number of Children", min_value=0, max_value=10, value=0
+        )
 
     # Income Information Section
     with income_col:
         st.markdown("### Income Information")
-        
+
         # Employment income
         if is_married:
             income_col1, income_col2 = st.columns(2)
@@ -81,7 +138,7 @@ def create_personal_inputs():
                 step=1000,
             )
             spouse_income = 0
-        
+
         # Tax-related income in two columns
         tax_col1, tax_col2 = st.columns(2)
         with tax_col1:
@@ -99,7 +156,7 @@ def create_personal_inputs():
                 value=30_000,
                 step=1000,
             )
-        
+
         with tax_col2:
             qualified_dividends = st.number_input(
                 "Qualified Dividends ($)",
