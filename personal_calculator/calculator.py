@@ -2,6 +2,7 @@ from policyengine_us import Simulation
 from policyengine_core.reforms import Reform
 from personal_calculator.reforms import PolicyReforms
 
+
 def calculate_impacts(situation, reform_params_dict):
     """Calculate the impacts of multiple reform scenarios"""
     # Set up baseline simulation
