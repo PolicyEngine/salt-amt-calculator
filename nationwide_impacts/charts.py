@@ -67,10 +67,29 @@ class ImpactCharts:
             )
             return fig
         
+        # Ensure revenue_impact is numeric and convert to billions
+        try:
+            y_values = pd.to_numeric(impact_data['revenue_impact']) / 1e9
+        except (KeyError, ValueError):
+            # Handle case where revenue_impact column doesn't exist or contains invalid data
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Invalid revenue impact data",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False
+            )
+            fig.update_layout(
+                title="Revenue Impact Over Time",
+                template="simple_white",
+                height=500
+            )
+            return fig
+
         fig = go.Figure()
         fig.add_trace(go.Scatter(
-            x=impact_data.index,
-            y=impact_data.values / 1e9,  # Convert to billions
+            x=impact_data['year'],
+            y=y_values,
             mode='lines+markers'
         ))
         
