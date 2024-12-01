@@ -66,7 +66,11 @@ with nationwide_tab:
             """Construct reform name to match CSV format based on policy config and baseline"""
             # Handle SALT cap base option
             if policy_config["salt_cap"] == "Uncapped":
-                salt_full = "salt_uncapped"
+                # Check if phase-out is enabled for uncapped case
+                if policy_config.get("salt_phaseout") != "None":
+                    salt_full = "salt_uncapped_with_phaseout"
+                else:
+                    salt_full = "salt_uncapped"
             elif policy_config["salt_cap"] == "$0 Cap":
                 salt_full = "salt_0_cap"
             else:  # Current Policy selected

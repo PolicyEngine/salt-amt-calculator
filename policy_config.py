@@ -28,14 +28,14 @@ def display_policy_config():
         st.markdown("**Select SALT configuration**")
         st.markdown("Choose how the State and Local Tax deduction will be structured.")
 
+        salt_marriage_bonus = st.checkbox(
+            "Marriage Bonus", help="Double the SALT cap for married couples"
+        )
+
         salt_cap = st.selectbox(
             "SALT Cap",
             ["Current Policy", "Uncapped", "$0 Cap"],
             help="Select the SALT deduction cap policy",
-        )
-
-        salt_marriage_bonus = st.checkbox(
-            "Marriage Bonus", help="Double the SALT cap for married couples"
         )
 
         salt_phaseout = st.selectbox(

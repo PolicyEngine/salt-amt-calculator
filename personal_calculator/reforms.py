@@ -44,28 +44,25 @@ class PolicyReforms:
         return reform_dict
 
 
-def get_reform_params_from_config(config):
-    """Convert policy configuration into reform parameters"""
-    reform_params = {
-        "salt_caps": {},
-        "salt_phase_out_rate": 0,
-        "salt_phase_out_threshold_joint": 0,
-        "salt_phase_out_threshold_other": 0,
-        "amt_exemptions": {},
-        "amt_phase_outs": {},
-        "salt_phase_out_in_effect": True,
-    }
+def get_reform_params_from_config(policy_config):
+    """Get reform parameters based on policy configuration"""
+    reform_params = {}
 
-    # Set SALT caps based on config
-    if config["salt_cap"] == "Uncapped":
+    # Handle SALT cap
+    if policy_config["salt_cap"] == "Uncapped":
         reform_params["salt_caps"] = {
-            "JOINT": np.inf,
-            "SEPARATE": np.inf,
-            "SINGLE": np.inf,
-            "HEAD_OF_HOUSEHOLD": np.inf,
-            "SURVIVING_SPOUSE": np.inf,
+            "JOINT": float("inf"),
+            "SEPARATE": float("inf"),
+            "SINGLE": float("inf"),
+            "HEAD_OF_HOUSEHOLD": float("inf"),
+            "SURVIVING_SPOUSE": float("inf"),
         }
-    elif config["salt_cap"] == "$0 Cap":
+        # Add phase-out parameters if enabled for uncapped case
+        if policy_config.get("salt_phaseout") != "None":
+            reform_params["salt_phase_out_rate"] = 0.1
+            reform_params["salt_phase_out_threshold_joint"] = 400_000
+            reform_params["salt_phase_out_threshold_other"] = 200_000
+    elif policy_config["salt_cap"] == "$0 Cap":
         reform_params["salt_caps"] = {
             "JOINT": 0,
             "SEPARATE": 0,
@@ -74,31 +71,26 @@ def get_reform_params_from_config(config):
             "SURVIVING_SPOUSE": 0,
         }
     else:  # Current Policy
-        if config.get("salt_marriage_bonus"):
-            reform_params["salt_caps"] = {
-                "JOINT": 20_000,
-                "SEPARATE": 10_000,
-                "SINGLE": 10_000,
-                "HEAD_OF_HOUSEHOLD": 10_000,
-                "SURVIVING_SPOUSE": 10_000,
-            }
-        else:
-            reform_params["salt_caps"] = {
-                "JOINT": 10_000,
-                "SEPARATE": 5_000,
-                "SINGLE": 10_000,
-                "HEAD_OF_HOUSEHOLD": 10_000,
-                "SURVIVING_SPOUSE": 10_000,
-            }
+        reform_params["salt_caps"] = {
+            "JOINT": 10_000,
+            "SEPARATE": 5_000,
+            "SINGLE": 10_000,
+            "HEAD_OF_HOUSEHOLD": 10_000,
+            "SURVIVING_SPOUSE": 10_000,
+        }
 
-    # Set phase-out parameters
-    if config["salt_phaseout"] != "None":
-        reform_params["salt_phase_out_rate"] = 0.1
-        reform_params["salt_phase_out_threshold_joint"] = 400_000
-        reform_params["salt_phase_out_threshold_other"] = 200_000
+        # Add marriage bonus if selected
+        if policy_config.get("salt_marriage_bonus"):
+            reform_params["salt_caps"]["JOINT"] = 20_000
+
+        # Add phase-out if selected
+        if policy_config.get("salt_phaseout") != "None":
+            reform_params["salt_phase_out_rate"] = 0.05
+            reform_params["salt_phase_out_threshold_joint"] = 400_000
+            reform_params["salt_phase_out_threshold_other"] = 200_000
 
     # Set AMT parameters
-    if config["amt_repealed"]:
+    if policy_config["amt_repealed"]:
         reform_params["amt_exemptions"] = {
             k: np.inf for k in reform_params["salt_caps"].keys()
         }
@@ -107,7 +99,7 @@ def get_reform_params_from_config(config):
         }
     else:
         # Set AMT exemptions
-        if config["amt_exemption"] == "Current Policy":
+        if policy_config["amt_exemption"] == "Current Policy":
             reform_params["amt_exemptions"] = {
                 "JOINT": 140_565,
                 "SEPARATE": 70_282,
@@ -125,7 +117,7 @@ def get_reform_params_from_config(config):
             }
 
         # Set AMT phase-outs
-        if config["amt_phaseout"] == "Current Policy":
+        if policy_config["amt_phaseout"] == "Current Policy":
             reform_params["amt_phase_outs"] = {
                 "JOINT": 1_285_409,
                 "SEPARATE": 642_704,
