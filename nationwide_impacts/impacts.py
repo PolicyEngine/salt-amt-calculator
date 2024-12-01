@@ -6,7 +6,7 @@ class NationwideImpacts:
         """Initialize nationwide impacts data loader"""
         self.data_dir = Path(__file__).parent / "data"
         self.single_year_impacts = self._load_data("single_year_impacts.csv")
-        self.budget_window_impacts = self._load_data("budget_window_impacts.csv")
+        self.budget_window_impacts = self._load_data("budget_window_impacts_temporary.csv")
         
         # Parse available options from reform names when data is loaded
         if not self.single_year_impacts.empty:

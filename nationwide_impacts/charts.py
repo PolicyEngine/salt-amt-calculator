@@ -5,6 +5,22 @@ class ImpactCharts:
     @staticmethod
     def plot_distributional_analysis(impact_data):
         """Create distributional analysis charts"""
+        # Check if data is empty
+        if impact_data.empty:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="No data available",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False
+            )
+            fig.update_layout(
+                title="Average Impact by Income Group",
+                template="simple_white",
+                height=500
+            )
+            return fig
+        
         # Convert decile data to labels and values
         decile_labels = [
             'Bottom 10%', '10-20%', '20-30%', '30-40%', '40-50%',
@@ -35,6 +51,22 @@ class ImpactCharts:
     @staticmethod
     def plot_time_series(impact_data):
         """Create time series visualization"""
+        # Check if data is empty
+        if impact_data.empty:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="No data available",
+                xref="paper", yref="paper",
+                x=0.5, y=0.5,
+                showarrow=False
+            )
+            fig.update_layout(
+                title="Revenue Impact Over Time",
+                template="simple_white",
+                height=500
+            )
+            return fig
+        
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=impact_data.index,
