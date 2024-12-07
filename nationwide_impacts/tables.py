@@ -26,24 +26,34 @@ def display_summary_metrics(impact_data, impact_type):
     # Create columns for metrics
     col1, col2, col3 = st.columns(3)
 
+    # Calculate values based on impact type
+    if impact_type == "budget_window":
+        revenue_display = f"${budget_window_impacts_temporary['revenue_impact'].sum()/1e9:,.0f}B"
+        poverty_display = f"{budget_window_impacts_temporary['poverty_rate_impact'].mean():+.2f}pp"
+        inequality_display = f"{budget_window_impacts_temporary['inequality_impact'].mean():+.2f}%"
+    else:
+        revenue_display = f"${revenue_impact/1e9:,.0f}B"
+        poverty_display = f"{poverty_impact:+.2f}pp"
+        inequality_display = f"{inequality_impact:+.2f}%"
+
     with col1:
         st.metric(
             "Revenue Impact",
-            f"${revenue_impact/1e9:,.0f}B",
-            help="Change in federal revenue (billions)",
+            revenue_display,
+            help="Change in federal revenue (billions)" + (" - 10 year sum" if impact_type == "budget_window" else ""),
         )
 
     with col2:
         st.metric(
             "Poverty Rate Impact",
-            f"{poverty_impact:+.2f}pp",
+            f"{poverty_display}",
             help="Change in poverty rate (percentage points)",
         )
 
     with col3:
         st.metric(
             "Inequality Impact",
-            f"{inequality_impact:+.2f}%",
+            f"{inequality_display}",
             help="Change in income inequality (percent)",
         )
 

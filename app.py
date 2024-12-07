@@ -58,6 +58,16 @@ with nationwide_tab:
     """
     )
 
+    # Add baseline selector radio button here
+    baseline = st.radio(
+        "Baseline Scenario",
+        ["Current Law", "Current Policy"],
+        help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
+    )
+    
+    # Store baseline in session state
+    st.session_state.baseline = baseline
+
     if not hasattr(st.session_state, "nationwide_impacts"):
         st.error("No impact data available. Please check data files.")
     else:
@@ -67,11 +77,8 @@ with nationwide_tab:
             # Handle SALT cap base option
             if policy_config["salt_cap"] == "Uncapped":
                 # Check if phase-out is enabled for uncapped case
-                if policy_config.get("salt_phaseout") != "None":
-                    salt_full = "salt_uncapped_with_phaseout"
-                else:
-                    salt_full = "salt_uncapped"
-            elif policy_config["salt_cap"] == "$0 Cap":
+                salt_full = "salt_uncapped"
+            elif policy_config["salt_repealed"]:
                 salt_full = "salt_0_cap"
             else:  # Current Policy selected
                 salt_base = "salt_tcja_base"
@@ -107,7 +114,7 @@ with nationwide_tab:
             # Add behavioral response suffix
             behavioral_suffix = (
                 "_behavioral_responses_yes"
-                if policy_config.get("behavioral_responses") == "Included"
+                if policy_config.get("behavioral_responses")
                 else "_behavioral_responses_no"
             )
 
@@ -188,14 +195,6 @@ with nationwide_tab:
 
     # Add Notes section
     st.markdown("---")
-    with st.expander("Notes and Methodology"):
-        st.markdown(
-            """
-            - All monetary values are in 2026 dollars
-            - Income groups are defined by total household income
-            - Budget window estimates account for behavioral responses
-            """
-        )
 
 # Then display calculator tab
 with calculator_tab:
@@ -227,7 +226,6 @@ with calculator_tab:
         # Create situation based on inputs
         situation = create_situation(
             state_code=personal_inputs["state_code"],
-            filing_status=personal_inputs["filing_status"],
             employment_income=personal_inputs["employment_income"],
             spouse_income=personal_inputs["spouse_income"],
             head_age=personal_inputs["head_age"],
@@ -235,9 +233,6 @@ with calculator_tab:
             spouse_age=personal_inputs["spouse_age"],
             num_children=personal_inputs["num_children"],
             child_ages=personal_inputs["child_ages"],
-            state_and_local_sales_or_income_tax=personal_inputs[
-                "state_and_local_sales_or_income_tax"
-            ],
             qualified_dividend_income=personal_inputs["qualified_dividend_income"],
             long_term_capital_gains=personal_inputs["long_term_capital_gains"],
             short_term_capital_gains=personal_inputs["short_term_capital_gains"],
@@ -289,6 +284,7 @@ with calculator_tab:
                     "HEAD_OF_HOUSEHOLD": 642_705,
                     "SURVIVING_SPOUSE": 642_705,
                 },
+                "salt_phase_out_enabled": False,
                 "salt_phase_out_rate": 0,
                 "salt_phase_out_threshold_joint": 0,
                 "salt_phase_out_threshold_other": 0,
@@ -328,27 +324,6 @@ with calculator_tab:
         fig = create_reform_comparison_graph(st.session_state.summary_results)
         chart_placeholder.plotly_chart(fig, use_container_width=True)
 
-        # Display detailed results in columns
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.markdown("#### Current Law")
-            st.markdown(f"Household income: **${round(current_law_income):,}**")
-
-        with col2:
-            st.markdown("#### Current Policy")
-            st.markdown(f"Household income: **${round(current_policy_income):,}**")
-            current_policy_impact = current_policy_income - current_law_income
-            st.markdown(
-                f"Change from Current Law: **${round(current_policy_impact):,}**"
-            )
-
-        with col3:
-            st.markdown("#### Selected Policy")
-            st.markdown(f"Household income: **${round(reform_income):,}**")
-            reform_impact = reform_income - current_law_income
-            st.markdown(f"Change from Current Law: **${round(reform_impact):,}**")
-
         # Clear status message when complete
         status_placeholder.empty()
 
@@ -359,12 +334,11 @@ with calculator_tab:
 
     # Add Notes section at the bottom
     st.markdown("---")  # Add a horizontal line for visual separation
-    with st.expander("Notes"):
-        st.markdown(
-            """
-        - For calculation purposes, all children are assumed to be 10 years old
-        - The calculator uses tax year 2026 for all calculations
-        - Current Policy represents the tax provisions that will be in effect for 2026 under current law
-        - Current Law represents the tax provisions that were in effect before the Tax Cuts and Jobs Act
+
+with st.expander("Notes"):
+    st.markdown(
         """
-        )
+    - All children are assumed to be 10 years old
+    - The calculator uses tax year 2026 for all calculations excluding budget window estimates
+    """
+    )

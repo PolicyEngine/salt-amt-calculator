@@ -147,7 +147,9 @@ class NationwideImpacts:
             mask &= df["reform"].str.contains(amt_phase_out)
 
         if behavioral is not None:
-            mask &= df["reform"].str.contains("yes" if behavioral == "yes" else "no")
+            mask &= df["reform"].str.contains(
+                "behavioral_responses_yes_" if behavioral else "behavioral_responses_no_"
+            )
 
         return df[mask]
 

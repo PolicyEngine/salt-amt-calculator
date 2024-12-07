@@ -5,21 +5,7 @@ def display_policy_config():
     """Display and collect policy configuration options"""
     st.markdown("## Reform Options")
 
-    # Baseline selector
     st.markdown("### Policy Configuration")
-    st.markdown("Select baseline scenario which the reform will be compared against")
-    st.markdown(
-        "This determines the starting point for measuring the impact of reforms."
-    )
-
-    baseline = st.selectbox(
-        "Baseline",
-        ["Current Law", "Current Policy"],
-        help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
-    )
-
-    # Store baseline in session state
-    st.session_state.baseline = baseline
 
     # Create two columns for SALT and AMT
     col1, col2 = st.columns(2)
@@ -28,20 +14,28 @@ def display_policy_config():
         st.markdown("**Select SALT configuration**")
         st.markdown("Choose how the State and Local Tax deduction will be structured.")
 
-        salt_marriage_bonus = st.checkbox(
-            "Marriage Bonus", help="Double the SALT cap for married couples"
+        salt_repealed = st.checkbox(
+            "SALT Deduction Repealed",
+            help="Check to repeal the State and Local Tax deduction",
         )
 
         salt_cap = st.selectbox(
             "SALT Cap",
-            ["Current Policy", "Uncapped", "$0 Cap"],
-            help="Select the SALT deduction cap policy",
+            ["Current Policy ($10k)", "Uncapped"],
+            help="Select the State and Local Tax deduction cap policy",
+            disabled=salt_repealed,
+        )
+
+        salt_marriage_bonus = st.checkbox(
+            "Double the SALT cap for married couples",
+            disabled=salt_repealed or salt_cap == "Uncapped",
         )
 
         salt_phaseout = st.selectbox(
             "SALT Phase-out",
-            ["10% for income over 200k (400k joint)", "None"],
+            ["None", "10% for income over 200k (400k joint)"],
             help="Configure SALT deduction phase-out parameters",
+            disabled=salt_repealed or salt_cap == "Uncapped",
         )
 
     with col2:
@@ -70,9 +64,8 @@ def display_policy_config():
     # Behavioral responses section
     st.markdown("**Apply behavioral responses**")
     st.markdown("Include or exclude taxpayer behavioral responses to policy changes.")
-    behavioral_responses = st.selectbox(
-        "Behavioral Responses",
-        ["Excluded", "Included"],
+    behavioral_responses = st.checkbox(
+        "Include behavioral responses",
         help="Account for how taxpayers might change their behavior",
     )
 
@@ -81,6 +74,7 @@ def display_policy_config():
         "salt_cap": salt_cap,
         "salt_marriage_bonus": salt_marriage_bonus,
         "salt_phaseout": salt_phaseout,
+        "salt_repealed": salt_repealed,
         "amt_exemption": amt_exemption,
         "amt_phaseout": amt_phaseout,
         "amt_repealed": amt_repealed,
