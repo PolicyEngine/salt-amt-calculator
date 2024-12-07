@@ -11,7 +11,7 @@ class PolicyReforms:
         salt_phase_out_rate = reform_params["salt_phase_out_rate"]
         salt_phase_out_threshold_joint = reform_params["salt_phase_out_threshold_joint"]
         salt_phase_out_threshold_other = reform_params["salt_phase_out_threshold_other"]
-
+        salt_phase_out_enabled = reform_params["salt_phase_out_enabled"]
         reform_dict = {}
 
         # SALT caps
@@ -21,32 +21,43 @@ class PolicyReforms:
             ] = {"2026-01-01.2100-12-31": salt_caps[status]}
 
         # SALT phase-out parameters
-        reform_dict["gov.contrib.salt_phase_out.in_effect"] = {
-            "2026-01-01.2100-12-31": True
-        }
-
-        # Single rate applied to both joint and other
-        reform_dict["gov.contrib.salt_phase_out.rate.joint[1].rate"] = {
-            "2026-01-01.2100-12-31": salt_phase_out_rate
-        }
-        reform_dict["gov.contrib.salt_phase_out.rate.other[1].rate"] = {
-            "2026-01-01.2100-12-31": salt_phase_out_rate
-        }
-
-        # Separate thresholds for joint and other
-        reform_dict["gov.contrib.salt_phase_out.rate.joint[1].threshold"] = {
-            "2026-01-01.2100-12-31": salt_phase_out_threshold_joint
-        }
-        reform_dict["gov.contrib.salt_phase_out.rate.other[1].threshold"] = {
-            "2026-01-01.2100-12-31": salt_phase_out_threshold_other
-        }
-
+        if salt_phase_out_enabled:
+            reform_dict["gov.contrib.salt_phase_out.enabled"] = {
+                "2026-01-01.2100-12-31": True
+            }
+            reform_dict["gov.contrib.salt_phase_out.rate"] = {
+                "2026-01-01.2100-12-31": salt_phase_out_rate
+            }
+            reform_dict["gov.contrib.salt_phase_out.threshold.JOINT"] = {
+                "2026-01-01.2100-12-31": salt_phase_out_threshold_joint
+            }
+            reform_dict["gov.contrib.salt_phase_out.threshold.SINGLE"] = {
+                "2026-01-01.2100-12-31": salt_phase_out_threshold_other
+            }
+        for status in amt_phase_outs:
+            reform_dict[f"gov.irs.income.amt.exemption.phase_out.start.{status}"] = {
+                "2026-01-01.2100-12-31": amt_phase_outs[status]
+            }
+        for status in amt_exemptions:
+            reform_dict[f"gov.irs.income.amt.exemption.amount.{status}"] = {
+                "2026-01-01.2100-12-31": amt_exemptions[status]
+            }
+  
         return reform_dict
 
 
 def get_reform_params_from_config(policy_config):
     """Get reform parameters based on policy configuration"""
-    reform_params = {}
+    reform_params = {
+        # Initialize with default values
+        "salt_phase_out_enabled": False,
+        "salt_phase_out_rate": 0,
+        "salt_phase_out_threshold_joint": 0,
+        "salt_phase_out_threshold_other": 0,
+        "amt_phase_out_rate": 0,
+        "amt_phase_out_threshold_joint": 0,
+        "amt_phase_out_threshold_other": 0,
+    }
 
     # Handle SALT cap
     if policy_config["salt_cap"] == "Uncapped":
@@ -58,7 +69,8 @@ def get_reform_params_from_config(policy_config):
             "SURVIVING_SPOUSE": float("inf"),
         }
         # Add phase-out parameters if enabled for uncapped case
-        if policy_config.get("salt_phaseout") != "None":
+        if policy_config.get("salt_phaseout") == "10% for income over 200k (400k joint)":
+            reform_params["salt_phase_out_enabled"] = True
             reform_params["salt_phase_out_rate"] = 0.1
             reform_params["salt_phase_out_threshold_joint"] = 400_000
             reform_params["salt_phase_out_threshold_other"] = 200_000
@@ -82,10 +94,14 @@ def get_reform_params_from_config(policy_config):
         # Add marriage bonus if selected
         if policy_config.get("salt_marriage_bonus"):
             reform_params["salt_caps"]["JOINT"] = 20_000
-
+        if policy_config.get("salt_repealed"):
+            reform_params["salt_caps"] = {
+                k: 0 for k in reform_params["salt_caps"].keys()
+            }
         # Add phase-out if selected
-        if policy_config.get("salt_phaseout") != "None":
-            reform_params["salt_phase_out_rate"] = 0.05
+        if policy_config.get("salt_phaseout") == "10% for income over 200k (400k joint)":
+            reform_params["salt_phase_out_enabled"] = True
+            reform_params["salt_phase_out_rate"] = 0.1
             reform_params["salt_phase_out_threshold_joint"] = 400_000
             reform_params["salt_phase_out_threshold_other"] = 200_000
 

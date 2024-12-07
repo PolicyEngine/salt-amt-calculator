@@ -1,6 +1,5 @@
 def create_situation(
     state_code,
-    filing_status,
     employment_income,
     head_age,
     is_married,
@@ -8,7 +7,6 @@ def create_situation(
     spouse_income,  # Added spouse_income parameter
     num_children,
     child_ages,
-    state_and_local_sales_or_income_tax,
     qualified_dividend_income,
     long_term_capital_gains,
     short_term_capital_gains,
@@ -35,10 +33,6 @@ def create_situation(
         "tax_units": {
             "tax_unit": {
                 "members": ["head"],
-                "filing_status": {"2026": filing_status},
-                "state_and_local_sales_or_income_tax": {
-                    "2026": state_and_local_sales_or_income_tax
-                },
             }
         },
         "families": {"family": {"members": ["head"]}},

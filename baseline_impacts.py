@@ -45,11 +45,19 @@ class BaselineImpacts:
             )
         )
 
+        # Get display title based on metric
+        if metric == "revenue_impact":
+            title = "Budgetary Deficit Impact"
+            y_axis_title = "Budgetary Deficit Impact"
+        else:
+            title = metric.replace("_", " ").title()
+            y_axis_title = title
+
         # Update layout
         fig.update_layout(
-            title=f"{metric.replace('_', ' ').title()} Over Time",
+            title=f"{title} Over Time",
             xaxis_title="Year",
-            yaxis_title=metric.replace("_", " ").title(),
+            yaxis_title=y_axis_title,
             hovermode="x unified",
         )
 
@@ -62,8 +70,8 @@ def display_baseline_impacts():
         """
     ### Baseline Policy Impacts (2026-2035)
     
-    The Tax Cuts and Jobs Act (TCJA) of 2017 made significant changes to the tax code, including modifications 
-    to the State and Local Tax (SALT) deduction. However, many provisions of TCJA are set to expire at the end 
+    The Tax Cuts and Jobs Act (TCJA) of 2017 made changes to the tax code, including modifications 
+    to the State and Local Tax (SALT) deduction and the Alternative Minimum Tax (AMT). However, many provisions of TCJA are set to expire at the end 
     of 2025.
 
     This creates two possible baseline scenarios for analyzing future tax policies:
@@ -95,10 +103,16 @@ def display_baseline_impacts():
     if not current_law_data.empty and not current_policy_data.empty:
         # Metric selector above the chart
         available_metrics = ["revenue_impact", "poverty_rate", "inequality_rate"]
+        
+        def format_metric_name(x):
+            if x == "revenue_impact":
+                return "Budgetary Deficit Impact"
+            return x.replace("_", " ").title()
+        
         selected_metric = st.selectbox(
-            "Select Metric",
+        "Select Metric",
             available_metrics,
-            format_func=lambda x: x.replace("_", " ").title(),
+            format_func=format_metric_name,
         )
 
         # Create and display chart

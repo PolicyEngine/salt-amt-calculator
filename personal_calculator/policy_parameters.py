@@ -9,6 +9,7 @@ def create_policy_inputs(prefix):
         "salt_phase_out_rate": 0,
         "salt_phase_out_threshold_joint": 0,
         "salt_phase_out_threshold_other": 0,
+        "salt_phase_out_enabled": False,
         "amt_exemptions": {},
         "amt_phase_outs": {},
         "salt_phase_out_in_effect": True,  # Always true, not a user input
@@ -57,6 +58,7 @@ def create_policy_inputs(prefix):
         st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
         st.session_state[f"{prefix}_salt_phase_out_threshold_joint"] = 0
         st.session_state[f"{prefix}_salt_phase_out_threshold_other"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_enabled"] = False
 
         # Set AMT exemptions
         st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
@@ -85,6 +87,7 @@ def create_policy_inputs(prefix):
         st.session_state[f"{prefix}_salt_phase_out_rate"] = 0
         st.session_state[f"{prefix}_salt_phase_out_threshold_joint"] = 0
         st.session_state[f"{prefix}_salt_phase_out_threshold_other"] = 0
+        st.session_state[f"{prefix}_salt_phase_out_enabled"] = False
 
         # Set AMT exemptions to default values
         st.session_state[f"{prefix}_amt_ex_joint_unlimited"] = False
