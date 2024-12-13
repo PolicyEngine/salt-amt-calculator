@@ -3,9 +3,8 @@ import streamlit as st
 
 def display_policy_config():
     """Display and collect policy configuration options"""
-    st.markdown("## Reform Options")
 
-    st.markdown("### Policy Configuration")
+    st.markdown("## Policy Configuration")
 
     # Create two columns for SALT and AMT
     col1, col2 = st.columns(2)
@@ -68,6 +67,17 @@ def display_policy_config():
         "Include behavioral responses",
         help="Account for how taxpayers might change their behavior",
     )
+    # Add other TCJA provisions selector
+    st.markdown("**Configure other TCJA provisions**")
+    other_tcja_provisions_extended = st.radio(
+        "Other TCJA Provisions",
+        ["Current Law", "Current Policy"],
+        help="Choose whether TCJA provisions other than SALT and AMT expire (Current Law) or are extended (Current Policy), including the Income Tax Rate Changes, Standard Deduction, and others.",
+    )
+    
+    # Store baseline in session state with the correct data column identifier
+    st.session_state.other_tcja_provisions_extended = "other_tcja_provisions_extended_no" if other_tcja_provisions_extended == "Current Law (TCJA Expires)" else "other_tcja_provisions_extended_yes"
+
 
     # Store configuration in session state
     st.session_state.policy_config = {
@@ -79,6 +89,7 @@ def display_policy_config():
         "amt_phaseout": amt_phaseout,
         "amt_repealed": amt_repealed,
         "behavioral_responses": behavioral_responses,
+        "other_tcja_provisions_extended": other_tcja_provisions_extended,
     }
 
     return st.session_state.policy_config
