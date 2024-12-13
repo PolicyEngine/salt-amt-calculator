@@ -42,7 +42,7 @@ class PolicyReforms:
             reform_dict[f"gov.irs.income.amt.exemption.amount.{status}"] = {
                 "2026-01-01.2100-12-31": amt_exemptions[status]
             }
-  
+
         return reform_dict
 
 
@@ -69,7 +69,10 @@ def get_reform_params_from_config(policy_config):
             "SURVIVING_SPOUSE": float("inf"),
         }
         # Add phase-out parameters if enabled for uncapped case
-        if policy_config.get("salt_phaseout") == "10% for income over 200k (400k joint)":
+        if (
+            policy_config.get("salt_phaseout")
+            == "10% for income over 200k (400k joint)"
+        ):
             reform_params["salt_phase_out_enabled"] = True
             reform_params["salt_phase_out_rate"] = 0.1
             reform_params["salt_phase_out_threshold_joint"] = 400_000
@@ -99,7 +102,10 @@ def get_reform_params_from_config(policy_config):
                 k: 0 for k in reform_params["salt_caps"].keys()
             }
         # Add phase-out if selected
-        if policy_config.get("salt_phaseout") == "10% for income over 200k (400k joint)":
+        if (
+            policy_config.get("salt_phaseout")
+            == "10% for income over 200k (400k joint)"
+        ):
             reform_params["salt_phase_out_enabled"] = True
             reform_params["salt_phase_out_rate"] = 0.1
             reform_params["salt_phase_out_threshold_joint"] = 400_000

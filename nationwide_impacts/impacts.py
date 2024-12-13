@@ -31,8 +31,7 @@ class NationwideImpacts:
             # Explicitly list all numeric columns from the CSV
             numeric_cols = [
                 "revenue_impact",
-                "poverty_impact",
-                "inequality_impact",
+                "gini_index",
                 "pct_better_off",
                 "pct_worse_off",
             ] + [f"income_p{i:02d}_{i+10}" for i in range(0, 100, 10)]
@@ -148,7 +147,9 @@ class NationwideImpacts:
 
         if behavioral is not None:
             mask &= df["reform"].str.contains(
-                "behavioral_responses_yes_" if behavioral else "behavioral_responses_no_"
+                "behavioral_responses_yes_"
+                if behavioral
+                else "behavioral_responses_no_"
             )
 
         return df[mask]

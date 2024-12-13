@@ -18,7 +18,7 @@ class ImpactCharts:
                 showarrow=False,
             )
             fig.update_layout(
-                title="Average Impact by Income Group",
+                title="Average household impact by income decile",
                 template="simple_white",
                 height=500,
             )
@@ -50,9 +50,9 @@ class ImpactCharts:
         )
 
         fig.update_layout(
-            title="Average Impact by Income Group",
-            xaxis_title="Income Group",
-            yaxis_title="Impact ($)",
+            title="Average household impact by income decile",
+            xaxis_title="Income group",
+            yaxis_title="Average household impact ($)",
             template="simple_white",
             showlegend=False,
             height=500,
