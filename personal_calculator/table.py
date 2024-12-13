@@ -51,14 +51,14 @@ def _format_policy_parameters(reform_params):
 
         # Only include SALT phase-out if it's the selected reform and has a non-zero phase-out rate
         base_output = (
-            f"SALT Cap:<br>"
-            f"• Joint: {salt_joint}<br>"
-            f"• Other: {salt_other}<br>"
+            f"SALT Cap:<br>" f"• Joint: {salt_joint}<br>" f"• Other: {salt_other}<br>"
         )
 
         # Add SALT phase-out section only for selected reform with non-zero phase-out rate
-        if reform_params.get('salt_phase_out_rate', 0) > 0:
-            salt_phase_out_rate = f"{reform_params.get('salt_phase_out_rate', 0)*100:.0f}%"
+        if reform_params.get("salt_phase_out_rate", 0) > 0:
+            salt_phase_out_rate = (
+                f"{reform_params.get('salt_phase_out_rate', 0)*100:.0f}%"
+            )
             salt_phase_out_threshold_joint = (
                 f"${reform_params.get('salt_phase_out_threshold_joint', 0):,.0f}"
             )

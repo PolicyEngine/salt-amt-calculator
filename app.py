@@ -24,7 +24,10 @@ from nationwide_impacts.charts import ImpactCharts
 st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
 
 # Title
-st.title("SALT and AMT Reform Impact Calculator")
+st.title("What's the SALTernative?")
+st.markdown(
+    "Design and compare changes to the state and local tax (SALT) deduction and alternative minimum tax (AMT)"
+)
 
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:
@@ -64,7 +67,7 @@ with nationwide_tab:
         ["Current Law", "Current Policy"],
         help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
     )
-    
+
     # Store baseline in session state
     st.session_state.baseline = baseline
 
@@ -128,7 +131,6 @@ with nationwide_tab:
 
             # Add other TCJA provisions suffix
             return f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{baseline_suffix}"
-
 
         reform_name = get_reform_name(
             st.session_state.policy_config, st.session_state.baseline
@@ -346,5 +348,6 @@ with st.expander("Notes"):
         """
     - All children are assumed to be 10 years old
     - The calculator uses tax year 2026 for all calculations excluding budget window estimates
+    - Baseline deficit values are based on the Congressional Budget Office's 10-Year Budget Projections
     """
     )

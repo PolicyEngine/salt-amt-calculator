@@ -63,7 +63,7 @@ def create_personal_inputs():
             "WV",
             "WI",
             "WY",
-            ]
+        ]
         state_code = st.selectbox(
             "What State do you live in?", state_codes, index=state_codes.index("CA")
         )
@@ -74,15 +74,24 @@ def create_personal_inputs():
             age_col1, age_col2 = st.columns(2)
             with age_col1:
                 head_age = st.number_input(
-                    "What is the age of Household Head", min_value=18, max_value=100, value=35
+                    "What is the age of Household Head",
+                    min_value=18,
+                    max_value=100,
+                    value=35,
                 )
             with age_col2:
                 spouse_age = st.number_input(
-                    "What is the age of the Spouse", min_value=18, max_value=100, value=35
+                    "What is the age of the Spouse",
+                    min_value=18,
+                    max_value=100,
+                    value=35,
                 )
         else:
             head_age = st.number_input(
-                "What is the age of the Household Head", min_value=18, max_value=100, value=35
+                "What is the age of the Household Head",
+                min_value=18,
+                max_value=100,
+                value=35,
             )
             spouse_age = None
 
