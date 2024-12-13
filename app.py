@@ -117,12 +117,18 @@ with nationwide_tab:
                 if policy_config.get("behavioral_responses")
                 else "_behavioral_responses_no"
             )
+            other_tcja_provisions_suffix = (
+                "_other_tcja_provisions_extended_no"
+                if policy_config.get("other_tcja_provisions_extended") == "Current Law"
+                else "_other_tcja_provisions_extended_yes"
+            )
 
             # Add baseline suffix
             baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
 
-            # Combine all parts
-            return f"{salt_full}{amt_suffix}{behavioral_suffix}{baseline_suffix}"
+            # Add other TCJA provisions suffix
+            return f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{baseline_suffix}"
+
 
         reform_name = get_reform_name(
             st.session_state.policy_config, st.session_state.baseline
