@@ -167,37 +167,25 @@ with nationwide_tab:
             )
 
             if impact_data is not None:
-
-                # Create tabs for different views
-                dist_tab, time_tab = st.tabs(["Distributional Analysis", "Time Series"])
-
-                with dist_tab:
-                    if impact_type == "single_year":
-                        # Get and plot income distribution data
-                        dist_data = (
-                            st.session_state.nationwide_impacts.get_income_distribution(
-                                filtered_data.iloc[0]["reform"]
-                            )
-                        )
-                        if dist_data is not None:
-                            fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                            st.plotly_chart(fig, use_container_width=True)
-                    else:
-                        st.info(
-                            "Distributional analysis only available for single year impacts"
-                        )
-
-                with time_tab:
-                    if impact_type == "budget_window":
-                        # Get and plot time series data
-                        time_data = st.session_state.nationwide_impacts.get_time_series(
+                # Show appropriate visualization based on impact_type
+                if impact_type == "single_year":
+                    # Get and plot income distribution data
+                    dist_data = (
+                        st.session_state.nationwide_impacts.get_income_distribution(
                             filtered_data.iloc[0]["reform"]
                         )
-                        if time_data is not None:
-                            fig = ImpactCharts.plot_time_series(time_data)
-                            st.plotly_chart(fig, use_container_width=True)
-                    else:
-                        st.info("Time series only available for budget window analysis")
+                    )
+                    if dist_data is not None:
+                        fig = ImpactCharts.plot_distributional_analysis(dist_data)
+                        st.plotly_chart(fig, use_container_width=True)
+                else:  # budget_window
+                    # Get and plot time series data
+                    time_data = st.session_state.nationwide_impacts.get_time_series(
+                        filtered_data.iloc[0]["reform"]
+                    )
+                    if time_data is not None:
+                        fig = ImpactCharts.plot_time_series(time_data)
+                        st.plotly_chart(fig, use_container_width=True)
             else:
                 st.error("No impact data available for this combination.")
 
