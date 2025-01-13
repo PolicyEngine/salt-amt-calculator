@@ -343,5 +343,9 @@ with st.expander("Notes"):
     - All children are assumed to be 10 years old
     - The calculator uses tax year 2026 for all calculations excluding budget window estimates
     - Baseline deficit values are based on the Congressional Budget Office's 10-Year Budget Projections
+    - We just compute the federal budgetary impact due to:
+      - States with AMT parameters tied to federal AMT (e.g., California)
+      - States with deductions for federal tax liability (e.g., Oregon)
+      - Behavioral responses
     """
     )
