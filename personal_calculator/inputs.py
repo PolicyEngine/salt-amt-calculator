@@ -65,7 +65,7 @@ def create_personal_inputs():
             "WY",
         ]
         state_code = st.selectbox(
-            "What State do you live in?", state_codes, index=state_codes.index("CA")
+            "What state do you live in", state_codes, index=state_codes.index("CA")
         )
 
         # Marriage status and ages
@@ -74,21 +74,21 @@ def create_personal_inputs():
             age_col1, age_col2 = st.columns(2)
             with age_col1:
                 head_age = st.number_input(
-                    "What is the age of Household Head",
+                    "What is the age of the household head",
                     min_value=18,
                     max_value=100,
                     value=35,
                 )
             with age_col2:
                 spouse_age = st.number_input(
-                    "What is the age of the Spouse",
+                    "What is the age of the spouse",
                     min_value=18,
                     max_value=100,
                     value=35,
                 )
         else:
             head_age = st.number_input(
-                "What is the age of the Household Head",
+                "What is the age of the household head",
                 min_value=18,
                 max_value=100,
                 value=35,
@@ -109,7 +109,7 @@ def create_personal_inputs():
             income_col1, income_col2 = st.columns(2)
             with income_col1:
                 employment_income = st.number_input(
-                    "What is the employment Income of the Household Head ($)",
+                    "What is the employment income of the household head ($)",
                     min_value=0,
                     max_value=10_000_000,
                     value=0,
@@ -117,7 +117,7 @@ def create_personal_inputs():
                 )
             with income_col2:
                 spouse_income = st.number_input(
-                    "What is the employment Income of the Spouse ($)",
+                    "What is the employment income of the spouse ($)",
                     min_value=0,
                     max_value=10_000_000,
                     value=0,
@@ -125,7 +125,7 @@ def create_personal_inputs():
                 )
         else:
             employment_income = st.number_input(
-                "What is the employment Income of the Household Head ($)",
+                "What is the employment income of the household head ($)",
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
@@ -137,14 +137,14 @@ def create_personal_inputs():
         tax_col1, tax_col2 = st.columns(2)
         with tax_col1:
             qualified_dividends = st.number_input(
-                "What is your Qualified Dividend Income($)",
+                "What is your qualified dividend income ($)",
                 min_value=0,
                 max_value=10_000_000,
                 value=5000,
                 step=1000,
             )
             real_estate_taxes = st.number_input(
-                "What are your Real Estate Taxes ($)",
+                "What are your real estate taxes ($)",
                 min_value=0,
                 max_value=10_000_000,
                 value=30_000,
@@ -154,14 +154,14 @@ def create_personal_inputs():
         with tax_col2:
 
             long_term_gains = st.number_input(
-                "What are your Long Term Capital Gains ($)",
+                "What are your long term capital gains ($)",
                 min_value=0,
                 max_value=10_000_000,
                 value=5000,
                 step=1000,
             )
             short_term_gains = st.number_input(
-                "What are your Short Term Capital Gains ($)",
+                "What are your short term capital gains ($)",
                 min_value=0,
                 max_value=10_000_000,
                 value=5000,
