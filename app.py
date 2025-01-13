@@ -61,15 +61,21 @@ with nationwide_tab:
     """
     )
 
-    # Add baseline selector radio button here
+    # Replace the two-column layout with sequential elements
     baseline = st.radio(
         "Baseline Scenario",
         ["Current Law", "Current Policy"],
         help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
     )
 
-    # Store baseline in session state
+    behavioral_responses = st.checkbox(
+        "Include behavioral responses",
+        help="Account for how taxpayers might change their behavior",
+    )
+
+    # Store baseline and behavioral responses in session state
     st.session_state.baseline = baseline
+    st.session_state.policy_config["behavioral_responses"] = behavioral_responses
 
     if not hasattr(st.session_state, "nationwide_impacts"):
         st.error("No impact data available. Please check data files.")
