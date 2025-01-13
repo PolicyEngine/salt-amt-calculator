@@ -57,7 +57,7 @@ nationwide_tab, calculator_tab = st.tabs(["Nationwide Impacts", "Household Calcu
 with nationwide_tab:
     st.markdown(
         """
-    This section shows the nationwide impacts of the selected policy configuration.
+    This section shows the nationwide impacts of the your policy configuration.
     """
     )
 
@@ -208,7 +208,7 @@ with nationwide_tab:
 with calculator_tab:
     st.markdown(
         """
-    This calculator shows the household-level impacts of the selected policy configuration.
+    This calculator shows the household-level impacts of the your policy configuration.
     Input your household characteristics below.
     """
     )
@@ -312,8 +312,8 @@ with calculator_tab:
             current_policy_income,
         )
 
-        # Calculate selected policy configuration
-        status_placeholder.info("Calculating selected policy...")
+        # Calculate your policy configuration
+        status_placeholder.info("Calculating your policy...")
         reform_params = get_reform_params_from_config(st.session_state.policy_config)
         reform_results = calculate_impacts(
             situation, {"selected_reform": reform_params}
@@ -324,7 +324,7 @@ with calculator_tab:
         st.session_state.results_df, st.session_state.summary_results = update_results(
             st.session_state.results_df,
             st.session_state.summary_results,
-            "Selected Policy",
+            "Your Policy",
             reform_income,
         )
 

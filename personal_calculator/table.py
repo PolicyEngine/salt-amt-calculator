@@ -3,17 +3,12 @@ import pandas as pd
 import numpy as np
 
 
-def _format_policy_parameters(reform_params):
-    """
-    Formats the policy parameters for a single reform.
-    """
-    # Handle Current Law case
+def _format_salt_caps(reform_params):
+    """Format just the SALT cap parameters."""
     if reform_params == "Pre-TCJA provisions":
-        return reform_params
+        return "Pre-TCJA"
 
-    # Handle missing or differently structured parameters
     try:
-        # Format SALT caps
         salt_joint = (
             "Unlimited"
             if reform_params.get("salt_caps", {}).get("JOINT", 0) == np.inf
@@ -24,144 +19,112 @@ def _format_policy_parameters(reform_params):
             if reform_params.get("salt_caps", {}).get("SINGLE", 0) == np.inf
             else f"${reform_params.get('salt_caps', {}).get('SINGLE', 0):,.0f}"
         )
+        return f"Joint: {salt_joint}<br>Other: {salt_other}"
+    except:
+        return "Error"
 
-        # Format AMT exemptions
-        amt_ex_joint = (
+
+def _format_salt_phaseout(reform_params):
+    """Format just the SALT phase-out parameters."""
+    if reform_params == "Pre-TCJA provisions":
+        return "Pre-TCJA"
+
+    try:
+        if reform_params.get("salt_phase_out_rate", 0) > 0:
+            rate = f"{reform_params.get('salt_phase_out_rate', 0)*100:.0f}%"
+            joint = f"${reform_params.get('salt_phase_out_threshold_joint', 0):,.0f}"
+            other = f"${reform_params.get('salt_phase_out_threshold_other', 0):,.0f}"
+            return f"Rate: {rate}<br>Joint: {joint}<br>Other: {other}"
+        return "N/A"
+    except:
+        return "Error"
+
+
+def _format_amt_exemptions(reform_params):
+    """Format just the AMT exemption parameters."""
+    if reform_params == "Pre-TCJA provisions":
+        return "Pre-TCJA"
+
+    try:
+        joint = (
             "Unlimited"
             if reform_params.get("amt_exemptions", {}).get("JOINT", 0) == np.inf
             else f"${reform_params.get('amt_exemptions', {}).get('JOINT', 0):,.0f}"
         )
-        amt_ex_other = (
+        other = (
             "Unlimited"
             if reform_params.get("amt_exemptions", {}).get("SINGLE", 0) == np.inf
             else f"${reform_params.get('amt_exemptions', {}).get('SINGLE', 0):,.0f}"
         )
+        return f"Joint: {joint}<br>Other: {other}"
+    except:
+        return "Error"
 
-        # Format AMT phase-outs
-        amt_po_joint = (
+
+def _format_amt_phaseout(reform_params):
+    """Format just the AMT phase-out parameters."""
+    if reform_params == "Pre-TCJA provisions":
+        return "Pre-TCJA"
+
+    try:
+        joint = (
             "Unlimited"
             if reform_params.get("amt_phase_outs", {}).get("JOINT", 0) == np.inf
             else f"${reform_params.get('amt_phase_outs', {}).get('JOINT', 0):,.0f}"
         )
-        amt_po_other = (
+        other = (
             "Unlimited"
             if reform_params.get("amt_phase_outs", {}).get("SINGLE", 0) == np.inf
             else f"${reform_params.get('amt_phase_outs', {}).get('SINGLE', 0):,.0f}"
         )
-
-        # Only include SALT phase-out if it's the selected reform and has a non-zero phase-out rate
-        base_output = (
-            f"SALT Cap:<br>" f"• Joint: {salt_joint}<br>" f"• Other: {salt_other}<br>"
-        )
-
-        # Add SALT phase-out section only for selected reform with non-zero phase-out rate
-        if reform_params.get("salt_phase_out_rate", 0) > 0:
-            salt_phase_out_rate = (
-                f"{reform_params.get('salt_phase_out_rate', 0)*100:.0f}%"
-            )
-            salt_phase_out_threshold_joint = (
-                f"${reform_params.get('salt_phase_out_threshold_joint', 0):,.0f}"
-            )
-            salt_phase_out_threshold_other = (
-                f"${reform_params.get('salt_phase_out_threshold_other', 0):,.0f}"
-            )
-            base_output += (
-                f"SALT Phase-out:<br>"
-                f"• Rate: {salt_phase_out_rate}<br>"
-                f"• Joint Threshold: {salt_phase_out_threshold_joint}<br>"
-                f"• Other Threshold: {salt_phase_out_threshold_other}<br>"
-            )
-
-        return base_output + (
-            f"AMT Exemption:<br>"
-            f"• Joint: {amt_ex_joint}<br>"
-            f"• Other: {amt_ex_other}<br>"
-            f"AMT Phase-out:<br>"
-            f"• Joint: {amt_po_joint}<br>"
-            f"• Other: {amt_po_other}"
-        )
-
-    except Exception as e:
-        # If there's any error in formatting, return a simple string
-        return "Error formatting parameters"
+        return f"Joint: {joint}<br>Other: {other}"
+    except:
+        return "Error"
 
 
 def create_summary_table(current_law_income, session_state, reform_params_dict):
-    """Create a summary table comparing current law, current policy, and selected policy"""
+    """Create a summary table comparing current law, current policy, and your policy"""
     import pandas as pd
     import streamlit as st
 
     # Create DataFrame for table
     data = {
-        "Situation": ["Current Law", "Current Policy", "Selected Policy"],
-        "Policy Parameters": [
-            _format_policy_parameters(
-                {
-                    "salt_caps": {
-                        "JOINT": np.inf,
-                        "SEPARATE": np.inf,
-                        "SINGLE": np.inf,
-                        "HEAD_OF_HOUSEHOLD": np.inf,
-                        "SURVIVING_SPOUSE": np.inf,
-                    },
-                    "amt_exemptions": {
-                        "JOINT": 109_700,
-                        "SEPARATE": 54_850,
-                        "SINGLE": 70_500,
-                        "HEAD_OF_HOUSEHOLD": 70_500,
-                        "SURVIVING_SPOUSE": 109_700,
-                    },
-                    "amt_phase_outs": {
-                        "JOINT": 209_000,
-                        "SEPARATE": 104_500,
-                        "SINGLE": 156_700,
-                        "HEAD_OF_HOUSEHOLD": 156_700,
-                        "SURVIVING_SPOUSE": 209_000,
-                    },
-                }
-            ),
-            _format_policy_parameters(
-                {
-                    "salt_caps": {
-                        "JOINT": 10_000,
-                        "SEPARATE": 5_000,
-                        "SINGLE": 10_000,
-                        "HEAD_OF_HOUSEHOLD": 10_000,
-                        "SURVIVING_SPOUSE": 10_000,
-                    },
-                    "amt_exemptions": {
-                        "JOINT": 140_565,
-                        "SEPARATE": 70_283,
-                        "SINGLE": 90_394,
-                        "HEAD_OF_HOUSEHOLD": 90_394,
-                        "SURVIVING_SPOUSE": 90_394,
-                    },
-                    "amt_phase_outs": {
-                        "JOINT": 1_285_409,
-                        "SEPARATE": 642_705,
-                        "SINGLE": 642_705,
-                        "HEAD_OF_HOUSEHOLD": 642_705,
-                        "SURVIVING_SPOUSE": 642_705,
-                    },
-                }
-            ),
-            _format_policy_parameters(reform_params_dict["selected_reform"]),
+        "Situation": ["Current Law", "Current Policy", "Your Policy"],
+        "SALT Cap": [
+            "Joint: Unlimited<br>Other: Unlimited",
+            "Joint: $10,000<br>Other: $10,000",
+            _format_salt_caps(reform_params_dict["selected_reform"]),
+        ],
+        "SALT Phase-out": [
+            "N/A",
+            "N/A",
+            _format_salt_phaseout(reform_params_dict["selected_reform"]),
+        ],
+        "AMT Exemption": [
+            "Joint: $109,700<br>Other: $70,500",
+            "Joint: $140,565<br>Other: $90,394",
+            _format_amt_exemptions(reform_params_dict["selected_reform"]),
+        ],
+        "AMT Phase-out": [
+            "Joint: $209,000<br>Other: $156,700",
+            "Joint: $1,285,409<br>Other: $642,705",
+            _format_amt_phaseout(reform_params_dict["selected_reform"]),
         ],
         "Household Income": [
             current_law_income,
             session_state.summary_results["Current Policy"],
-            session_state.summary_results["Selected Policy"],
+            session_state.summary_results["Your Policy"],
         ],
         "Change from Current Law": [
             0,
             session_state.summary_results["Current Policy"] - current_law_income,
-            session_state.summary_results["Selected Policy"] - current_law_income,
+            session_state.summary_results["Your Policy"] - current_law_income,
         ],
         "Change from Current Policy": [
             session_state.summary_results["Current Law"]
             - session_state.summary_results["Current Policy"],
             0,
-            session_state.summary_results["Selected Policy"]
+            session_state.summary_results["Your Policy"]
             - session_state.summary_results["Current Policy"],
         ],
     }
