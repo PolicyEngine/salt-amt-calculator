@@ -60,10 +60,6 @@ def display_policy_config():
 
     # Behavioral responses section
     st.markdown("**General**")
-    behavioral_responses = st.checkbox(
-        "Include behavioral responses",
-        help="Account for how taxpayers might change their behavior",
-    )
     # Add other TCJA provisions selector
     other_tcja_provisions_extended = st.radio(
         "Other TCJA Provisions",
@@ -87,7 +83,6 @@ def display_policy_config():
         "amt_exemption": amt_exemption,
         "amt_phaseout": amt_phaseout,
         "amt_repealed": amt_repealed,
-        "behavioral_responses": behavioral_responses,
         "other_tcja_provisions_extended": other_tcja_provisions_extended,
     }
 
