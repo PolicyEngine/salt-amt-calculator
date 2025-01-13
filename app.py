@@ -51,7 +51,7 @@ st.markdown("---")
 
 st.subheader("Impacts")
 
-nationwide_tab, calculator_tab = st.tabs(["Nationwide Impacts", "Household Calculator"])
+nationwide_tab, calculator_tab = st.tabs(["US", "Household"])
 
 # Display nationwide impacts first
 with nationwide_tab:
