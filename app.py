@@ -19,6 +19,11 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
+from personal_calculator.situation import create_situation_with_axes
+from personal_calculator.subsidy_rate import calculate_subsidy_rate
+from personal_calculator.chart import plot_subsidy_rates
+from constants import CURRENT_POLICY_PARAMS
+
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
@@ -202,7 +207,7 @@ with nationwide_tab:
 with calculator_tab:
     st.markdown(
         """
-    This calculator shows the household-level impacts of the your policy configuration.
+    This calculator shows the household-level impacts of your policy configuration.
     Input your household characteristics below.
     """
     )
@@ -263,37 +268,8 @@ with calculator_tab:
 
         # Calculate current policy
         status_placeholder.info("Calculating current policy...")
-        current_policy_params = {
-            "reform_current_policy": {
-                "salt_caps": {
-                    "JOINT": 10_000,
-                    "SEPARATE": 5_000,
-                    "SINGLE": 10_000,
-                    "HEAD_OF_HOUSEHOLD": 10_000,
-                    "SURVIVING_SPOUSE": 10_000,
-                },
-                "amt_exemptions": {
-                    "JOINT": 140_565,
-                    "SEPARATE": 70_283,
-                    "SINGLE": 90_394,
-                    "HEAD_OF_HOUSEHOLD": 90_394,
-                    "SURVIVING_SPOUSE": 90_394,
-                },
-                "amt_phase_outs": {
-                    "JOINT": 1_285_409,
-                    "SEPARATE": 642_705,
-                    "SINGLE": 642_705,
-                    "HEAD_OF_HOUSEHOLD": 642_705,
-                    "SURVIVING_SPOUSE": 642_705,
-                },
-                "salt_phase_out_enabled": False,
-                "salt_phase_out_rate": 0,
-                "salt_phase_out_threshold_joint": 0,
-                "salt_phase_out_threshold_other": 0,
-            }
-        }
 
-        current_policy_results = calculate_impacts(situation, current_policy_params)
+        current_policy_results = calculate_impacts(situation, CURRENT_POLICY_PARAMS)
         current_policy_income = (
             current_law_income + current_policy_results["reform_current_policy_impact"]
         )
@@ -326,8 +302,38 @@ with calculator_tab:
         fig = create_reform_comparison_graph(st.session_state.summary_results)
         chart_placeholder.plotly_chart(fig, use_container_width=True)
 
+        # Calculate and display subsidy rate
+        situation_with_axes = create_situation_with_axes(
+            state_code=personal_inputs["state_code"],
+            employment_income=personal_inputs["employment_income"],
+            head_age=personal_inputs["head_age"],
+            is_married=personal_inputs["is_married"],
+            spouse_age=personal_inputs["spouse_age"],
+            spouse_income=personal_inputs["spouse_income"],
+            num_children=personal_inputs["num_children"],
+            child_ages=personal_inputs["child_ages"],
+            qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+            long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+            short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+            real_estate_taxes=personal_inputs["real_estate_taxes"],
+            income_min=0,
+            income_max=200000,
+            income_count=200
+        )
+
+        # Calculate subsidy rates
+        period = '2026'
+        subsidy_rates = calculate_subsidy_rate(situation_with_axes, period, st.session_state.policy_config)
+
+        # Display subsidy rates
+        for policy, rate in subsidy_rates.items():
+            st.markdown(f"**{policy} Marginal Subsidy Rate:** {rate:.2%}")
+
         # Clear status message when complete
         status_placeholder.empty()
+
+        # Display results in a nice format
+        st.markdown("### Results")
 
         # Create summary table
         create_summary_table(
@@ -343,7 +349,8 @@ with st.expander("Notes"):
     - All children are assumed to be 10 years old
     - The calculator uses tax year 2026 for all calculations excluding budget window estimates
     - Baseline deficit values are based on the Congressional Budget Office's 10-Year Budget Projections
-    - We just compute the federal budgetary impact due to:
+    - In the household calculator, the marginal subsidy rate is computed in $500 increments of real estate taxes
+    - We limit the computation to the federal budgetary impact to:
       - States with AMT parameters tied to federal AMT (e.g., California)
       - States with deductions for federal tax liability (e.g., Oregon)
       - Behavioral responses
