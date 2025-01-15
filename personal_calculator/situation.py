@@ -61,6 +61,7 @@ def create_situation(
 
     return situation
 
+
 def create_situation_with_axes(
     state_code,
     employment_income,
@@ -76,7 +77,7 @@ def create_situation_with_axes(
     real_estate_taxes,
     income_min=0,
     income_max=200000,
-    income_count=200
+    income_count=200,
 ):
     """Creates a situation dictionary with axes for income variation"""
     situation = {
@@ -132,7 +133,7 @@ def create_situation_with_axes(
                 "name": "employment_income",
                 "count": income_count,
                 "min": income_min,
-                "max": income_max
+                "max": income_max,
             }
         ]
     ]

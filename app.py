@@ -318,12 +318,15 @@ with calculator_tab:
             real_estate_taxes=personal_inputs["real_estate_taxes"],
             income_min=0,
             income_max=200000,
-            income_count=200
+            income_count=200,
         )
 
         # Calculate subsidy rates
-        period = '2026'
-        subsidy_rates = calculate_subsidy_rate(situation_with_axes, period, st.session_state.policy_config)
+        period = "2026"
+        status_placeholder.info("Calculating marginal subsidy rates...")
+        subsidy_rates = calculate_subsidy_rate(
+            situation_with_axes, period, st.session_state.policy_config
+        )
 
         # Display subsidy rates
         for policy, rate in subsidy_rates.items():
