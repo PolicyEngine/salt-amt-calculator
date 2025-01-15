@@ -157,6 +157,7 @@ def update_results(df, summary_results, reform_name, income_value):
     summary_results[reform_name] = income_value
     return df, summary_results
 
+
 def plot_subsidy_rates(subsidy_rates):
     """Plot the marginal subsidy rates for real estate taxes"""
     fig = go.Figure()
@@ -165,10 +166,7 @@ def plot_subsidy_rates(subsidy_rates):
     for i, rate in enumerate(subsidy_rates):
         fig.add_trace(
             go.Bar(
-                x=[f"Person {i}"],
-                y=[rate],
-                name=f"Person {i}",
-                marker_color='skyblue'
+                x=[f"Person {i}"], y=[rate], name=f"Person {i}", marker_color="skyblue"
             )
         )
 
@@ -177,7 +175,7 @@ def plot_subsidy_rates(subsidy_rates):
         title="Marginal Subsidy Rates for Real Estate Taxes",
         xaxis_title="Person",
         yaxis_title="Subsidy Rate",
-        showlegend=False
+        showlegend=False,
     )
 
     # Show the figure
