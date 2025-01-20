@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
+from policyengine_core.charts import format_fig
 
 
 class BaselineImpacts:
@@ -124,24 +125,14 @@ def display_baseline_impacts():
             col for col in current_law_data.columns if col in ["total_income_change"]
         ]
 
-        def format_metric_name(x):
-            if x == "total_income_change":
-                return "Total Deficit"
-            return x.replace("_", " ").title()
-
         if len(available_metrics) > 0:
             selected_metric = "total_income_change"
-            # selected_metric = st.selectbox(
-            #     "Select Metric",
-            #     available_metrics,
-            #     format_func=format_metric_name,
-            # )
 
             # Create and display chart
             fig = st.session_state.baseline_impacts.create_metric_chart(
                 current_law_data, current_policy_data, selected_metric
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(format_fig(fig), use_container_width=True)
         else:
             st.error("No metrics available to display")
 

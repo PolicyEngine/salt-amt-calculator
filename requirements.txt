@@ -1,5 +1,6 @@
 streamlit
 policyengine_us
+policyengine_core
 numpy
 pyyaml
 pandas
