@@ -14,27 +14,23 @@ def display_summary_metrics(impact_data, impact_type):
 
     # Check if impact_data is a DataFrame
     if isinstance(impact_data, pd.DataFrame):
-        revenue_impact = impact_data["revenue_impact"].iloc[0]
-        gini_index = impact_data["gini_index"].iloc[0]
+        total_income_change = impact_data["total_income_change"].iloc[0]
+        percent_better = impact_data["percent_better_off"].iloc[0]
+        percent_worse = impact_data["percent_worse_off"].iloc[0]
     else:
         # If impact_data is already a single value or series
-        revenue_impact = impact_data["revenue_impact"]
-        gini_index = impact_data["gini_index"]
+        total_income_change = impact_data["total_income_change"]
+        percent_better = impact_data["percent_better_off"]
+        percent_worse = impact_data["percent_worse_off"]
 
     # Create columns for metrics
     col1, col2, col3 = st.columns(3)
 
-    # Calculate values based on impact type
+    # Calculate revenue display value
     if impact_type == "budget_window":
-        revenue_display = (
-            f"${budget_window_impacts_temporary['revenue_impact'].sum()/1e9:,.0f}B"
-        )
-        inequality_display = (
-            f"{budget_window_impacts_temporary['gini_index'].mean():+.2f}%"
-        )
+        revenue_display = f"${budget_window_impacts_temporary['total_income_change'].sum()/1e9:,.0f}B"
     else:
-        revenue_display = f"${revenue_impact/1e9:,.0f}B"
-        inequality_display = f"{gini_index:+.2f}%"
+        revenue_display = f"${total_income_change/1e9:,.0f}B"
 
     with col1:
         st.metric(
@@ -44,11 +40,18 @@ def display_summary_metrics(impact_data, impact_type):
             + (" - 10 year sum" if impact_type == "budget_window" else ""),
         )
 
-    # with col2:
-    #     st.metric(
-    #         "Inequality Impact",
-    #         f"{inequality_display}",
-    #         help="Change in Gini index of income inequality (percent)",
-    #     )
+    with col2:
+        st.metric(
+            "Percent of Households Better Off in 2026",
+            f"{percent_better:.1f}%",
+            help="Percentage of households with increased household net income",
+        )
+
+    with col3:
+        st.metric(
+            "Percent of Households Worse Off in 2026",
+            f"{percent_worse:.1f}%",
+            help="Percentage of households with reduced household net income",
+        )
 
     return impact_data

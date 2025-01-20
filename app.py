@@ -34,6 +34,7 @@ st.markdown(
     "Design and compare changes to the state and local tax (SALT) deduction and alternative minimum tax (AMT)"
 )
 
+
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:
     try:
@@ -94,6 +95,18 @@ with nationwide_tab:
                 salt_full = "salt_uncapped"
             elif policy_config["salt_repealed"]:
                 salt_full = "salt_0_cap"
+            elif policy_config["salt_cap"] == "$15k":
+                # Handle the 15k case with potential marriage bonus
+                if policy_config.get("salt_marriage_bonus"):
+                    if policy_config.get("salt_phaseout") != "None":
+                        salt_full = "salt_15_30_k_with_phaseout"
+                    else:
+                        salt_full = "salt_15_30_k_without_phaseout"
+                else:
+                    if policy_config.get("salt_phaseout") != "None":
+                        salt_full = "salt_15_k_with_phaseout"
+                    else:
+                        salt_full = "salt_15_k_without_phaseout"
             else:  # Current Policy selected
                 salt_base = "salt_tcja_base"
                 marriage_bonus = policy_config.get("salt_marriage_bonus", False)
@@ -108,6 +121,7 @@ with nationwide_tab:
                 else:
                     salt_full = salt_base
 
+            # Rest of the function remains the same
             # Handle AMT suffix based on configuration
             if policy_config.get("amt_repealed"):
                 amt_suffix = "_amt_repealed"
@@ -131,6 +145,7 @@ with nationwide_tab:
                 if policy_config.get("behavioral_responses")
                 else "_behavioral_responses_no"
             )
+            
             other_tcja_provisions_suffix = (
                 "_other_tcja_provisions_extended_no"
                 if policy_config.get("other_tcja_provisions_extended") == "Current Law"
@@ -140,7 +155,6 @@ with nationwide_tab:
             # Add baseline suffix
             baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
 
-            # Add other TCJA provisions suffix
             return f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{baseline_suffix}"
 
         reform_name = get_reform_name(

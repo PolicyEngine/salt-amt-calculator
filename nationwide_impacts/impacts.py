@@ -6,7 +6,7 @@ class NationwideImpacts:
     def __init__(self):
         """Initialize nationwide impacts data loader"""
         self.data_dir = Path(__file__).parent / "data"
-        self.single_year_impacts = self._load_data("single_year_impacts.csv")
+        self.single_year_impacts = self._load_data("impacts.csv")
         self.budget_window_impacts = self._load_data(
             "budget_window_impacts_temporary.csv"
         )
@@ -30,8 +30,7 @@ class NationwideImpacts:
         try:
             # Explicitly list all numeric columns from the CSV
             numeric_cols = [
-                "revenue_impact",
-                "gini_index",
+                "total_income_change",
                 "pct_better_off",
                 "pct_worse_off",
             ] + [f"income_p{i:02d}_{i+10}" for i in range(0, 100, 10)]
@@ -58,6 +57,7 @@ class NationwideImpacts:
             "amt_type": set(),
             "tcja_status": set(),
             "behavioral_response": set(),
+            "salt_cap": set(),  # Add this line to track SALT cap options
         }
 
         for reform in reform_names:
@@ -73,16 +73,18 @@ class NationwideImpacts:
             try:
                 salt_idx = parts.index("salt")
 
+                # Extract SALT cap type
+                if "15_30" in reform:
+                    filter_options["salt_cap"].add("15_30_k")
+                elif "0_cap" in reform:
+                    filter_options["salt_cap"].add("0_cap")
+                elif "tcja" in reform:
+                    filter_options["salt_cap"].add("tcja_base")
+
                 # Extract AMT type
                 amt_parts = []
-                for part in parts[salt_idx + 1 :]:
-                    if part in [
-                        "amt",
-                        "repealed",
-                        "extended",
-                        "behavioral",
-                        "responses",
-                    ]:
+                for part in parts[salt_idx + 1:]:
+                    if part in ["amt", "repealed", "extended", "behavioral", "responses"]:
                         break
                     amt_parts.append(part)
                 if amt_parts:
@@ -106,7 +108,6 @@ class NationwideImpacts:
                     filter_options["behavioral_response"].add(response)
 
             except (ValueError, IndexError):
-                # Skip reforms we can't parse
                 continue
 
         return filter_options
@@ -134,7 +135,12 @@ class NationwideImpacts:
             )
 
         if salt_cap is not None:
-            mask &= df["reform"].str.contains(f"salt_{salt_cap}_")
+            if salt_cap == "15_30":
+                mask &= df["reform"].str.contains("salt_15_30_k")
+            elif salt_cap == "0_cap":
+                mask &= df["reform"].str.contains("salt_0_cap")
+            else:
+                mask &= df["reform"].str.contains("salt_tcja")
 
         if salt_phase_out is not None:
             mask &= df["reform"].str.contains(salt_phase_out)
@@ -181,8 +187,22 @@ class NationwideImpacts:
 
     def get_income_distribution(self, reform_name):
         """Get income distribution impacts for a reform"""
-        if self.single_year_impacts.empty or not self.income_cols:
+        if self.single_year_impacts.empty:
             return None
+
+        # Define the income columns in order
+        self.income_cols = [
+            'avg_income_change_p10_20',
+            'avg_income_change_p20_30',
+            'avg_income_change_p30_40',
+            'avg_income_change_p40_50',
+            'avg_income_change_p50_60',
+            'avg_income_change_p60_70',
+            'avg_income_change_p70_80',
+            'avg_income_change_p80_90',
+            'avg_income_change_p90_100',
+            'avg_income_change_p100_110'
+        ]
 
         reform_data = self.single_year_impacts[
             self.single_year_impacts["reform"] == reform_name
@@ -193,7 +213,7 @@ class NationwideImpacts:
         return (
             reform_data[self.income_cols]
             .iloc[0]
-            .rename(lambda x: x.replace("income_p", ""))
+            .rename(lambda x: x.replace("avg_income_change_p", ""))
         )
 
     def get_time_series(self, reform_name):

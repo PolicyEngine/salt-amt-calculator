@@ -20,20 +20,20 @@ class BaselineImpacts:
 
         if baseline_type == "current_law":
             # For current law, use values from baseline_deficit.csv
-            baseline_deficit["revenue_impact"] = baseline_deficit["deficit_total"]
+            baseline_deficit["total_income_change"] = baseline_deficit["deficit_total"]
             return baseline_deficit
         else:  # current policy
             # Calculate TCJA impact as difference between tcja_extension_baseline and baseline
             tcja_data = self.budget_window_data[
                 self.budget_window_data["reform"] == "tcja_extension_baseline"
-            ]["revenue_impact"]
+            ]["total_income_change"]
             baseline_data = self.budget_window_data[
                 self.budget_window_data["reform"] == "baseline"
-            ]["revenue_impact"]
+            ]["total_income_change"]
             tcja_impact = tcja_data.values - baseline_data.values
 
             # Add TCJA impact to baseline deficit
-            baseline_deficit["revenue_impact"] = (
+            baseline_deficit["total_income_change"] = (
                 baseline_deficit["deficit_total"] + tcja_impact
             )
             return baseline_deficit
@@ -66,7 +66,7 @@ class BaselineImpacts:
         )
 
         # Get display title based on metric
-        if metric == "revenue_impact":
+        if metric == "total_income_change":
             title = "Total Deficit"
             y_axis_title = "Total Deficit"
         else:
@@ -121,16 +121,16 @@ def display_baseline_impacts():
     if not current_law_data.empty and not current_policy_data.empty:
         # Only show metrics that exist in the data
         available_metrics = [
-            col for col in current_law_data.columns if col in ["revenue_impact"]
+            col for col in current_law_data.columns if col in ["total_income_change"]
         ]
 
         def format_metric_name(x):
-            if x == "revenue_impact":
+            if x == "total_income_change":
                 return "Total Deficit"
             return x.replace("_", " ").title()
 
         if len(available_metrics) > 0:
-            selected_metric = "revenue_impact"
+            selected_metric = "total_income_change"
             # selected_metric = st.selectbox(
             #     "Select Metric",
             #     available_metrics,
