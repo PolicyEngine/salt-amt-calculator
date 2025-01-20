@@ -168,9 +168,9 @@ def create_policy_inputs(prefix):
         st.session_state[f"{prefix}_salt_phase_out_rate"] = salt_phase_out_rate
 
         # Determine if phase-out is enabled based on rate and thresholds
-        salt_phase_out_enabled = (
-            salt_phase_out_rate > 0 
-            and (st.session_state[f"{prefix}_salt_phase_out_threshold_joint"] > 0 or st.session_state[f"{prefix}_salt_phase_out_threshold_other"] > 0)
+        salt_phase_out_enabled = salt_phase_out_rate > 0 and (
+            st.session_state[f"{prefix}_salt_phase_out_threshold_joint"] > 0
+            or st.session_state[f"{prefix}_salt_phase_out_threshold_other"] > 0
         )
 
         # Separate threshold inputs for joint and other

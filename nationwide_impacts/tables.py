@@ -28,7 +28,9 @@ def display_summary_metrics(impact_data, impact_type):
 
     # Calculate revenue display value
     if impact_type == "budget_window":
-        revenue_display = f"${budget_window_impacts_temporary['total_income_change'].sum()/1e9:,.0f}B"
+        revenue_display = (
+            f"${budget_window_impacts_temporary['total_income_change'].sum()/1e9:,.0f}B"
+        )
     else:
         revenue_display = f"${total_income_change/1e9:,.0f}B"
 

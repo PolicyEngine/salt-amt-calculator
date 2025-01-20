@@ -83,8 +83,14 @@ class NationwideImpacts:
 
                 # Extract AMT type
                 amt_parts = []
-                for part in parts[salt_idx + 1:]:
-                    if part in ["amt", "repealed", "extended", "behavioral", "responses"]:
+                for part in parts[salt_idx + 1 :]:
+                    if part in [
+                        "amt",
+                        "repealed",
+                        "extended",
+                        "behavioral",
+                        "responses",
+                    ]:
                         break
                     amt_parts.append(part)
                 if amt_parts:
@@ -192,16 +198,16 @@ class NationwideImpacts:
 
         # Define the income columns in order
         self.income_cols = [
-            'avg_income_change_p10_20',
-            'avg_income_change_p20_30',
-            'avg_income_change_p30_40',
-            'avg_income_change_p40_50',
-            'avg_income_change_p50_60',
-            'avg_income_change_p60_70',
-            'avg_income_change_p70_80',
-            'avg_income_change_p80_90',
-            'avg_income_change_p90_100',
-            'avg_income_change_p100_110'
+            "avg_income_change_p10_20",
+            "avg_income_change_p20_30",
+            "avg_income_change_p30_40",
+            "avg_income_change_p40_50",
+            "avg_income_change_p50_60",
+            "avg_income_change_p60_70",
+            "avg_income_change_p70_80",
+            "avg_income_change_p80_90",
+            "avg_income_change_p90_100",
+            "avg_income_change_p100_110",
         ]
 
         reform_data = self.single_year_impacts[

@@ -145,7 +145,7 @@ with nationwide_tab:
                 if policy_config.get("behavioral_responses")
                 else "_behavioral_responses_no"
             )
-            
+
             other_tcja_provisions_suffix = (
                 "_other_tcja_provisions_extended_no"
                 if policy_config.get("other_tcja_provisions_extended") == "Current Law"
