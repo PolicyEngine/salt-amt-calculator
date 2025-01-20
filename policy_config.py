@@ -19,7 +19,7 @@ def display_policy_config():
 
         salt_cap = st.selectbox(
             "SALT cap",
-            ["Current Policy ($10k)", "Uncapped"],
+            ["Current Policy ($10k)", "$15k", "Uncapped"],
             help="Select the State and Local Tax deduction cap policy",
             disabled=salt_repealed,
         )
@@ -57,7 +57,6 @@ def display_policy_config():
             help="Set AMT phase-out threshold",
             disabled=amt_repealed,
         )
-
     # Behavioral responses section
     st.markdown("**General**")
     # Add other TCJA provisions selector

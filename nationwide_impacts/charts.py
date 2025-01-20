@@ -80,11 +80,11 @@ class ImpactCharts:
             )
             return fig
 
-        # Ensure revenue_impact is numeric and convert to billions
+        # Ensure total_income_change is numeric and convert to billions
         try:
-            y_values = pd.to_numeric(impact_data["revenue_impact"]) / 1e9
+            y_values = pd.to_numeric(impact_data["total_income_change"]) / 1e9
         except (KeyError, ValueError):
-            # Handle case where revenue_impact column doesn't exist or contains invalid data
+            # Handle case where total_income_change column doesn't exist or contains invalid data
             fig = go.Figure()
             fig.add_annotation(
                 text="Invalid revenue impact data",
