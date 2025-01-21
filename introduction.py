@@ -120,36 +120,47 @@ def display_introduction():
 
     The subsidy rate represents how much the federal government effectively subsidizes real estate taxes through various provisions. 
 
+    > In this case the example household is a married couple in California with:
+    > * Two children (both aged 10)
+    > * $100,000 in capital gains
+    > * $200,000 in employment income
+
     """)
 
 
     # Add subsidy rates plot for both years
     df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
 
+    # Filter data for 2025 and 2026
+    df_2025 = df_subsidy[df_subsidy["Year"] == 2025]
+    df_2026 = df_subsidy[df_subsidy["Year"] == 2026]
+
+    # Create the plot
     fig3 = go.Figure()
     fig3.add_trace(
         go.Scatter(
-            x=df_subsidy["employment_income"],
-            y=df_subsidy["subsidy_rate_2025"],
+            x=df_2025["Real Estate Taxes"],
+            y=df_2025["Subsidy Rate (%)"],
             mode="lines",
             name="2025 Subsidy Rate",
         )
     )
     fig3.add_trace(
         go.Scatter(
-            x=df_subsidy["employment_income"],
-            y=df_subsidy["subsidy_rate_2026"],
+            x=df_2026["Real Estate Taxes"],
+            y=df_2026["Subsidy Rate (%)"],
             mode="lines",
             name="2026 Subsidy Rate",
         )
     )
     fig3.update_layout(
-        title="Subsidy Rates by Employment Income (2025-2026)",
-        xaxis_title="Employment Income ($)",
-        yaxis_title="Subsidy Rate",
+        title="Subsidy Rates by Real Estate Taxes (2025-2026)",
+        xaxis_title="Real Estate Taxes ($)",
+        yaxis_title="Subsidy Rate (%)",
         showlegend=True,
         template="simple_white",
         height=500,
     )
 
+    # Display the plot in Streamlit
     st.plotly_chart(format_fig(fig3))
