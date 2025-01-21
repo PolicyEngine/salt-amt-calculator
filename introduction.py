@@ -29,7 +29,7 @@ def display_introduction():
     # Read the CSV files
     df_2025 = pd.read_csv("personal_calculator/data/tax_calculations_2025.csv")
     df_2026 = pd.read_csv("personal_calculator/data/tax_calculations_2026.csv")
-    
+
     # Create SALT deduction plot
     fig = go.Figure()
     fig.add_trace(
@@ -125,8 +125,8 @@ def display_introduction():
     > * $100,000 in capital gains
     > * $200,000 in employment income
 
-    """)
-
+    """
+    )
 
     # Add subsidy rates plot for both years
     df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
