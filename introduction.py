@@ -7,10 +7,6 @@ from policyengine_core.charts import format_fig
 def display_introduction():
     st.markdown(
         """
-    > Start by displaying the respecitve impact of the SALT deduction and the Alternative Minimum Tax (AMT) on a married household in California with:
-    > * Two children (both aged 10)
-    > * $200,000 in capital gains
-    > * $50,000 in real estate taxes
 
     ## What is the SALT Deduction?
 
@@ -21,13 +17,19 @@ def display_introduction():
     * Sales taxes (as an alternative to income taxes in some cases)
 
     This deduction aims to reduce the impact of double taxation, as individuals are already paying taxes at the state and local levels.
+
+    > We will show the respecitve impacts of the SALT deduction and the Alternative Minimum Tax (AMT) on an exmaple of a    married household in California with:
+    > * Two children (both aged 10)
+    > * $200,000 in capital gains
+    > * $50,000 in real estate taxes
+    
     """
     )
 
     # Read the CSV files
     df_2025 = pd.read_csv("personal_calculator/data/tax_calculations_2025.csv")
     df_2026 = pd.read_csv("personal_calculator/data/tax_calculations_2026.csv")
-
+    
     # Create SALT deduction plot
     fig = go.Figure()
     fig.add_trace(
