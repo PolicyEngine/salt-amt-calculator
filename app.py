@@ -2,7 +2,6 @@ import streamlit as st
 from personal_calculator.situation import create_situation
 from personal_calculator.calculator import calculate_impacts
 from personal_calculator.inputs import create_personal_inputs
-from personal_calculator.policy_parameters import create_policy_inputs
 from personal_calculator.chart import (
     create_reform_comparison_graph,
     initialize_results_tracking,
@@ -21,8 +20,8 @@ from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
 from personal_calculator.situation import create_situation_with_axes
 from personal_calculator.subsidy_rate import calculate_subsidy_rate
-from personal_calculator.chart import plot_subsidy_rates
 from constants import CURRENT_POLICY_PARAMS
+from introduction import display_introduction
 
 
 # Set up the Streamlit page
@@ -34,6 +33,7 @@ st.markdown(
     "Design and compare changes to the state and local tax (SALT) deduction and alternative minimum tax (AMT)"
 )
 
+display_introduction()
 
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:

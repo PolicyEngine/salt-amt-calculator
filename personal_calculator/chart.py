@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
+from policyengine_core.charts import format_fig
 
 # Define colors - using more neutral shades that work in both modes
 DARK_GRAY = "rgba(74, 74, 74, 0.9)"  # More transparent dark gray
@@ -10,36 +11,6 @@ BLUE_SHADES = [
     "rgba(0, 82, 204, 0.9)",  # Darker blue
     "rgba(0, 61, 153, 0.9)",  # Even darker blue
 ]
-
-
-def format_fig(fig):
-    """Apply styling to a Plotly figure that works in both light/dark modes"""
-    fig.update_layout(
-        font_family="Roboto",
-        plot_bgcolor="rgba(0, 0, 0, 0)",  # Transparent background
-        paper_bgcolor="rgba(0, 0, 0, 0)",  # Transparent background
-        margin=dict(l=20, r=20, t=40, b=20),
-        height=400,
-        bargap=0.2,
-        uniformtext_minsize=10,
-        uniformtext_mode="hide",
-        showlegend=False,
-        xaxis=dict(
-            title=None,
-            tickformat="$,.0f",
-            tickfont=dict(size=14),  # Remove color to inherit from theme
-            gridcolor="rgba(128, 128, 128, 0.2)",
-            zerolinecolor="rgba(128, 128, 128, 0.2)",
-            showgrid=True,
-            gridwidth=1,
-        ),
-        yaxis=dict(
-            title=None,
-            tickfont=dict(size=18),  # Remove color to inherit from theme
-            showgrid=False,
-        ),
-    )
-    return fig
 
 
 def create_reform_comparison_graph(summary_results):
@@ -156,27 +127,3 @@ def update_results(df, summary_results, reform_name, income_value):
     df.loc[reform_name] = income_value
     summary_results[reform_name] = income_value
     return df, summary_results
-
-
-def plot_subsidy_rates(subsidy_rates):
-    """Plot the marginal subsidy rates for real estate taxes"""
-    fig = go.Figure()
-
-    # Add bars for each person's subsidy rate
-    for i, rate in enumerate(subsidy_rates):
-        fig.add_trace(
-            go.Bar(
-                x=[f"Person {i}"], y=[rate], name=f"Person {i}", marker_color="skyblue"
-            )
-        )
-
-    # Update layout
-    fig.update_layout(
-        title="Marginal Subsidy Rates for Real Estate Taxes",
-        xaxis_title="Person",
-        yaxis_title="Subsidy Rate",
-        showlegend=False,
-    )
-
-    # Show the figure
-    fig.show()

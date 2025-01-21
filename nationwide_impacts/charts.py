@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 import pandas as pd
+from policyengine_core.charts import format_fig
 
 
 class ImpactCharts:
@@ -22,7 +23,7 @@ class ImpactCharts:
                 template="simple_white",
                 height=500,
             )
-            return fig
+            return format_fig(fig)
 
         # Convert decile data to labels and values
         decile_labels = [
@@ -59,7 +60,7 @@ class ImpactCharts:
             yaxis=dict(tickformat="$,.0f"),
         )
 
-        return fig
+        return format_fig(fig)
 
     @staticmethod
     def plot_time_series(impact_data):
@@ -78,7 +79,7 @@ class ImpactCharts:
             fig.update_layout(
                 title="Revenue Impact Over Time", template="simple_white", height=500
             )
-            return fig
+            return format_fig(fig)
 
         # Ensure total_income_change is numeric and convert to billions
         try:
@@ -97,7 +98,7 @@ class ImpactCharts:
             fig.update_layout(
                 title="Revenue Impact Over Time", template="simple_white", height=500
             )
-            return fig
+            return format_fig(fig)
 
         fig = go.Figure()
         fig.add_trace(
@@ -114,4 +115,4 @@ class ImpactCharts:
             yaxis=dict(tickformat="$,.0f"),
         )
 
-        return fig
+        return format_fig(fig)
