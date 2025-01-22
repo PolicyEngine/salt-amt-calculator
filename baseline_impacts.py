@@ -82,7 +82,7 @@ class BaselineImpacts:
             hovermode="x unified",
         )
 
-        return fig
+        return format_fig(fig)
 
 
 def display_baseline_impacts():

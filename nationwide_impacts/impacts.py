@@ -7,9 +7,7 @@ class NationwideImpacts:
         """Initialize nationwide impacts data loader"""
         self.data_dir = Path(__file__).parent / "data"
         self.single_year_impacts = self._load_data("impacts.csv")
-        self.budget_window_impacts = self._load_data(
-            "budget_window_impacts_temporary.csv"
-        )
+        self.budget_window_impacts = self._load_budget_window_impacts()
 
         # Parse available options from reform names when data is loaded
         if not self.single_year_impacts.empty:
@@ -35,13 +33,43 @@ class NationwideImpacts:
                 "pct_worse_off",
             ] + [f"income_p{i:02d}_{i+10}" for i in range(0, 100, 10)]
 
-            return pd.read_csv(
+            df = pd.read_csv(
                 filepath,
                 on_bad_lines="skip",
                 dtype={col: float for col in numeric_cols},
             )
+            
+            
+            return df
         except Exception as e:
             print(f"Warning: Error loading {filename}: {str(e)}")
+            return pd.DataFrame()
+
+    def _load_budget_window_impacts(self):
+        """Load and combine yearly impact files for the budget window."""
+        years = range(2027, 2036)  # 2027-2035 inclusive
+        dfs = []
+
+        for year in years:
+            filename = f"impacts_{year}.csv"
+            filepath = self.data_dir / "impacts_2026_2035" / filename
+            if filepath.exists():
+                try:
+                    df = pd.read_csv(filepath)
+                    df['year'] = year  # Add a year column
+                    dfs.append(df)
+                    
+                except Exception as e:
+                    print(f"Warning: Error loading {filename}: {str(e)}")
+            else:
+                print(f"Warning: File not found: {filename}")
+
+        if dfs:
+            combined_df = pd.concat(dfs, ignore_index=True)
+        
+            
+            return combined_df
+        else:
             return pd.DataFrame()
 
     def _parse_reform_options(self):
@@ -183,13 +211,14 @@ class NationwideImpacts:
             else self.budget_window_impacts
         )
         if data.empty:
+            print(f"No data available for impact type: {impact_type}")
             return None
 
-        return (
-            data[data["reform"] == reform_name].iloc[0]
-            if not data[data["reform"] == reform_name].empty
-            else None
-        )
+        reform_data = data[data["reform"] == reform_name]
+        if reform_data.empty:
+            return None
+
+        return reform_data
 
     def get_income_distribution(self, reform_name):
         """Get income distribution impacts for a reform"""
@@ -230,9 +259,6 @@ class NationwideImpacts:
 
         # Ensure 'reform' column exists
         if "reform" not in self.budget_window_impacts.columns:
-            print(
-                "Available columns:", self.budget_window_impacts.columns
-            )  # Debug info
             return None
 
         # Get reform data
