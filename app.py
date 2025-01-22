@@ -26,7 +26,6 @@ import plotly.express as px
 from policyengine_core.charts import format_fig
 
 
-
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
 
@@ -62,15 +61,16 @@ st.subheader("Impacts")
 
 nationwide_tab, calculator_tab = st.tabs(["US", "Household"])
 
+
 # Move the get_reform_name function outside of the nationwide_tab block
 def get_reform_name(policy_config, baseline, year=None):
     """Construct reform name to match CSV format based on policy config and baseline.
-    
+
     Parameters:
         policy_config (dict): The policy configuration.
         baseline (str): The baseline scenario ("Current Law" or "Current Policy").
         year (int, optional): The year for budget window impacts (2027-2035). If None, assumes 2026.
-    
+
     Returns:
         str: The reform name.
     """
@@ -134,8 +134,7 @@ def get_reform_name(policy_config, baseline, year=None):
         year_suffix = ""
 
     reform_name = f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{year_suffix}{baseline_suffix}"
-    
-    
+
     return reform_name
 
 
@@ -170,7 +169,7 @@ with nationwide_tab:
         reform_name = get_reform_name(
             st.session_state.policy_config, st.session_state.baseline
         )
-        
+
         # Get impact data for the selected reform
         impacts_data = st.session_state.nationwide_impacts.single_year_impacts
         reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
@@ -179,7 +178,9 @@ with nationwide_tab:
             st.warning(f"No data available for reform: {reform_name}")
         else:
             # Display summary metrics
-            filtered_impacts = display_summary_metrics(reform_impacts, st.session_state.baseline)
+            filtered_impacts = display_summary_metrics(
+                reform_impacts, st.session_state.baseline
+            )
 
             # Create radio button for impact period selection
             impact_type = st.radio(
@@ -193,24 +194,34 @@ with nationwide_tab:
 
             # Handle single-year impacts
             if impact_type == "single_year":
-                single_year_impact = st.session_state.nationwide_impacts.get_reform_impact(
-                    reform_name, impact_type="single_year"
+                single_year_impact = (
+                    st.session_state.nationwide_impacts.get_reform_impact(
+                        reform_name, impact_type="single_year"
+                    )
                 )
                 if single_year_impact is not None:
                     # Show the single-year impact graph
-                    dist_data = st.session_state.nationwide_impacts.get_income_distribution(reform_name)
+                    dist_data = (
+                        st.session_state.nationwide_impacts.get_income_distribution(
+                            reform_name
+                        )
+                    )
                     if dist_data is not None:
                         fig = ImpactCharts.plot_distributional_analysis(dist_data)
                         st.plotly_chart(format_fig(fig), use_container_width=True)
                 else:
-                    st.error("No single-year impact data available for this combination.")
+                    st.error(
+                        "No single-year impact data available for this combination."
+                    )
 
             # Handle 10-year budget window impacts
             elif impact_type == "budget_window":
                 budget_window_impacts = []
                 for year in range(2027, 2036):  # 2027-2035 inclusive
                     reform_name_with_year = get_reform_name(
-                        st.session_state.policy_config, st.session_state.baseline, year=year
+                        st.session_state.policy_config,
+                        st.session_state.baseline,
+                        year=year,
                     )
                     impact = st.session_state.nationwide_impacts.get_reform_impact(
                         reform_name_with_year, impact_type="budget_window"
@@ -218,11 +229,17 @@ with nationwide_tab:
                     if impact is not None:
                         budget_window_impacts.append(impact)
                     else:
-                        st.warning(f"No data found for year {year} and reform: {reform_name_with_year}")
+                        st.warning(
+                            f"No data found for year {year} and reform: {reform_name_with_year}"
+                        )
 
                 if budget_window_impacts:
-                    budget_window_impacts_df = pd.concat(budget_window_impacts, ignore_index=True)
-                    total_revenue_impact = budget_window_impacts_df['total_income_change'].sum()
+                    budget_window_impacts_df = pd.concat(
+                        budget_window_impacts, ignore_index=True
+                    )
+                    total_revenue_impact = budget_window_impacts_df[
+                        "total_income_change"
+                    ].sum()
                     # Show the 10-year impact graph
                     fig = px.line(
                         budget_window_impacts_df,
@@ -237,7 +254,9 @@ with nationwide_tab:
                     fig = format_fig(fig)
                     st.plotly_chart(fig, use_container_width=True)
                 else:
-                    st.warning("No budget window impacts found for the selected reform.")
+                    st.warning(
+                        "No budget window impacts found for the selected reform."
+                    )
 
     # Add Notes section
     st.markdown("---")

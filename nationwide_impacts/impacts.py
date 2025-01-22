@@ -38,8 +38,7 @@ class NationwideImpacts:
                 on_bad_lines="skip",
                 dtype={col: float for col in numeric_cols},
             )
-            
-            
+
             return df
         except Exception as e:
             print(f"Warning: Error loading {filename}: {str(e)}")
@@ -56,9 +55,9 @@ class NationwideImpacts:
             if filepath.exists():
                 try:
                     df = pd.read_csv(filepath)
-                    df['year'] = year  # Add a year column
+                    df["year"] = year  # Add a year column
                     dfs.append(df)
-                    
+
                 except Exception as e:
                     print(f"Warning: Error loading {filename}: {str(e)}")
             else:
@@ -66,8 +65,7 @@ class NationwideImpacts:
 
         if dfs:
             combined_df = pd.concat(dfs, ignore_index=True)
-        
-            
+
             return combined_df
         else:
             return pd.DataFrame()
