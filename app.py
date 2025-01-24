@@ -138,21 +138,16 @@ def get_reform_name(policy_config, baseline, year=None):
     return reform_name
 
 
-# Modify the nationwide_tab section to display both single-year and 10-year impacts side by side
+# Modify the nationwide_tab section for better width usage
 with nationwide_tab:
-    st.markdown(
-        """
-    This section shows the nationwide impacts of your policy configuration.
-    """
-    )
-
-    # Baseline and behavioral responses selection
+    # Create single column for controls
     baseline = st.radio(
         "Baseline Scenario",
         ["Current Law", "Current Policy"],
         help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
+        horizontal=True,  # Make radio buttons horizontal
     )
-
+    
     behavioral_responses = st.checkbox(
         "Include behavioral responses",
         help="Account for how taxpayers might change their behavior",
@@ -161,6 +156,55 @@ with nationwide_tab:
     # Store baseline and behavioral responses in session state
     st.session_state.baseline = baseline
     st.session_state.policy_config["behavioral_responses"] = behavioral_responses
+
+    # Show budget window impacts with full width
+    budget_window_impacts = []
+    for year in range(2026, 2036):
+        reform_name_with_year = get_reform_name(
+            st.session_state.policy_config,
+            st.session_state.baseline,
+            year=year,
+        )
+        impact = st.session_state.nationwide_impacts.get_reform_impact(
+            reform_name_with_year, impact_type="budget_window"
+        )
+        if impact is not None:
+            budget_window_impacts.append(impact)
+        else:
+            st.warning(
+                f"No data found for year {year} and reform: {reform_name_with_year}"
+            )
+
+    if budget_window_impacts:
+        budget_window_impacts_df = pd.concat(
+            budget_window_impacts, ignore_index=True
+        )
+        # Get unique reform name for filtering
+        reform_name = get_reform_name(
+            st.session_state.policy_config,
+            st.session_state.baseline,
+        )
+        # Sum the total income change only for the selected reform
+        total_revenue_impact = budget_window_impacts_df.loc[budget_window_impacts_df["reform"] == reform_name, "total_income_change"].sum()
+        
+        st.markdown(f"### The total revenue impact of this reform over the 10-Year Budget window is ${total_revenue_impact/1e9:.0f}B")
+        
+        # Show the 10-year impact graph without the title
+        fig = px.line(
+            budget_window_impacts_df,
+            x="year",
+            y="total_income_change",
+            labels={
+                "year": "Year",
+                "total_income_change": "Total Income Change (in billions)",
+            },
+        )
+        fig = format_fig(fig)
+        st.plotly_chart(fig, use_container_width=False)
+    else:
+        st.warning(
+            "No budget window impacts found for the selected reform."
+        )
 
     if not hasattr(st.session_state, "nationwide_impacts"):
         st.error("No impact data available. Please check data files.")
@@ -182,81 +226,20 @@ with nationwide_tab:
                 reform_impacts, st.session_state.baseline
             )
 
-            # Create radio button for impact period selection
-            impact_type = st.radio(
-                "Select Impact Period",
-                ["single_year", "budget_window"],
-                format_func=lambda x: (
-                    "2026 Impact" if x == "single_year" else "10-Year Impact"
-                ),
-                horizontal=True,
+            # Show single-year impacts
+            single_year_impact = st.session_state.nationwide_impacts.get_reform_impact(
+                reform_name, impact_type="single_year"
             )
-
-            # Handle single-year impacts
-            if impact_type == "single_year":
-                single_year_impact = (
-                    st.session_state.nationwide_impacts.get_reform_impact(
-                        reform_name, impact_type="single_year"
-                    )
+            if single_year_impact is not None:
+                # Show the single-year impact graph
+                dist_data = st.session_state.nationwide_impacts.get_income_distribution(
+                    reform_name
                 )
-                if single_year_impact is not None:
-                    # Show the single-year impact graph
-                    dist_data = (
-                        st.session_state.nationwide_impacts.get_income_distribution(
-                            reform_name
-                        )
-                    )
-                    if dist_data is not None:
-                        fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                        st.plotly_chart(format_fig(fig), use_container_width=True)
-                else:
-                    st.error(
-                        "No single-year impact data available for this combination."
-                    )
-
-            # Handle 10-year budget window impacts
-            elif impact_type == "budget_window":
-                budget_window_impacts = []
-                for year in range(2027, 2036):  # 2027-2035 inclusive
-                    reform_name_with_year = get_reform_name(
-                        st.session_state.policy_config,
-                        st.session_state.baseline,
-                        year=year,
-                    )
-                    impact = st.session_state.nationwide_impacts.get_reform_impact(
-                        reform_name_with_year, impact_type="budget_window"
-                    )
-                    if impact is not None:
-                        budget_window_impacts.append(impact)
-                    else:
-                        st.warning(
-                            f"No data found for year {year} and reform: {reform_name_with_year}"
-                        )
-
-                if budget_window_impacts:
-                    budget_window_impacts_df = pd.concat(
-                        budget_window_impacts, ignore_index=True
-                    )
-                    total_revenue_impact = budget_window_impacts_df[
-                        "total_income_change"
-                    ].sum()
-                    # Show the 10-year impact graph
-                    fig = px.line(
-                        budget_window_impacts_df,
-                        x="year",
-                        y="total_income_change",
-                        title="Yearly Impact Over Time",
-                        labels={
-                            "year": "Year",
-                            "total_income_change": "Total Income Change (in billions)",
-                        },
-                    )
-                    fig = format_fig(fig)
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.warning(
-                        "No budget window impacts found for the selected reform."
-                    )
+                if dist_data is not None:
+                    fig = ImpactCharts.plot_distributional_analysis(dist_data)
+                    st.plotly_chart(format_fig(fig), use_container_width=False) 
+            else:
+                st.error("No single-year impact data available for this combination.")
 
     # Add Notes section
     st.markdown("---")
@@ -270,7 +253,7 @@ with calculator_tab:
     """
     )
 
-    # Get personal inputs
+    # Remove the outer columns and let create_personal_inputs handle its own columns
     personal_inputs = create_personal_inputs()
 
     # Initialize results tracking in session state if not exists
@@ -282,7 +265,7 @@ with calculator_tab:
     # Create columns for calculate button alignment
     calc_col1, calc_col2 = st.columns([1, 8])
     with calc_col1:
-        calculate_clicked = st.button("Calculate Impacts", use_container_width=True)
+        calculate_clicked = st.button("Calculate Impacts", use_container_width=False)
 
     if calculate_clicked:
         # Reset results to start fresh
@@ -358,7 +341,7 @@ with calculator_tab:
 
         # Update chart with all results
         fig = create_reform_comparison_graph(st.session_state.summary_results)
-        chart_placeholder.plotly_chart(fig, use_container_width=True)
+        chart_placeholder.plotly_chart(fig, use_container_width=False)  # Enable container width
 
         # Calculate and display subsidy rate
         situation_with_axes = create_situation_with_axes(
@@ -386,20 +369,16 @@ with calculator_tab:
             situation_with_axes, period, st.session_state.policy_config
         )
 
-        # Display subsidy rates
-        for policy, rate in subsidy_rates.items():
-            st.markdown(f"**{policy} Marginal Subsidy Rate:** {rate:.2%}")
+        # Create summary table with subsidy rates
+        create_summary_table(
+            current_law_income, 
+            st.session_state, 
+            {"selected_reform": reform_params},
+            subsidy_rates=subsidy_rates
+        )
 
         # Clear status message when complete
         status_placeholder.empty()
-
-        # Display results in a nice format
-        st.markdown("### Results")
-
-        # Create summary table
-        create_summary_table(
-            current_law_income, st.session_state, {"selected_reform": reform_params}
-        )
 
     # Add Notes section at the bottom
     st.markdown("---")  # Add a horizontal line for visual separation

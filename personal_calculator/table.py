@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 
 
 def _format_salt_caps(reform_params):
@@ -81,70 +82,67 @@ def _format_amt_phaseout(reform_params):
         return "Error"
 
 
-def create_summary_table(current_law_income, session_state, reform_params_dict):
+def create_summary_table(current_law_income, session_state, reform_params_dict, subsidy_rates=None):
     """Create a summary table comparing current law, current policy, and your policy"""
-    import pandas as pd
-    import streamlit as st
 
     # Create DataFrame for table
     data = {
-        "Situation": ["Current Law", "Current Policy", "Your Policy"],
-        "SALT Cap": [
-            "Joint: Unlimited<br>Other: Unlimited",
+        "Current Law": [
+            "Joint: Unlimited<br>Other: Unlimited",  # SALT Cap
+            "N/A",  # SALT Phase-out
+            "Joint: $109,700<br>Other: $70,500",  # AMT Exemption
+            "Joint: $209,000<br>Other: $156,700",  # AMT Phase-out
+            f"${current_law_income:,.0f}",  # Household Income
+            "$0",  # Change from Current Law
+            f"${session_state.summary_results['Current Law'] - session_state.summary_results['Current Policy']:,.0f}",  # Change from Current Policy
+        ],
+        "Current Policy": [
             "Joint: $10,000<br>Other: $10,000",
-            _format_salt_caps(reform_params_dict["selected_reform"]),
-        ],
-        "SALT Phase-out": [
             "N/A",
-            "N/A",
-            _format_salt_phaseout(reform_params_dict["selected_reform"]),
-        ],
-        "AMT Exemption": [
-            "Joint: $109,700<br>Other: $70,500",
             "Joint: $140,565<br>Other: $90,394",
-            _format_amt_exemptions(reform_params_dict["selected_reform"]),
-        ],
-        "AMT Phase-out": [
-            "Joint: $209,000<br>Other: $156,700",
             "Joint: $1,285,409<br>Other: $642,705",
+            f"${session_state.summary_results['Current Policy']:,.0f}",
+            f"${session_state.summary_results['Current Policy'] - current_law_income:,.0f}",
+            "$0",
+        ],
+        "Your Policy": [
+            _format_salt_caps(reform_params_dict["selected_reform"]),
+            _format_salt_phaseout(reform_params_dict["selected_reform"]),
+            _format_amt_exemptions(reform_params_dict["selected_reform"]),
             _format_amt_phaseout(reform_params_dict["selected_reform"]),
-        ],
-        "Household Income": [
-            current_law_income,
-            session_state.summary_results["Current Policy"],
-            session_state.summary_results["Your Policy"],
-        ],
-        "Change from Current Law": [
-            0,
-            session_state.summary_results["Current Policy"] - current_law_income,
-            session_state.summary_results["Your Policy"] - current_law_income,
-        ],
-        "Change from Current Policy": [
-            session_state.summary_results["Current Law"]
-            - session_state.summary_results["Current Policy"],
-            0,
-            session_state.summary_results["Your Policy"]
-            - session_state.summary_results["Current Policy"],
-        ],
+            f"${session_state.summary_results['Your Policy']:,.0f}",
+            f"${session_state.summary_results['Your Policy'] - current_law_income:,.0f}",
+            f"${session_state.summary_results['Your Policy'] - session_state.summary_results['Current Policy']:,.0f}",
+        ]
     }
 
-    df = pd.DataFrame(data)
+    # Create index for the rows
+    index = [
+        "SALT Cap",
+        "SALT Phase-out",
+        "AMT Exemption",
+        "AMT Phase-out",
+        "Household Income",
+        "Change from Current Law",
+        "Change from Current Policy",
+    ]
 
-    # Format numeric columns
-    df["Household Income"] = df["Household Income"].apply(lambda x: f"${x:,.0f}")
-    df["Change from Current Law"] = df["Change from Current Law"].apply(
-        lambda x: f"${x:,.0f}" if x >= 0 else f"-${-x:,.0f}"
-    )
-    df["Change from Current Policy"] = df["Change from Current Policy"].apply(
-        lambda x: f"${x:,.0f}" if x >= 0 else f"-${-x:,.0f}"
-    )
+    df = pd.DataFrame(data, index=index)
+
+    # Add subsidy rates if provided
+    if subsidy_rates:
+        df.loc["Marginal Subsidy Rate"] = [
+            f"{subsidy_rates.get('Current Law', 0):.2%}",
+            f"{subsidy_rates.get('Current Policy', 0):.2%}",
+            f"{subsidy_rates.get('Your Policy', 0):.2%}",
+        ]
 
     # Display table
     st.markdown("### Summary Table")
 
     # Use the full container width
     st.write(
-        df.to_html(escape=False, index=False, classes=["dataframe", "full-width"]),
+        df.to_html(escape=False, classes=["dataframe", "full-width"]),
         unsafe_allow_html=True,
     )
 

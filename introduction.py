@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
+from constants import LIGHT_GRAY, DARK_GRAY, BLUE
 
 
 def display_introduction():
@@ -38,6 +39,7 @@ def display_introduction():
             y=df_2025["salt_deduction"],
             mode="lines",
             name="Current Policy (2025)",
+            line=dict(color=DARK_GRAY),
         )
     )
     fig.add_trace(
@@ -46,12 +48,15 @@ def display_introduction():
             y=df_2026["salt_deduction"],
             mode="lines",
             name="Current Law (2026)",
+            line=dict(color=BLUE),
         )
     )
     fig.update_layout(
-        title="SALT Deduction by Employment Income (Current Policy vs Current Law)",
+        title="SALT Deduction by Employment Income",
         xaxis_title="Employment Income ($)",
         yaxis_title="SALT Deduction ($)",
+        xaxis_range=[0, max(df_2025["employment_income"])],
+        yaxis_range=[0, max(max(df_2025["salt_deduction"]), max(df_2026["salt_deduction"]))],
         showlegend=True,
         template="simple_white",
         height=500,
@@ -93,6 +98,7 @@ def display_introduction():
             y=df_2025["alternative_minimum_tax"],
             mode="lines",
             name="Current Policy (2025)",
+            line=dict(color=DARK_GRAY),
         )
     )
     fig2.add_trace(
@@ -101,10 +107,11 @@ def display_introduction():
             y=df_2026["alternative_minimum_tax"],
             mode="lines",
             name="Current Law (2026)",
+            line=dict(color=BLUE),
         )
     )
     fig2.update_layout(
-        title="Alternative Minimum Tax by Employment Income (Current Policy vs Current Law)",
+        title="Alternative Minimum Tax by Employment Income",
         xaxis_title="Employment Income ($)",
         yaxis_title="Alternative Minimum Tax ($)",
         showlegend=True,
@@ -120,10 +127,12 @@ def display_introduction():
 
     The subsidy rate represents how much the federal government effectively subsidizes real estate taxes through various provisions. 
 
-    > In this case the example household is a married couple in California with:
+    > In this case the example household is a married couple in Texas with:
     > * Two children (both aged 10)
     > * $100,000 in capital gains
     > * $200,000 in employment income
+    > * $30,000 in medical expenses
+    > * $20,000 in charitable cash donations
 
     """
     )
@@ -143,6 +152,7 @@ def display_introduction():
             y=df_2025["Subsidy Rate (%)"],
             mode="lines",
             name="2025 Subsidy Rate",
+            line=dict(color=DARK_GRAY),
         )
     )
     fig3.add_trace(
@@ -151,10 +161,11 @@ def display_introduction():
             y=df_2026["Subsidy Rate (%)"],
             mode="lines",
             name="2026 Subsidy Rate",
+            line=dict(color=BLUE),
         )
     )
     fig3.update_layout(
-        title="Subsidy Rates by Real Estate Taxes (2025-2026)",
+        title="Real Estate Tax Subsidy Rate",
         xaxis_title="Real Estate Taxes ($)",
         yaxis_title="Subsidy Rate (%)",
         showlegend=True,

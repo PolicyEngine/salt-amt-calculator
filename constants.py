@@ -27,3 +27,8 @@ CURRENT_POLICY_PARAMS = {
         "salt_phase_out_threshold_other": 0,
     }
 }
+
+DARK_GRAY = "rgba(74, 74, 74, 0.9)"  # More transparent dark gray
+BLUE = "#3378b2"
+RED = "#f45959"
+LIGHT_GRAY = "#bababa"

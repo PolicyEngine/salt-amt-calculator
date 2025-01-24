@@ -6,19 +6,19 @@ def display_policy_config():
 
     st.markdown("## Configure your policy")
 
-    # Create two columns for SALT and AMT
-    col1, col2 = st.columns(2)
+    # Create two columns for SALT and AMT with more width for the first column
+    col1, col2 = st.columns([3, 2])  # Adjust ratio to give more space to SALT column
 
     with col1:
         st.markdown("**State and local tax deduction**")
-
+        # Make labels more concise
         salt_repealed = st.checkbox(
-            "Repeal SALT deduction",
+            "Repeal SALT",  # Shortened label
             help="Check to repeal the State and Local Tax deduction",
         )
 
         salt_cap = st.selectbox(
-            "SALT cap",
+            "Cap amount",  # Shortened label
             ["Current Policy ($10k)", "$15k", "Uncapped"],
             help="Select the State and Local Tax deduction cap policy",
             disabled=salt_repealed,
@@ -64,6 +64,7 @@ def display_policy_config():
         "Other TCJA Provisions",
         ["Current Law", "Current Policy"],
         help="Choose whether TCJA provisions other than SALT and AMT expire (Current Law) or are extended (Current Policy), including the Income Tax Rate Changes, Standard Deduction, and others.",
+        horizontal=True  # Make radio buttons horizontal
     )
 
     # Store baseline in session state with the correct data column identifier

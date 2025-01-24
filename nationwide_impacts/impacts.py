@@ -5,8 +5,8 @@ from pathlib import Path
 class NationwideImpacts:
     def __init__(self):
         """Initialize nationwide impacts data loader"""
-        self.data_dir = Path(__file__).parent / "data"
-        self.single_year_impacts = self._load_data("impacts.csv")
+        self.data_dir = Path(__file__).parent / "data" / "impacts_2026_2035"
+        self.single_year_impacts = self._load_data("impacts_2026.csv")
         self.budget_window_impacts = self._load_budget_window_impacts()
 
         # Parse available options from reform names when data is loaded
@@ -46,18 +46,17 @@ class NationwideImpacts:
 
     def _load_budget_window_impacts(self):
         """Load and combine yearly impact files for the budget window."""
-        years = range(2027, 2036)  # 2027-2035 inclusive
+        years = range(2026, 2036)  
         dfs = []
 
         for year in years:
             filename = f"impacts_{year}.csv"
-            filepath = self.data_dir / "impacts_2026_2035" / filename
+            filepath = self.data_dir / filename
             if filepath.exists():
                 try:
                     df = pd.read_csv(filepath)
-                    df["year"] = year  # Add a year column
+                    df["year"] = year 
                     dfs.append(df)
-
                 except Exception as e:
                     print(f"Warning: Error loading {filename}: {str(e)}")
             else:

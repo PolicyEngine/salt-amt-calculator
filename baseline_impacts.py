@@ -2,21 +2,28 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE
 
 class BaselineImpacts:
     def __init__(self):
         # Load both required CSV files
-        self.budget_window_data = pd.read_csv(
-            "nationwide_impacts/data/raw_budget_window_metrics.csv"
-        )
-        self.baseline_deficit = pd.read_csv(
-            "nationwide_impacts/data/baseline_deficit.csv"
-        )
+        try:
+            self.budget_window_data = pd.read_csv(
+                "nationwide_impacts/data/raw_budget_window_metrics.csv"
+            )
+            self.baseline_deficit = pd.read_csv(
+                "nationwide_impacts/data/baseline_deficit.csv"
+            )
+        except Exception as e:
+            st.error(f"Error loading baseline data: {str(e)}")
+            self.budget_window_data = pd.DataFrame()
+            self.baseline_deficit = pd.DataFrame()
 
     def get_baseline_data(self, baseline_type="current_law"):
         """Get time series data for either current law or current policy"""
-        # Get baseline deficit data
+        if self.baseline_deficit.empty:
+            return pd.DataFrame()
+
         baseline_deficit = self.baseline_deficit.copy()
 
         if baseline_type == "current_law":
@@ -43,38 +50,26 @@ class BaselineImpacts:
         """Create a line chart comparing current law and policy for a given metric"""
         fig = go.Figure()
 
-        # Create year range from the data
         years = current_law_data["year"]
 
-        # Add current law line
-        fig.add_trace(
-            go.Scatter(
-                x=years,
-                y=current_law_data[metric],
-                name="Current Law",
-                line=dict(color="blue"),
+        # Add traces for current law and current policy
+        for data, name, color in zip(
+            [current_law_data, current_policy_data],
+            ["Current Law", "Current Policy"],
+            [BLUE, DARK_GRAY],
+        ):
+            fig.add_trace(
+                go.Scatter(
+                    x=years,
+                    y=data[metric],
+                    name=name,
+                    line=dict(color=color),
+                )
             )
-        )
 
-        # Add current policy line
-        fig.add_trace(
-            go.Scatter(
-                x=years,
-                y=current_policy_data[metric],
-                name="Current Policy (TCJA individual provisions)",
-                line=dict(color="red"),
-            )
-        )
+        title = "Total Deficit" if metric == "total_income_change" else metric.replace("_", " ").title()
+        y_axis_title = title
 
-        # Get display title based on metric
-        if metric == "total_income_change":
-            title = "Total Deficit"
-            y_axis_title = "Total Deficit"
-        else:
-            title = metric.replace("_", " ").title()
-            y_axis_title = title
-
-        # Update layout
         fig.update_layout(
             title=f"{title} Over Time",
             xaxis_title="Year",
@@ -84,58 +79,45 @@ class BaselineImpacts:
 
         return format_fig(fig)
 
-
 def display_baseline_impacts():
     """Main function to display baseline impacts section"""
     st.markdown(
         """
     ### Baseline Policy Impacts (2026-2035)
     
-    The Tax Cuts and Jobs Act (TCJA) of 2017 capped the SALT deduction, applied the AMT to fewer households, and reformed several other parts of the individual and corporate tax code. With most provisions sunsetting after 2025, policymakers are exploring extensions and comparing them against one of two baseline scenarios:
+    The Tax Cuts and Jobs Act (TCJA) of 2017 capped the SALT deduction, applied the AMT to fewer households, and reformed several other parts of the individual and corporate tax code. 
+    
+    With most provisions sunsetting after 2025, policymakers are exploring extensions and comparing them against one of two baseline scenarios:
     - **Current Law**: Assumes TCJA provisions expire as scheduled in 2025
     - **Current Policy**: Assumes TCJA provisions are extended beyond 2025
     """
     )
 
-    # Initialize baseline impacts
     if "baseline_impacts" not in st.session_state:
         with st.spinner("Loading baseline data..."):
             st.session_state.baseline_impacts = BaselineImpacts()
 
-    # Get data
-    current_law_data = st.session_state.baseline_impacts.get_baseline_data(
-        "current_law"
-    )
-    current_policy_data = st.session_state.baseline_impacts.get_baseline_data(
-        "current_policy"
-    )
+    current_law_data = st.session_state.baseline_impacts.get_baseline_data("current_law")
+    current_policy_data = st.session_state.baseline_impacts.get_baseline_data("current_policy")
 
     st.markdown(
         """
     The chart below shows how extending TCJA individual provisions would affect the deficit, using PolicyEngine's open-source microsimulation model.
 
-    _NB: All 10-year impacts are currently 2026 impacts replicated. We will add full budget window impacts in future versions._
-    _CBO has also not yet produced a 2035 baseline forecast, so we are using the 2034 forecast for 2035._
     """
     )
 
     if not current_law_data.empty and not current_policy_data.empty:
-        # Only show metrics that exist in the data
-        available_metrics = [
-            col for col in current_law_data.columns if col in ["total_income_change"]
-        ]
+        available_metrics = [col for col in current_law_data.columns if col in ["total_income_change"]]
 
-        if len(available_metrics) > 0:
+        if available_metrics:
             selected_metric = "total_income_change"
-
-            # Create and display chart
             fig = st.session_state.baseline_impacts.create_metric_chart(
                 current_law_data, current_policy_data, selected_metric
             )
-            st.plotly_chart(format_fig(fig), use_container_width=True)
+            st.plotly_chart(format_fig(fig), use_container_width=False)
         else:
             st.error("No metrics available to display")
-
     else:
         st.error("Unable to load baseline impact data")
 
