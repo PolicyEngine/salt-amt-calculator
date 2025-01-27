@@ -14,9 +14,11 @@ def calculate_impacts(situation, reform_params_dict):
 
     # Calculate each reform
     for reform_key, reform_params in reform_params_dict.items():
+        # Get the reform dictionary
         reform_dict = PolicyReforms.policy_reforms(reform_params)
         reform = Reform.from_dict(reform_dict, country_id="us")
         reform_sim = Simulation(situation=situation, reform=reform)
+
         reform_income = reform_sim.calculate("household_net_income", "2026")[0]
 
         # Store the impact

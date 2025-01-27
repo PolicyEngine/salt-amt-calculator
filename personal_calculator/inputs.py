@@ -1,4 +1,5 @@
 import streamlit as st
+from constants import STATE_CODES
 
 
 def create_personal_inputs():
@@ -12,83 +13,31 @@ def create_personal_inputs():
         st.markdown("### Personal Information")
 
         # Filing status and state in same row
-        state_codes = [
-            "AL",
-            "AK",
-            "AZ",
-            "AR",
-            "CA",
-            "CO",
-            "CT",
-            "DE",
-            "FL",
-            "GA",
-            "HI",
-            "ID",
-            "IL",
-            "IN",
-            "IA",
-            "KS",
-            "KY",
-            "LA",
-            "ME",
-            "MD",
-            "MA",
-            "MI",
-            "MN",
-            "MS",
-            "MO",
-            "MT",
-            "NE",
-            "NV",
-            "NH",
-            "NJ",
-            "NM",
-            "NY",
-            "NC",
-            "ND",
-            "OH",
-            "OK",
-            "OR",
-            "PA",
-            "RI",
-            "SC",
-            "SD",
-            "TN",
-            "TX",
-            "UT",
-            "VT",
-            "VA",
-            "WA",
-            "WV",
-            "WI",
-            "WY",
-        ]
         state_code = st.selectbox(
-            "What state do you live in", state_codes, index=state_codes.index("CA")
+            "What state do you live in?", STATE_CODES, index=STATE_CODES.index("CA")
         )
 
         # Marriage status and ages
-        is_married = st.checkbox("Are you married")
+        is_married = st.checkbox("Are you married?")
         if is_married:
             age_col1, age_col2 = st.columns(2)
             with age_col1:
                 head_age = st.number_input(
-                    "What is the age of the household head",
+                    "How old are you?",
                     min_value=18,
                     max_value=100,
                     value=35,
                 )
             with age_col2:
                 spouse_age = st.number_input(
-                    "What is the age of the spouse",
+                    "How old is your spouse?",
                     min_value=18,
                     max_value=100,
                     value=35,
                 )
         else:
             head_age = st.number_input(
-                "What is the age of the household head",
+                "How old are you?",
                 min_value=18,
                 max_value=100,
                 value=35,
@@ -97,7 +46,7 @@ def create_personal_inputs():
 
         # Children information
         num_children = st.number_input(
-            "How many children do you have", min_value=0, max_value=10, value=0
+            "How many children do you have?", min_value=0, max_value=10, value=0
         )
 
     # Income Information Section
@@ -109,7 +58,7 @@ def create_personal_inputs():
             income_col1, income_col2 = st.columns(2)
             with income_col1:
                 employment_income = st.number_input(
-                    "What is the employment income of the household head ($)",
+                    "How much income do you make from employment?",
                     min_value=0,
                     max_value=10_000_000,
                     value=0,
@@ -117,7 +66,7 @@ def create_personal_inputs():
                 )
             with income_col2:
                 spouse_income = st.number_input(
-                    "What is the employment income of the spouse ($)",
+                    "How much income does your spouse make from employment?",
                     min_value=0,
                     max_value=10_000_000,
                     value=0,
@@ -125,7 +74,7 @@ def create_personal_inputs():
                 )
         else:
             employment_income = st.number_input(
-                "What is the employment income of the household head ($)",
+                "How much income do you make from employment?",
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
@@ -137,14 +86,14 @@ def create_personal_inputs():
         tax_col1, tax_col2 = st.columns(2)
         with tax_col1:
             qualified_dividends = st.number_input(
-                "What is your qualified dividend income ($)",
+                "How much income do you make from qualified dividends?",
                 min_value=0,
                 max_value=10_000_000,
-                value=5000,
+                value=0,
                 step=1000,
             )
             real_estate_taxes = st.number_input(
-                "What are your real estate taxes ($)",
+                "How much do you pay in real estate taxes?",
                 min_value=0,
                 max_value=10_000_000,
                 value=30_000,
@@ -154,17 +103,17 @@ def create_personal_inputs():
         with tax_col2:
 
             long_term_gains = st.number_input(
-                "What are your long term capital gains ($)",
+                "How much income do you make from long term capital gains?",
                 min_value=0,
                 max_value=10_000_000,
-                value=5000,
+                value=0,
                 step=1000,
             )
             short_term_gains = st.number_input(
-                "What are your short term capital gains ($)",
+                "How much income do you make from short term capital gains?",
                 min_value=0,
                 max_value=10_000_000,
-                value=5000,
+                value=0,
                 step=1000,
             )
 

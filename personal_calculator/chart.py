@@ -2,15 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-
-# Define colors - using more neutral shades that work in both modes
-DARK_GRAY = "rgba(74, 74, 74, 0.9)"  # More transparent dark gray
-LIGHT_GRAY = "rgba(124, 124, 124, 0.9)"  # More transparent light gray
-BLUE_SHADES = [
-    "rgba(44, 107, 255, 0.9)",  # Bright blue
-    "rgba(0, 82, 204, 0.9)",  # Darker blue
-    "rgba(0, 61, 153, 0.9)",  # Even darker blue
-]
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE
 
 
 def create_reform_comparison_graph(summary_results):
@@ -68,7 +60,7 @@ def create_reform_comparison_graph(summary_results):
             color = LIGHT_GRAY
         else:
             # Assign different shades of blue to custom reforms
-            color = BLUE_SHADES[reform_counter % len(BLUE_SHADES)]
+            color = BLUE
             reform_counter += 1
 
         # Add bar with black text for reform names

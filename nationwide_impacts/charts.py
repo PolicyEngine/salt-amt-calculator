@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE
 
 
 class ImpactCharts:
@@ -47,6 +48,7 @@ class ImpactCharts:
                 name="Average Impact",
                 text=[f"${x:,.0f}" for x in impact_data.values],
                 textposition="auto",
+                marker_color=BLUE,
             )
         )
 
@@ -102,7 +104,13 @@ class ImpactCharts:
 
         fig = go.Figure()
         fig.add_trace(
-            go.Scatter(x=impact_data["year"], y=y_values, mode="lines+markers")
+            go.Scatter(
+                x=impact_data["year"],
+                y=y_values,
+                mode="lines+markers",
+                line=dict(color=BLUE),
+                marker=dict(color=BLUE),
+            )
         )
 
         fig.update_layout(
