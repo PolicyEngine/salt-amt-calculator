@@ -166,7 +166,7 @@ def create_summary_table(current_law_income, session_state, reform_params_dict, 
             border: 1px solid #e1e4e8;
         }
         [data-theme="light"] .dataframe th {
-            text-align: center !important;
+            text-align: left !important;
             padding: 8px !important;
             background-color: #f0f2f6 !important;
             border: 1px solid #e1e4e8;
@@ -185,7 +185,7 @@ def create_summary_table(current_law_income, session_state, reform_params_dict, 
             background-color: #262730;
         }
         [data-theme="dark"] .dataframe th {
-            text-align: center !important;
+            text-align: left !important;
             padding: 8px !important;
             background-color: #1e1e1e !important;
             border: 1px solid #4a5568;

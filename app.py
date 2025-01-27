@@ -179,28 +179,34 @@ with nationwide_tab:
         budget_window_impacts_df = pd.concat(
             budget_window_impacts, ignore_index=True
         )
-        # Get unique reform name for filtering
+        # Calculate total revenue impact by filtering for the specific reform first
         reform_name = get_reform_name(
             st.session_state.policy_config,
             st.session_state.baseline,
+            year=2026,  # Base reform name without year
         )
-        # Sum the total income change only for the selected reform
-        total_revenue_impact = budget_window_impacts_df.loc[budget_window_impacts_df["reform"] == reform_name, "total_income_change"].sum()
+        reform_base = reform_name.split("_vs_")[0]  # Get the base reform name up to "_vs_"
         
-        st.markdown(f"### The total revenue impact of this reform over the 10-Year Budget window is ${total_revenue_impact/1e9:.0f}B")
+        total_revenue_impact = budget_window_impacts_df[
+            budget_window_impacts_df["reform"].str.contains(reform_base)
+        ]["total_income_change"].sum()
         
-        # Show the 10-year impact graph without the title
-        fig = px.line(
-            budget_window_impacts_df,
-            x="year",
-            y="total_income_change",
-            labels={
-                "year": "Year",
-                "total_income_change": "Total Income Change (in billions)",
-            },
-        )
-        fig = format_fig(fig)
-        st.plotly_chart(fig, use_container_width=False)
+        
+        st.markdown(f"### The total revenue impact of this reform over the 10-Year Budget window is ${total_revenue_impact/1e12:.2f} trillion")
+        # Create an expander for the 10-year impact graph
+        with st.expander("Show 10-Year Impact Graph"):
+            # Show the 10-year impact graph without the title
+            fig = px.line(
+                budget_window_impacts_df,
+                x="year",
+                y="total_income_change",
+                labels={
+                    "year": "Year",
+                    "total_income_change": "Total Income Change (in billions)",
+                },
+            )
+            fig = format_fig(fig)
+            st.plotly_chart(fig, use_container_width=False)
     else:
         st.warning(
             "No budget window impacts found for the selected reform."
@@ -236,8 +242,9 @@ with nationwide_tab:
                     reform_name
                 )
                 if dist_data is not None:
-                    fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                    st.plotly_chart(format_fig(fig), use_container_width=False) 
+                    with st.expander("Show Distributional Analysis"):
+                        fig = ImpactCharts.plot_distributional_analysis(dist_data)
+                        st.plotly_chart(format_fig(fig), use_container_width=False) 
             else:
                 st.error("No single-year impact data available for this combination.")
 

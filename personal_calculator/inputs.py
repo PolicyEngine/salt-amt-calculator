@@ -1,4 +1,5 @@
 import streamlit as st
+from constants import STATE_CODES
 
 
 def create_personal_inputs():
@@ -12,60 +13,8 @@ def create_personal_inputs():
         st.markdown("### Personal Information")
 
         # Filing status and state in same row
-        state_codes = [
-            "AL",
-            "AK",
-            "AZ",
-            "AR",
-            "CA",
-            "CO",
-            "CT",
-            "DE",
-            "FL",
-            "GA",
-            "HI",
-            "ID",
-            "IL",
-            "IN",
-            "IA",
-            "KS",
-            "KY",
-            "LA",
-            "ME",
-            "MD",
-            "MA",
-            "MI",
-            "MN",
-            "MS",
-            "MO",
-            "MT",
-            "NE",
-            "NV",
-            "NH",
-            "NJ",
-            "NM",
-            "NY",
-            "NC",
-            "ND",
-            "OH",
-            "OK",
-            "OR",
-            "PA",
-            "RI",
-            "SC",
-            "SD",
-            "TN",
-            "TX",
-            "UT",
-            "VT",
-            "VA",
-            "WA",
-            "WV",
-            "WI",
-            "WY",
-        ]
         state_code = st.selectbox(
-            "What state do you live in?", state_codes, index=state_codes.index("CA")
+            "What state do you live in?", STATE_CODES, index=STATE_CODES.index("CA")
         )
 
         # Marriage status and ages
