@@ -82,7 +82,9 @@ def _format_amt_phaseout(reform_params):
         return "Error"
 
 
-def create_summary_table(current_law_income, session_state, reform_params_dict, subsidy_rates=None):
+def create_summary_table(
+    current_law_income, session_state, reform_params_dict, subsidy_rates=None
+):
     """Create a summary table comparing current law, current policy, and your policy"""
 
     # Create DataFrame for table
@@ -113,7 +115,7 @@ def create_summary_table(current_law_income, session_state, reform_params_dict, 
             f"${session_state.summary_results['Your Policy']:,.0f}",
             f"${session_state.summary_results['Your Policy'] - current_law_income:,.0f}",
             f"${session_state.summary_results['Your Policy'] - session_state.summary_results['Current Policy']:,.0f}",
-        ]
+        ],
     }
 
     # Create index for the rows

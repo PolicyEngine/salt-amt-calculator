@@ -64,7 +64,7 @@ def display_policy_config():
         "Other TCJA Provisions",
         ["Current Law", "Current Policy"],
         help="Choose whether TCJA provisions other than SALT and AMT expire (Current Law) or are extended (Current Policy), including the Income Tax Rate Changes, Standard Deduction, and others.",
-        horizontal=True  # Make radio buttons horizontal
+        horizontal=True,  # Make radio buttons horizontal
     )
 
     # Store baseline in session state with the correct data column identifier

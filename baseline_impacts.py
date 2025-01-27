@@ -4,6 +4,7 @@ import pandas as pd
 from policyengine_core.charts import format_fig
 from constants import DARK_GRAY, LIGHT_GRAY, BLUE
 
+
 class BaselineImpacts:
     def __init__(self):
         # Load both required CSV files
@@ -67,7 +68,11 @@ class BaselineImpacts:
                 )
             )
 
-        title = "Total Deficit" if metric == "total_income_change" else metric.replace("_", " ").title()
+        title = (
+            "Total Deficit"
+            if metric == "total_income_change"
+            else metric.replace("_", " ").title()
+        )
         y_axis_title = title
 
         fig.update_layout(
@@ -78,6 +83,7 @@ class BaselineImpacts:
         )
 
         return format_fig(fig)
+
 
 def display_baseline_impacts():
     """Main function to display baseline impacts section"""
@@ -97,8 +103,12 @@ def display_baseline_impacts():
         with st.spinner("Loading baseline data..."):
             st.session_state.baseline_impacts = BaselineImpacts()
 
-    current_law_data = st.session_state.baseline_impacts.get_baseline_data("current_law")
-    current_policy_data = st.session_state.baseline_impacts.get_baseline_data("current_policy")
+    current_law_data = st.session_state.baseline_impacts.get_baseline_data(
+        "current_law"
+    )
+    current_policy_data = st.session_state.baseline_impacts.get_baseline_data(
+        "current_policy"
+    )
 
     st.markdown(
         """
@@ -108,7 +118,9 @@ def display_baseline_impacts():
     )
 
     if not current_law_data.empty and not current_policy_data.empty:
-        available_metrics = [col for col in current_law_data.columns if col in ["total_income_change"]]
+        available_metrics = [
+            col for col in current_law_data.columns if col in ["total_income_change"]
+        ]
 
         if available_metrics:
             selected_metric = "total_income_change"

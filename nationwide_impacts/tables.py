@@ -18,11 +18,15 @@ def display_summary_metrics(impact_data, baseline):
         impact_data = pd.DataFrame([impact_data])
 
     # Check for required columns
-    required_columns = ['total_income_change', 'percent_better_off', 'percent_worse_off']
+    required_columns = [
+        "total_income_change",
+        "percent_better_off",
+        "percent_worse_off",
+    ]
     if not all(col in impact_data.columns for col in required_columns):
         st.error("Required columns not found in the data.")
         return impact_data
-    
+
     # Get percentages (only needed for single year)
     percent_better = impact_data["percent_better_off"].iloc[0]
     percent_worse = impact_data["percent_worse_off"].iloc[0]

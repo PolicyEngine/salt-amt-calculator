@@ -105,11 +105,11 @@ class ImpactCharts:
         fig = go.Figure()
         fig.add_trace(
             go.Scatter(
-                x=impact_data["year"], 
-                y=y_values, 
+                x=impact_data["year"],
+                y=y_values,
                 mode="lines+markers",
                 line=dict(color=BLUE),
-                marker=dict(color=BLUE)
+                marker=dict(color=BLUE),
             )
         )
 

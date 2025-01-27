@@ -46,7 +46,7 @@ class NationwideImpacts:
 
     def _load_budget_window_impacts(self):
         """Load and combine yearly impact files for the budget window."""
-        years = range(2026, 2036)  
+        years = range(2026, 2036)
         dfs = []
 
         for year in years:
@@ -55,7 +55,7 @@ class NationwideImpacts:
             if filepath.exists():
                 try:
                     df = pd.read_csv(filepath)
-                    df["year"] = year 
+                    df["year"] = year
                     dfs.append(df)
                 except Exception as e:
                     print(f"Warning: Error loading {filename}: {str(e)}")
