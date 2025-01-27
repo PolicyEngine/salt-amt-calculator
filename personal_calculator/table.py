@@ -3,29 +3,29 @@ import numpy as np
 import pandas as pd
 
 
-def _format_salt_caps(reform_params):
-    """Format just the SALT cap parameters."""
+def _format_value(reform_params, key, label, default_value="N/A"):
     if reform_params == "Pre-TCJA provisions":
         return "Pre-TCJA"
 
     try:
-        salt_joint = (
+        joint = (
             "Unlimited"
-            if reform_params.get("salt_caps", {}).get("JOINT", 0) == np.inf
-            else f"${reform_params.get('salt_caps', {}).get('JOINT', 0):,.0f}"
+            if reform_params.get(key, {}).get("JOINT", 0) == np.inf
+            else f"${reform_params.get(key, {}).get('JOINT', 0):,.0f}"
         )
-        salt_other = (
+        other = (
             "Unlimited"
-            if reform_params.get("salt_caps", {}).get("SINGLE", 0) == np.inf
-            else f"${reform_params.get('salt_caps', {}).get('SINGLE', 0):,.0f}"
+            if reform_params.get(key, {}).get("SINGLE", 0) == np.inf
+            else f"${reform_params.get(key, {}).get('SINGLE', 0):,.0f}"
         )
-        return f"Joint: {salt_joint}<br>Other: {salt_other}"
+        return f"Joint: {joint}<br>Other: {other}"
     except:
-        return "Error"
+        return default_value
 
+def _format_salt_caps(reform_params):
+    return _format_value(reform_params, "salt_caps", "SALT Cap")
 
 def _format_salt_phaseout(reform_params):
-    """Format just the SALT phase-out parameters."""
     if reform_params == "Pre-TCJA provisions":
         return "Pre-TCJA"
 
@@ -39,47 +39,11 @@ def _format_salt_phaseout(reform_params):
     except:
         return "Error"
 
-
 def _format_amt_exemptions(reform_params):
-    """Format just the AMT exemption parameters."""
-    if reform_params == "Pre-TCJA provisions":
-        return "Pre-TCJA"
-
-    try:
-        joint = (
-            "Unlimited"
-            if reform_params.get("amt_exemptions", {}).get("JOINT", 0) == np.inf
-            else f"${reform_params.get('amt_exemptions', {}).get('JOINT', 0):,.0f}"
-        )
-        other = (
-            "Unlimited"
-            if reform_params.get("amt_exemptions", {}).get("SINGLE", 0) == np.inf
-            else f"${reform_params.get('amt_exemptions', {}).get('SINGLE', 0):,.0f}"
-        )
-        return f"Joint: {joint}<br>Other: {other}"
-    except:
-        return "Error"
-
+    return _format_value(reform_params, "amt_exemptions", "AMT Exemption")
 
 def _format_amt_phaseout(reform_params):
-    """Format just the AMT phase-out parameters."""
-    if reform_params == "Pre-TCJA provisions":
-        return "Pre-TCJA"
-
-    try:
-        joint = (
-            "Unlimited"
-            if reform_params.get("amt_phase_outs", {}).get("JOINT", 0) == np.inf
-            else f"${reform_params.get('amt_phase_outs', {}).get('JOINT', 0):,.0f}"
-        )
-        other = (
-            "Unlimited"
-            if reform_params.get("amt_phase_outs", {}).get("SINGLE", 0) == np.inf
-            else f"${reform_params.get('amt_phase_outs', {}).get('SINGLE', 0):,.0f}"
-        )
-        return f"Joint: {joint}<br>Other: {other}"
-    except:
-        return "Error"
+    return _format_value(reform_params, "amt_phase_outs", "AMT Phase-out")
 
 
 def create_summary_table(
@@ -134,9 +98,9 @@ def create_summary_table(
     # Add subsidy rates if provided
     if subsidy_rates:
         df.loc["Marginal Subsidy Rate"] = [
-            f"{subsidy_rates.get('Current Law', 0):.2%}",
-            f"{subsidy_rates.get('Current Policy', 0):.2%}",
-            f"{subsidy_rates.get('Your Policy', 0):.2%}",
+            f"{subsidy_rates.get('Current Law', 0):.0%}",
+            f"{subsidy_rates.get('Current Policy', 0):.0%}",
+            f"{subsidy_rates.get('Your Policy', 0):.0%}",
         ]
 
     # Display table
