@@ -5,6 +5,7 @@ from personal_calculator.reforms import PolicyReforms
 
 def calculate_impacts(situation, reform_params_dict):
     """Calculate the impacts of multiple reform scenarios"""
+    
     # Set up baseline simulation
     current_law = Simulation(situation=situation)
     current_law_income = current_law.calculate("household_net_income", "2026")[0]
@@ -16,6 +17,7 @@ def calculate_impacts(situation, reform_params_dict):
     for reform_key, reform_params in reform_params_dict.items():
         # Get the reform dictionary
         reform_dict = PolicyReforms.policy_reforms(reform_params)
+        
         reform = Reform.from_dict(reform_dict, country_id="us")
         reform_sim = Simulation(situation=situation, reform=reform)
 

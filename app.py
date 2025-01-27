@@ -18,7 +18,6 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from personal_calculator.situation import create_situation_with_axes
 from personal_calculator.subsidy_rate import calculate_subsidy_rate
 from constants import CURRENT_POLICY_PARAMS
 from introduction import display_introduction
@@ -352,29 +351,8 @@ with calculator_tab:
         )  # Enable container width
 
         # Calculate and display subsidy rate
-        situation_with_axes = create_situation_with_axes(
-            state_code=personal_inputs["state_code"],
-            employment_income=personal_inputs["employment_income"],
-            head_age=personal_inputs["head_age"],
-            is_married=personal_inputs["is_married"],
-            spouse_age=personal_inputs["spouse_age"],
-            spouse_income=personal_inputs["spouse_income"],
-            num_children=personal_inputs["num_children"],
-            child_ages=personal_inputs["child_ages"],
-            qualified_dividend_income=personal_inputs["qualified_dividend_income"],
-            long_term_capital_gains=personal_inputs["long_term_capital_gains"],
-            short_term_capital_gains=personal_inputs["short_term_capital_gains"],
-            real_estate_taxes=personal_inputs["real_estate_taxes"],
-            income_min=0,
-            income_max=200000,
-            income_count=200,
-        )
-
-        # Calculate subsidy rates
-        period = "2026"
-        status_placeholder.info("Calculating marginal subsidy rates...")
         subsidy_rates = calculate_subsidy_rate(
-            situation_with_axes, period, st.session_state.policy_config
+            situation, "2026", st.session_state.policy_config
         )
 
         # Create summary table with subsidy rates
