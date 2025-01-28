@@ -7,20 +7,19 @@ def display_policy_config():
     st.markdown("## Configure your policy")
 
     # Create two columns for SALT and AMT with more width for the first column
-    col1, col2 = st.columns([3, 2])  # Adjust ratio to give more space to SALT column
+    col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
     with col1:
         st.markdown("**State and local tax deduction**")
         # Make labels more concise
         salt_repealed = st.checkbox(
-            "Repeal SALT",  # Shortened label
-            help="Check to repeal the State and Local Tax deduction",
+            "Repeal SALT",
         )
 
         salt_cap = st.selectbox(
             "Cap amount",  # Shortened label
             ["Current Policy ($10k)", "$15k", "Uncapped"],
-            help="Select the State and Local Tax deduction cap policy",
+            index=2,
             disabled=salt_repealed,
         )
 
@@ -32,7 +31,7 @@ def display_policy_config():
         salt_phaseout = st.selectbox(
             "SALT phase-out",
             ["None", "10% for income over 200k (400k joint)"],
-            help="Configure SALT deduction phase-out parameters",
+            help="Reduce the SALT cap linearly by 10 cents for each dollar of additional income over \$200k (or $400k for joint filers)",
             disabled=salt_repealed or salt_cap == "Uncapped",
         )
 
@@ -40,21 +39,19 @@ def display_policy_config():
         st.markdown("**Alternative minimum tax**")
 
         amt_repealed = st.checkbox(
-            "Repeal AMT", help="Check to repeal the Alternative Minimum Tax"
+            "Repeal AMT",
         )
 
         # AMT options are disabled if AMT is repealed
         amt_exemption = st.selectbox(
             "AMT exemption",
             ["Current Law", "Current Policy"],
-            help="Set AMT exemption levels",
             disabled=amt_repealed,
         )
 
         amt_phaseout = st.selectbox(
             "AMT phase-out threshold",
             ["Current Law", "Current Policy"],
-            help="Set AMT phase-out threshold",
             disabled=amt_repealed,
         )
     # Behavioral responses section

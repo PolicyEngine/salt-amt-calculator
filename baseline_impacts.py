@@ -112,7 +112,7 @@ def display_baseline_impacts():
 
     st.markdown(
         """
-    The chart below shows how extending TCJA individual provisions would affect the deficit, using PolicyEngine's open-source microsimulation model.
+    The chart below shows how extending TCJA individual provisions would affect the deficit.
 
     """
     )
@@ -133,6 +133,4 @@ def display_baseline_impacts():
     else:
         st.error("Unable to load baseline impact data")
 
-    st.markdown(
-        "Now what happens if we change the SALT and AMT provisions? Let's find out in the next section."
-    )
+    st.markdown("Now what happens if we change the SALT and AMT provisions?")

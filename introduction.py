@@ -18,14 +18,17 @@ def display_introduction():
     * Sales taxes (as an alternative to income taxes in some cases)
 
     This deduction aims to reduce the impact of double taxation, as individuals are already paying taxes at the state and local levels.
-
-    > We will show the respecitve impacts of the SALT deduction and the Alternative Minimum Tax (AMT) on an exmaple of a    married household in California with:
-    > * Two children (both aged 10)
-    > * $200,000 in capital gains
-    > * $50,000 in real estate taxes
-    
     """
     )
+    with st.expander("Show example household description"):
+        st.markdown(
+            """
+            > We will show the respecitve impacts of the SALT deduction and the Alternative Minimum Tax (AMT) in 2026 on a married household in California with:
+            > * Two children (both aged 10)
+            > * $200,000 in capital gains
+            > * $50,000 in real estate taxes
+            """
+        )
 
     # Read the CSV files
     df_2025 = pd.read_csv("personal_calculator/data/tax_calculations_2025.csv")
@@ -38,7 +41,7 @@ def display_introduction():
             x=df_2025["employment_income"],
             y=df_2025["salt_deduction"],
             mode="lines",
-            name="Current Policy (2025)",
+            name="Current Policy",
             line=dict(color=DARK_GRAY),
         )
     )
@@ -47,7 +50,7 @@ def display_introduction():
             x=df_2026["employment_income"],
             y=df_2026["salt_deduction"],
             mode="lines",
-            name="Current Law (2026)",
+            name="Current Law",
             line=dict(color=BLUE),
         )
     )
@@ -97,7 +100,7 @@ def display_introduction():
             x=df_2025["employment_income"],
             y=df_2025["alternative_minimum_tax"],
             mode="lines",
-            name="Current Policy (2025)",
+            name="Current Policy",
             line=dict(color=DARK_GRAY),
         )
     )
@@ -106,7 +109,7 @@ def display_introduction():
             x=df_2026["employment_income"],
             y=df_2026["alternative_minimum_tax"],
             mode="lines",
-            name="Current Law (2026)",
+            name="Current Law",
             line=dict(color=BLUE),
         )
     )
@@ -126,8 +129,12 @@ def display_introduction():
     ## Current Real Estate Tax Subsidy Rates
 
     The subsidy rate represents how much the federal government effectively subsidizes real estate taxes through various provisions. 
-
-    > In this case the example household is a married couple in Texas with:
+    """
+    )
+    with st.expander("Show example household description"):
+        st.markdown(
+            """
+    > For the marginal subsidy rate computation in 2026, the example household is a married couple in Texas with:
     > * Two children (both aged 10)
     > * $100,000 in capital gains
     > * $200,000 in employment income
@@ -135,7 +142,7 @@ def display_introduction():
     > * $20,000 in charitable cash donations
 
     """
-    )
+        )
 
     # Add subsidy rates plot for both years
     df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
@@ -151,7 +158,7 @@ def display_introduction():
             x=df_2025["Real Estate Taxes"],
             y=df_2025["Subsidy Rate (%)"],
             mode="lines",
-            name="2025 Subsidy Rate",
+            name="Current Policy",
             line=dict(color=DARK_GRAY),
         )
     )
@@ -160,12 +167,12 @@ def display_introduction():
             x=df_2026["Real Estate Taxes"],
             y=df_2026["Subsidy Rate (%)"],
             mode="lines",
-            name="2026 Subsidy Rate",
+            name="Current Law",
             line=dict(color=BLUE),
         )
     )
     fig3.update_layout(
-        title="Real Estate Tax Subsidy Rate",
+        title="Real Estate Tax Marginal Subsidy Rate",
         xaxis_title="Real Estate Taxes ($)",
         yaxis_title="Subsidy Rate (%)",
         showlegend=True,
