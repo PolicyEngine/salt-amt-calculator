@@ -350,6 +350,7 @@ with calculator_tab:
             fig, use_container_width=False
         )  # Enable container width
 
+        status_placeholder.info("Calculating subsidy rates...")
         # Calculate and display subsidy rate
         subsidy_rates = calculate_subsidy_rate(
             situation, "2026", st.session_state.policy_config

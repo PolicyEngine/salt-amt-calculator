@@ -22,8 +22,10 @@ def _format_value(reform_params, key, label, default_value="N/A"):
     except:
         return default_value
 
+
 def _format_salt_caps(reform_params):
     return _format_value(reform_params, "salt_caps", "SALT Cap")
+
 
 def _format_salt_phaseout(reform_params):
     if reform_params == "Pre-TCJA provisions":
@@ -39,11 +41,27 @@ def _format_salt_phaseout(reform_params):
     except:
         return "Error"
 
+
 def _format_amt_exemptions(reform_params):
     return _format_value(reform_params, "amt_exemptions", "AMT Exemption")
 
+
 def _format_amt_phaseout(reform_params):
     return _format_value(reform_params, "amt_phase_outs", "AMT Phase-out")
+
+
+def _format_tcja_provisions(reform_params):
+    if reform_params == "Pre-TCJA provisions":
+        return "Pre-TCJA"
+
+    try:
+        return (
+            "Extended"
+            if reform_params.get("other_tcja_provisions", False)
+            else "Repealed"
+        )
+    except:
+        return "Error"
 
 
 def create_summary_table(
@@ -58,6 +76,7 @@ def create_summary_table(
             "N/A",  # SALT Phase-out
             "Joint: $109,700<br>Other: $70,500",  # AMT Exemption
             "Joint: $209,000<br>Other: $156,700",  # AMT Phase-out
+            "Repealed",  # Other TCJA Provisions
             f"${current_law_income:,.0f}",  # Household Income
             "$0",  # Change from Current Law
             f"${session_state.summary_results['Current Law'] - session_state.summary_results['Current Policy']:,.0f}",  # Change from Current Policy
@@ -67,6 +86,7 @@ def create_summary_table(
             "N/A",
             "Joint: $140,565<br>Other: $90,394",
             "Joint: $1,285,409<br>Other: $642,705",
+            "Extended",  # Other TCJA Provisions
             f"${session_state.summary_results['Current Policy']:,.0f}",
             f"${session_state.summary_results['Current Policy'] - current_law_income:,.0f}",
             "$0",
@@ -76,6 +96,9 @@ def create_summary_table(
             _format_salt_phaseout(reform_params_dict["selected_reform"]),
             _format_amt_exemptions(reform_params_dict["selected_reform"]),
             _format_amt_phaseout(reform_params_dict["selected_reform"]),
+            _format_tcja_provisions(
+                reform_params_dict["selected_reform"]
+            ),  # Other TCJA Provisions
             f"${session_state.summary_results['Your Policy']:,.0f}",
             f"${session_state.summary_results['Your Policy'] - current_law_income:,.0f}",
             f"${session_state.summary_results['Your Policy'] - session_state.summary_results['Current Policy']:,.0f}",
@@ -88,6 +111,7 @@ def create_summary_table(
         "SALT Phase-out",
         "AMT Exemption",
         "AMT Phase-out",
+        "Other TCJA Provisions",
         "Household Income",
         "Change from Current Law",
         "Change from Current Policy",
