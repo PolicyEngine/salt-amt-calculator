@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import DARK_GRAY, LIGHT_GRAY, BLUE
+from constants import BLUE
 
 
 class ImpactCharts:
@@ -20,7 +20,7 @@ class ImpactCharts:
                 showarrow=False,
             )
             fig.update_layout(
-                title="Average household impact by income decile",
+                title="Average household impact by income decile in 2026",
                 template="simple_white",
                 height=500,
             )
@@ -53,9 +53,9 @@ class ImpactCharts:
         )
 
         fig.update_layout(
-            title="Average household impact by income decile",
+            title="Average household net income change by income decile in 2026",
             xaxis_title="Income group",
-            yaxis_title="Average household impact ($)",
+            yaxis_title="Average household net income change ($)",
             template="simple_white",
             showlegend=False,
             height=500,

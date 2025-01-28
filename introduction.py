@@ -15,9 +15,8 @@ def display_introduction():
 
     * State and local income taxes
     * Property taxes 
-    * Sales taxes (as an alternative to income taxes in some cases)
+    * Sales taxes
 
-    This deduction aims to reduce the impact of double taxation, as individuals are already paying taxes at the state and local levels.
     """
     )
     with st.expander("Show example household description"):
@@ -26,7 +25,7 @@ def display_introduction():
             > We will show the respecitve impacts of the SALT deduction and the Alternative Minimum Tax (AMT) in 2026 on a married household in California with:
             > * Two children (both aged 10)
             > * $200,000 in capital gains
-            > * $50,000 in real estate taxes
+            > * $50,000 in property estate taxes
             """
         )
 
@@ -125,9 +124,9 @@ def display_introduction():
 
     st.markdown(
         """
-    ## Current Real Estate Tax Subsidy Rates
+    ## Current Property Tax Subsidy Rates
 
-    The subsidy rate represents how much the federal government effectively subsidizes real estate taxes through various provisions. 
+    The subsidy rate represents how much the federal government effectively subsidizes property taxes through various provisions. 
     """
     )
     with st.expander("Show example household description"):
@@ -154,7 +153,7 @@ def display_introduction():
     fig3 = go.Figure()
     fig3.add_trace(
         go.Scatter(
-            x=df_2025["Real Estate Taxes"],
+            x=df_2025["Property Taxes"],
             y=df_2025["Subsidy Rate (%)"],
             mode="lines",
             name="Current Policy",
@@ -163,7 +162,7 @@ def display_introduction():
     )
     fig3.add_trace(
         go.Scatter(
-            x=df_2026["Real Estate Taxes"],
+            x=df_2026["Property Taxes"],
             y=df_2026["Subsidy Rate (%)"],
             mode="lines",
             name="Current Law",
@@ -171,8 +170,8 @@ def display_introduction():
         )
     )
     fig3.update_layout(
-        title="Real Estate Tax Marginal Subsidy Rate",
-        xaxis_title="Real Estate Taxes ($)",
+        title="Property Tax Marginal Subsidy Rate",
+        xaxis_title="Property Taxes ($)",
         yaxis_title="Subsidy Rate (%)",
         showlegend=True,
         template="simple_white",

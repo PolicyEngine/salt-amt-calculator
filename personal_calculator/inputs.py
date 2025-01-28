@@ -97,7 +97,7 @@ def create_personal_inputs():
                 step=1000,
             )
             real_estate_taxes = st.number_input(
-                "How much do you pay in real estate taxes?",
+                "How much do you pay in property taxes?",
                 min_value=0,
                 max_value=10_000_000,
                 value=30_000,
