@@ -31,15 +31,14 @@ def display_introduction():
         )
 
     # Read the CSV files
-    df_2025 = pd.read_csv("personal_calculator/data/tax_calculations_2025.csv")
-    df_2026 = pd.read_csv("personal_calculator/data/tax_calculations_2026.csv")
+    df = pd.read_csv("personal_calculator/data/tax_calculations_2026.csv")
 
     # Create SALT deduction plot
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=df_2025["employment_income"],
-            y=df_2025["salt_deduction"],
+            x=df["employment_income"],
+            y=df["current_policy_salt_deduction"],
             mode="lines",
             name="Current Policy",
             line=dict(color=DARK_GRAY),
@@ -47,8 +46,8 @@ def display_introduction():
     )
     fig.add_trace(
         go.Scatter(
-            x=df_2026["employment_income"],
-            y=df_2026["salt_deduction"],
+            x=df["employment_income"],
+            y=df["current_law_salt_deduction"],
             mode="lines",
             name="Current Law",
             line=dict(color=BLUE),
@@ -97,8 +96,8 @@ def display_introduction():
     fig2 = go.Figure()
     fig2.add_trace(
         go.Scatter(
-            x=df_2025["employment_income"],
-            y=df_2025["alternative_minimum_tax"],
+            x=df["employment_income"],
+            y=df["current_policy_amt"],
             mode="lines",
             name="Current Policy",
             line=dict(color=DARK_GRAY),
@@ -106,8 +105,8 @@ def display_introduction():
     )
     fig2.add_trace(
         go.Scatter(
-            x=df_2026["employment_income"],
-            y=df_2026["alternative_minimum_tax"],
+            x=df["employment_income"],
+            y=df["current_law_amt"],
             mode="lines",
             name="Current Law",
             line=dict(color=BLUE),
