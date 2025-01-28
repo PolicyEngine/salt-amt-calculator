@@ -25,6 +25,7 @@ CURRENT_POLICY_PARAMS = {
         "salt_phase_out_rate": 0,
         "salt_phase_out_threshold_joint": 0,
         "salt_phase_out_threshold_other": 0,
+        "other_tcja_provisions": True,
     }
 }
 

@@ -9,6 +9,7 @@ def _calculate_income(situation, policy_params):
     results = calculate_impacts(situation, policy_params)
     return results["current_law"] + results.get("reform_current_policy_impact", 0)
 
+
 def calculate_subsidy_rate(situation, period, policy_config):
     """Calculate the marginal subsidy rates for real estate taxes under different policies"""
 
@@ -25,13 +26,19 @@ def calculate_subsidy_rate(situation, period, policy_config):
     # Modify the real estate taxes
     head_key = "head"
     if "real_estate_taxes" in modified_situation["people"][head_key]:
-        current_taxes = modified_situation["people"][head_key]["real_estate_taxes"][period]
-        modified_situation["people"][head_key]["real_estate_taxes"][period] = current_taxes + delta
+        current_taxes = modified_situation["people"][head_key]["real_estate_taxes"][
+            period
+        ]
+        modified_situation["people"][head_key]["real_estate_taxes"][period] = (
+            current_taxes + delta
+        )
 
     # Calculate modified net incomes for each policy
     current_law_mod = _calculate_income(modified_situation, {})
     current_policy_mod = _calculate_income(modified_situation, CURRENT_POLICY_PARAMS)
-    your_policy_mod = _calculate_income(modified_situation, {"selected_reform": reform_params})
+    your_policy_mod = _calculate_income(
+        modified_situation, {"selected_reform": reform_params}
+    )
 
     # Calculate subsidy rates
     subsidy_rates = {

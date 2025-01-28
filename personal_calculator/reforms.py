@@ -1,6 +1,191 @@
 import numpy as np
 
 
+def get_other_tcja_provisions():
+    """Returns the reform dictionary for TCJA extension"""
+    return {
+        "gov.irs.credits.ctc.amount.base[0].amount": {"2026-01-01.2100-12-31": 2000},
+        "gov.irs.credits.ctc.phase_out.threshold.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2100-12-31": 200000
+        },
+        "gov.irs.credits.ctc.phase_out.threshold.JOINT": {
+            "2026-01-01.2100-12-31": 400000
+        },
+        "gov.irs.credits.ctc.phase_out.threshold.SEPARATE": {
+            "2026-01-01.2100-12-31": 200000
+        },
+        "gov.irs.credits.ctc.phase_out.threshold.SINGLE": {
+            "2026-01-01.2100-12-31": 200000
+        },
+        "gov.irs.credits.ctc.phase_out.threshold.SURVIVING_SPOUSE": {
+            "2026-01-01.2100-12-31": 400000
+        },
+        "gov.irs.credits.ctc.refundable.individual_max": {
+            "2026-01-01.2026-12-31": 1800,
+        },
+        "gov.irs.credits.ctc.refundable.phase_in.threshold": {
+            "2026-01-01.2100-12-31": 2500
+        },
+        "gov.irs.deductions.itemized.casualty.active": {"2026-01-01.2100-12-31": False},
+        "gov.irs.deductions.itemized.charity.ceiling.all": {
+            "2026-01-01.2100-12-31": 0.6
+        },
+        "gov.irs.deductions.itemized.limitation.agi_rate": {
+            "2026-01-01.2026-12-31": 1,
+        },
+        "gov.irs.deductions.itemized.limitation.applicable_amount.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 1000000,
+        },
+        "gov.irs.deductions.itemized.limitation.applicable_amount.JOINT": {
+            "2026-01-01.2026-12-31": 1000000,
+        },
+        "gov.irs.deductions.itemized.limitation.applicable_amount.SEPARATE": {
+            "2026-01-01.2026-12-31": 1000000,
+        },
+        "gov.irs.deductions.itemized.limitation.applicable_amount.SINGLE": {
+            "2026-01-01.2026-12-31": 1000000,
+        },
+        "gov.irs.deductions.itemized.limitation.applicable_amount.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 1000000,
+        },
+        "gov.irs.deductions.itemized.limitation.itemized_deduction_rate": {
+            "2026-01-01.2026-12-31": 1,
+        },
+        "gov.irs.deductions.itemized.salt_and_real_estate.cap.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2100-12-31": 10000
+        },
+        "gov.irs.deductions.itemized.salt_and_real_estate.cap.JOINT": {
+            "2026-01-01.2100-12-31": 10000
+        },
+        "gov.irs.deductions.itemized.salt_and_real_estate.cap.SEPARATE": {
+            "2026-01-01.2100-12-31": 5000
+        },
+        "gov.irs.deductions.itemized.salt_and_real_estate.cap.SINGLE": {
+            "2026-01-01.2100-12-31": 10000
+        },
+        "gov.irs.deductions.itemized.salt_and_real_estate.cap.SURVIVING_SPOUSE": {
+            "2026-01-01.2100-12-31": 10000
+        },
+        "gov.irs.deductions.qbi.max.business_property.rate": {
+            "2026-01-01.2100-12-31": 0.025
+        },
+        "gov.irs.deductions.qbi.max.rate": {"2026-01-01.2100-12-31": 0.2},
+        "gov.irs.deductions.qbi.max.w2_wages.alt_rate": {"2026-01-01.2100-12-31": 0.25},
+        "gov.irs.deductions.qbi.max.w2_wages.rate": {"2026-01-01.2100-12-31": 0.5},
+        "gov.irs.deductions.qbi.phase_out.length.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2100-12-31": 50000
+        },
+        "gov.irs.deductions.qbi.phase_out.length.JOINT": {
+            "2026-01-01.2100-12-31": 100000
+        },
+        "gov.irs.deductions.qbi.phase_out.length.SEPARATE": {
+            "2026-01-01.2100-12-31": 50000
+        },
+        "gov.irs.deductions.qbi.phase_out.length.SINGLE": {
+            "2026-01-01.2100-12-31": 50000
+        },
+        "gov.irs.deductions.qbi.phase_out.length.SURVIVING_SPOUSE": {
+            "2026-01-01.2100-12-31": 100000
+        },
+        "gov.irs.deductions.qbi.phase_out.start.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 204900,
+        },
+        "gov.irs.deductions.qbi.phase_out.start.JOINT": {
+            "2026-01-01.2026-12-31": 409800,
+        },
+        "gov.irs.deductions.qbi.phase_out.start.SEPARATE": {
+            "2026-01-01.2026-12-31": 204900,
+        },
+        "gov.irs.deductions.qbi.phase_out.start.SINGLE": {
+            "2026-01-01.2026-12-31": 204900,
+        },
+        "gov.irs.deductions.qbi.phase_out.start.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 409800,
+        },
+        "gov.irs.deductions.standard.amount.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 22950,
+        },
+        "gov.irs.deductions.standard.amount.JOINT": {
+            "2026-01-01.2026-12-31": 30600,
+        },
+        "gov.irs.deductions.standard.amount.SEPARATE": {
+            "2026-01-01.2026-12-31": 15300,
+        },
+        "gov.irs.deductions.standard.amount.SINGLE": {
+            "2026-01-01.2026-12-31": 15300,
+        },
+        "gov.irs.deductions.standard.amount.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 30600,
+        },
+        "gov.irs.income.bracket.rates.2": {"2026-01-01.2100-12-31": 0.12},
+        "gov.irs.income.bracket.rates.3": {"2026-01-01.2100-12-31": 0.22},
+        "gov.irs.income.bracket.rates.4": {"2026-01-01.2100-12-31": 0.24},
+        "gov.irs.income.bracket.rates.5": {"2026-01-01.2100-12-31": 0.32},
+        "gov.irs.income.bracket.rates.7": {"2026-01-01.2100-12-31": 0.37},
+        "gov.irs.income.bracket.thresholds.3.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 105475,
+        },
+        "gov.irs.income.bracket.thresholds.3.JOINT": {
+            "2026-01-01.2026-12-31": 210950,
+        },
+        "gov.irs.income.bracket.thresholds.3.SEPARATE": {
+            "2026-01-01.2026-12-31": 105475,
+        },
+        "gov.irs.income.bracket.thresholds.3.SINGLE": {
+            "2026-01-01.2026-12-31": 105475,
+        },
+        "gov.irs.income.bracket.thresholds.3.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 210950,
+        },
+        "gov.irs.income.bracket.thresholds.4.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 201350,
+        },
+        "gov.irs.income.bracket.thresholds.4.JOINT": {
+            "2026-01-01.2026-12-31": 402725,
+        },
+        "gov.irs.income.bracket.thresholds.4.SEPARATE": {
+            "2026-01-01.2026-12-31": 201350,
+        },
+        "gov.irs.income.bracket.thresholds.4.SINGLE": {
+            "2026-01-01.2026-12-31": 201350,
+        },
+        "gov.irs.income.bracket.thresholds.4.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 402725,
+        },
+        "gov.irs.income.bracket.thresholds.5.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 255700,
+        },
+        "gov.irs.income.bracket.thresholds.5.JOINT": {
+            "2026-01-01.2026-12-31": 511400,
+        },
+        "gov.irs.income.bracket.thresholds.5.SEPARATE": {
+            "2026-01-01.2026-12-31": 255700,
+        },
+        "gov.irs.income.bracket.thresholds.5.SINGLE": {
+            "2026-01-01.2026-12-31": 255700,
+        },
+        "gov.irs.income.bracket.thresholds.5.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 511400,
+        },
+        "gov.irs.income.bracket.thresholds.6.HEAD_OF_HOUSEHOLD": {
+            "2026-01-01.2026-12-31": 639300,
+        },
+        "gov.irs.income.bracket.thresholds.6.JOINT": {
+            "2026-01-01.2026-12-31": 767125,
+        },
+        "gov.irs.income.bracket.thresholds.6.SEPARATE": {
+            "2026-01-01.2026-12-31": 383550,
+        },
+        "gov.irs.income.bracket.thresholds.6.SINGLE": {
+            "2026-01-01.2026-12-31": 639300,
+        },
+        "gov.irs.income.bracket.thresholds.6.SURVIVING_SPOUSE": {
+            "2026-01-01.2026-12-31": 767125,
+        },
+        "gov.irs.income.exemption.amount": {"2026-01-01.2100-12-31": 0},
+    }
+
+
 class PolicyReforms:
     @staticmethod
     def policy_reforms(reform_params):
@@ -12,6 +197,7 @@ class PolicyReforms:
         salt_phase_out_threshold_joint = reform_params["salt_phase_out_threshold_joint"]
         salt_phase_out_threshold_other = reform_params["salt_phase_out_threshold_other"]
         salt_phase_out_enabled = reform_params["salt_phase_out_enabled"]
+        other_tcja_provisions = reform_params.get("other_tcja_provisions", False)
         reform_dict = {}
 
         # SALT caps
@@ -43,6 +229,9 @@ class PolicyReforms:
                 "2026-01-01.2100-12-31": amt_exemptions[status]
             }
 
+        if other_tcja_provisions:
+            reform_dict.update(get_other_tcja_provisions())
+
         return reform_dict
 
 
@@ -57,6 +246,8 @@ def get_reform_params_from_config(policy_config):
         "amt_phase_out_rate": 0,
         "amt_phase_out_threshold_joint": 0,
         "amt_phase_out_threshold_other": 0,
+        "other_tcja_provisions": policy_config.get("other_tcja_provisions_extended")
+        == "Current Policy",
     }
 
     # Handle SALT cap
