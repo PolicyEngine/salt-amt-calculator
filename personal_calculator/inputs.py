@@ -46,7 +46,11 @@ def create_personal_inputs():
 
         # Children information
         num_children = st.number_input(
-            "How many children do you have?", min_value=0, max_value=10, value=0
+            "How many children do you have?",
+            min_value=0,
+            max_value=10,
+            value=0,
+            help="Each child is assumed to be 10 years old.",
         )
 
     # Income Information Section

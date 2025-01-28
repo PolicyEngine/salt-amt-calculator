@@ -149,7 +149,7 @@ with nationwide_tab:
 
     behavioral_responses = st.checkbox(
         "Include behavioral responses",
-        help="Account for how taxpayers might change their behavior",
+        help="When selected, simulations adjust earnings based on how reforms affect net income and marginal tax rates, applying the Congressional Budget Office's assumptions. [Learn more](https://www.cbo.gov/sites/default/files/112th-congress-2011-2012/reports/43674-laborsupplyfiscalpolicy.pdf#page=4).",
     )
 
     # Store baseline and behavioral responses in session state
@@ -373,11 +373,10 @@ with calculator_tab:
 with st.expander("Notes"):
     st.markdown(
         """
-    - All children are assumed to be 10 years old
     - The calculator uses tax year 2026 for all calculations excluding budget window estimates
     - Baseline deficit values are based on the Congressional Budget Office's 10-Year Budget Projections
-    - In the household calculator, the marginal subsidy rate is computed in $500 increments of real estate taxes
-    - We limit the computation to the federal budgetary impact to:
+    - The marginal subsidy rate is computed in $500 increments of real estate taxes
+    - We limit the computation to the federal budgetary impact due to:
       - States with AMT parameters tied to federal AMT (e.g., California)
       - States with deductions for federal tax liability (e.g., Oregon)
       - Behavioral responses
