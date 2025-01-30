@@ -18,7 +18,7 @@ def display_policy_config():
 
         salt_cap = st.selectbox(
             "Cap amount",  # Shortened label
-            ["Current Policy ($10k)", "$15k", "Uncapped"],
+            ["Current Policy ($10k)", "$15k", "Current Law (Uncapped)"],
             index=2,
             disabled=salt_repealed,
         )
@@ -45,13 +45,19 @@ def display_policy_config():
         # AMT options are disabled if AMT is repealed
         amt_exemption = st.selectbox(
             "AMT exemption",
-            ["Current Law", "Current Policy"],
+            [
+                "Current Law ($70,500 Single, $109,500 Joint)",
+                "Current Policy ($89,925 Single, $139,850 Joint)",
+            ],
             disabled=amt_repealed,
         )
 
         amt_phaseout = st.selectbox(
             "AMT phase-out threshold",
-            ["Current Law", "Current Policy"],
+            [
+                "Current Law ($156,700 Single, $209,000 Joint)",
+                "Current Policy ($639,300 Single, $1,278,575 Joint)",
+            ],
             disabled=amt_repealed,
         )
     # Behavioral responses section
@@ -60,7 +66,7 @@ def display_policy_config():
     other_tcja_provisions_extended = st.radio(
         "Other TCJA Provisions",
         ["Current Law", "Current Policy"],
-        help="Choose whether TCJA provisions other than SALT and AMT expire (Current Law) or are extended (Current Policy), including the Income Tax Rate Changes, Standard Deduction, and others.",
+        help="Choose whether TCJA provisions other than SALT and AMT expire (Current Law) or are extended (Current Policy), including the Income Tax Rate Changes, Standard Deduction, and others. [Learn More](https://policyengine.org/us/research/tcja-extension)",
         horizontal=True,  # Make radio buttons horizontal
     )
 

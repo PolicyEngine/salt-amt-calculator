@@ -11,7 +11,7 @@ def _calculate_income(situation, policy_params):
 
 
 def calculate_subsidy_rate(situation, period, policy_config):
-    """Calculate the marginal subsidy rates for real estate taxes under different policies"""
+    """Calculate the marginal subsidy rates for property taxes under different policies"""
 
     # Calculate baseline net incomes for each policy
     current_law_base = _calculate_income(situation, {})

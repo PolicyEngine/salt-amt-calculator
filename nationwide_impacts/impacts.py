@@ -273,3 +273,113 @@ class NationwideImpacts:
         if not hasattr(self, "filter_options"):
             return {}
         return self.filter_options
+
+
+def get_reform_name(policy_config, baseline, year=None):
+    """Construct reform name to match CSV format based on policy config and baseline.
+
+    Parameters:
+        policy_config (dict): The policy configuration.
+        baseline (str): The baseline scenario ("Current Law" or "Current Policy").
+        year (int, optional): The year for budget window impacts (2027-2035). If None, assumes 2026.
+
+    Returns:
+        str: The reform name.
+    """
+    # Handle SALT cap base option
+    if policy_config["salt_cap"] == "Current Law (Uncapped)":
+        salt_full = "salt_uncapped"
+    elif policy_config["salt_repealed"]:
+        salt_full = "salt_0_cap"
+    elif policy_config["salt_cap"] == "$15k":
+        if policy_config.get("salt_marriage_bonus"):
+            if policy_config.get("salt_phaseout") != "None":
+                salt_full = "salt_15_30_k_with_phaseout"
+            else:
+                salt_full = "salt_15_30_k_without_phaseout"
+        else:
+            if policy_config.get("salt_phaseout") != "None":
+                salt_full = "salt_15_k_with_phaseout"
+            else:
+                salt_full = "salt_15_k_without_phaseout"
+    else:  # Current Policy selected
+        salt_full = "salt_tcja_base"
+
+    # Handle AMT suffix based on configuration
+    if policy_config.get("amt_repealed"):
+        amt_suffix = "_amt_repealed"
+    else:
+        exemption = policy_config.get("amt_exemption")
+        phaseout = policy_config.get("amt_phaseout")
+
+        # Map the combinations to their correct suffixes
+        if (
+            exemption == "Current Law ($70,500 Single, $109,500 Joint)"
+            and phaseout == "Current Law ($156,700 Single, $209,000 Joint)"
+        ):
+            amt_suffix = "_amt_tcja_both"
+        elif (
+            exemption == "Current Law ($70,500 Single, $109,500 Joint)"
+            and phaseout == "Current Policy ($639,300 Single, $1,278,575 Joint)"
+        ):
+            amt_suffix = "_amt_pre_tcja_ex_tcja_po"
+        elif (
+            exemption == "Current Policy ($89,925 Single, $139,850 Joint)"
+            and phaseout == "Current Policy ($639,300 Single, $1,278,575 Joint)"
+        ):
+            amt_suffix = "_amt_pre_tcja_ex_pre_tcja_po"
+        elif (
+            exemption == "Current Policy ($89,925 Single, $139,850 Joint)"
+            and phaseout == "Current Law ($156,700 Single, $209,000 Joint)"
+        ):
+            amt_suffix = "_amt_tcja_ex_pre_tcja_po"
+
+    # Add behavioral response suffix
+    behavioral_suffix = (
+        "_behavioral_responses_yes"
+        if policy_config.get("behavioral_responses")
+        else "_behavioral_responses_no"
+    )
+
+    # Add other TCJA provisions suffix
+    other_tcja_provisions_suffix = (
+        "_other_tcja_provisions_extended_no"
+        if policy_config.get("other_tcja_provisions_extended") == "Current Law"
+        else "_other_tcja_provisions_extended_yes"
+    )
+
+    # Add baseline suffix
+    baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
+
+    # Add year suffix for budget window impacts (2027-2035)
+    if year is not None and year >= 2027:
+        year_suffix = f"_year_{year}"
+    else:
+        year_suffix = ""
+
+    reform_name = f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{year_suffix}{baseline_suffix}"
+
+    return reform_name
+
+
+def calculate_total_revenue_impact(budget_window_impacts_df, policy_config, baseline):
+    """Calculate total revenue impact across all years for a given reform.
+
+    Parameters:
+        budget_window_impacts_df (pd.DataFrame): Concatenated DataFrame of budget window impacts
+        policy_config (dict): The policy configuration
+        baseline (str): The baseline scenario
+
+    Returns:
+        float: Total revenue impact across all years
+    """
+    reform_name = get_reform_name(
+        policy_config,
+        baseline,
+        year=2026,  # Base reform name without year
+    )
+    reform_base = reform_name.split("_vs_")[0]  # Get the base reform name up to "_vs_"
+
+    return budget_window_impacts_df[
+        budget_window_impacts_df["reform"].str.contains(reform_base)
+    ]["total_income_change"].sum()
