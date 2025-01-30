@@ -23,13 +23,15 @@ class BaselineImpacts:
             return pd.DataFrame()
 
         baseline_deficit = self.baseline_deficit.copy()
-        
+
         # Map the column names based on baseline type
-        column_name = "Current Law" if baseline_type == "current_law" else "Current Policy"
-        
+        column_name = (
+            "Current Law" if baseline_type == "current_law" else "Current Policy"
+        )
+
         # Create total_income_change from the appropriate column
         baseline_deficit["total_income_change"] = baseline_deficit[column_name]
-        
+
         return baseline_deficit
 
     def create_metric_chart(self, current_law_data, current_policy_data, metric):
