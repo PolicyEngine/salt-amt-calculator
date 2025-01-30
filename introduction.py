@@ -36,7 +36,7 @@ def display_introduction():
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=df["employment_income"],
+            x=df["real_estate_taxes"],
             y=df["current_policy_salt_deduction"],
             mode="lines",
             name="Current Policy",
@@ -45,7 +45,7 @@ def display_introduction():
     )
     fig.add_trace(
         go.Scatter(
-            x=df["employment_income"],
+            x=df["real_estate_taxes"],
             y=df["current_law_salt_deduction"],
             mode="lines",
             name="Current Law",
@@ -56,8 +56,6 @@ def display_introduction():
         title="SALT Deduction by Employment Income",
         xaxis_title="Employment Income ($)",
         yaxis_title="SALT Deduction ($)",
-        xaxis_range=[0, 200_000],
-        yaxis_range=[0, 20_000],
         showlegend=True,
         template="simple_white",
         height=500,
@@ -95,7 +93,7 @@ def display_introduction():
     fig2 = go.Figure()
     fig2.add_trace(
         go.Scatter(
-            x=df["employment_income"],
+            x=df["real_estate_taxes"],
             y=df["current_policy_amt"],
             mode="lines",
             name="Current Policy",
@@ -104,7 +102,7 @@ def display_introduction():
     )
     fig2.add_trace(
         go.Scatter(
-            x=df["employment_income"],
+            x=df["real_estate_taxes"],
             y=df["current_law_amt"],
             mode="lines",
             name="Current Law",
@@ -146,8 +144,8 @@ def display_introduction():
     df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
 
     # Filter data for 2025 and 2026
-    df_2025 = df_subsidy[df_subsidy["Year"] == 2025]
-    df_2026 = df_subsidy[df_subsidy["Year"] == 2026]
+    df_2025 = df_subsidy[df_subsidy["Simulation"] == "Current Policy"]
+    df_2026 = df_subsidy[df_subsidy["Simulation"] == "Current Law"]
 
     # Create the plot
     fig3 = go.Figure()
