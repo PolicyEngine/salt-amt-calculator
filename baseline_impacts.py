@@ -9,9 +9,6 @@ class BaselineImpacts:
     def __init__(self):
         # Load both required CSV files
         try:
-            self.budget_window_data = pd.read_csv(
-                "nationwide_impacts/data/raw_budget_window_metrics.csv"
-            )
             self.baseline_deficit = pd.read_csv(
                 "nationwide_impacts/data/baseline_deficit.csv"
             )
@@ -27,25 +24,15 @@ class BaselineImpacts:
 
         baseline_deficit = self.baseline_deficit.copy()
 
-        if baseline_type == "current_law":
-            # For current law, use values from baseline_deficit.csv
-            baseline_deficit["total_income_change"] = baseline_deficit["deficit_total"]
-            return baseline_deficit
-        else:  # current policy
-            # Calculate TCJA impact as difference between tcja_extension_baseline and baseline
-            tcja_data = self.budget_window_data[
-                self.budget_window_data["reform"] == "tcja_extension_baseline"
-            ]["total_income_change"]
-            baseline_data = self.budget_window_data[
-                self.budget_window_data["reform"] == "baseline"
-            ]["total_income_change"]
-            tcja_impact = tcja_data.values - baseline_data.values
+        # Map the column names based on baseline type
+        column_name = (
+            "Current Law" if baseline_type == "current_law" else "Current Policy"
+        )
 
-            # Add TCJA impact to baseline deficit
-            baseline_deficit["total_income_change"] = (
-                baseline_deficit["deficit_total"] + tcja_impact
-            )
-            return baseline_deficit
+        # Create total_income_change from the appropriate column
+        baseline_deficit["total_income_change"] = baseline_deficit[column_name]
+
+        return baseline_deficit
 
     def create_metric_chart(self, current_law_data, current_policy_data, metric):
         """Create a line chart comparing current law and policy for a given metric"""
