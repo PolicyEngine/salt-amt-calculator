@@ -45,13 +45,19 @@ def display_policy_config():
         # AMT options are disabled if AMT is repealed
         amt_exemption = st.selectbox(
             "AMT exemption",
-            ["Current Law ($70,500 Single, $109,500 Joint)", "Current Policy ($89,925 Single, $139,850 Joint)"],
+            [
+                "Current Law ($70,500 Single, $109,500 Joint)",
+                "Current Policy ($89,925 Single, $139,850 Joint)",
+            ],
             disabled=amt_repealed,
         )
 
         amt_phaseout = st.selectbox(
             "AMT phase-out threshold",
-            ["Current Law ($156,700 Single, $209,000 Joint)", "Current Policy ($639,300 Single, $1,278,575 Joint)"],
+            [
+                "Current Law ($156,700 Single, $209,000 Joint)",
+                "Current Policy ($639,300 Single, $1,278,575 Joint)",
+            ],
             disabled=amt_repealed,
         )
     # Behavioral responses section
