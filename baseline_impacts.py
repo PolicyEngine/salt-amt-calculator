@@ -101,6 +101,11 @@ def display_baseline_impacts():
         """
     The chart below shows how extending TCJA individual provisions would affect the deficit.
 
+    **Current Law** deficit projections are sourced directly from the Congressional Budget Office (CBO), which provides detailed forecasts of the federal budget and economic outlook.
+
+    You can view the full report [here](https://www.cbo.gov/publication/60870#:~:text=The%20Budget%20Outlook,-Deficits&text=In%20CBO's%20projections%2C%20the%20federal%20budget%20deficit%20in%20fiscal%20year,to%20%242.7%20trillion%20by%202035).
+
+    **Current Policy** projections are computed using the budgetary impact from the PolicyEngine microsimulation, which models the effects of extending the Tax Cuts and Jobs Act (TCJA) provisions beyond 2025.
     """
     )
 

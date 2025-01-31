@@ -173,7 +173,7 @@ with nationwide_tab:
 with calculator_tab:
     st.markdown(
         """
-    This calculator shows the household-level impacts of your policy configuration.
+    This calculator shows the household-level impacts in 2026 of your policy configuration. 
     Input your household characteristics below.
     """
     )
