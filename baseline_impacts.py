@@ -81,8 +81,6 @@ def display_baseline_impacts():
     The Tax Cuts and Jobs Act (TCJA) of 2017 capped the SALT deduction, applied the AMT to fewer households, and reformed several other parts of the individual and corporate tax code. 
     
     With most provisions sunsetting after 2025, policymakers are exploring extensions and comparing them against one of two baseline scenarios:
-    - **Current Law**: Assumes TCJA provisions expire as scheduled in 2025
-    - **Current Policy**: Assumes TCJA provisions are extended beyond 2025
     """
     )
 
