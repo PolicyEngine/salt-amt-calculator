@@ -10,7 +10,7 @@ def create_reform_comparison_graph(summary_results):
     if not summary_results:  # If no results, return empty figure
         fig = go.Figure()
         fig.update_layout(
-            title="Household Income by Reform",
+            title="Household Net Income after Income Taxes and Transfers by Reform",
             showlegend=False,
             height=400,
         )
@@ -94,7 +94,7 @@ def create_reform_comparison_graph(summary_results):
     # Update layout without specifying text colors
     fig.update_layout(
         title=dict(
-            text="Household Income by Reform",
+            text="Household Net Income after Income Taxes and Transfers by Reform",
             font=dict(size=24),  # Remove color to inherit from theme
         ),
     )

@@ -30,12 +30,15 @@ from policyengine_core.charts import format_fig
 
 
 # Set up the Streamlit page
-st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
+st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
 # Title
 st.title("What's the SALTernative?")
 st.markdown(
-    "Design and compare changes to the state and local tax (SALT) deduction and alternative minimum tax (AMT)"
+    """
+    _The state and local tax (SALT) deduction and alternative minimum tax (AMT) will change next year. We'll walk you through these policies and model your custom reform._\n
+    This tool starts by describing SALT and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act in 2026) and under current policy (if the TCJA were extended). Then we'll explain these policies in the context of a sample filer. Finally, we'll put you in the driver's seat--you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
+    """
 )
 
 display_introduction()
@@ -109,24 +112,26 @@ with nationwide_tab:
             st.session_state.policy_config,
             st.session_state.baseline,
         )
-
-        st.markdown(
-            f"### Your policy would {'reduce' if total_revenue_impact > 0 else 'increase'} the deficit by ${abs(total_revenue_impact)/1e12:.2f} trillion over the 10-Year Budget window."
-        )
-        # Create an expander for the 10-year impact graph
-        with st.expander("Show 10-Year Impact Graph"):
-            # Show the 10-year impact graph without the title
-            fig = px.line(
-                budget_window_impacts_df,
-                x="year",
-                y="total_income_change",
-                labels={
-                    "year": "Year",
-                    "total_income_change": "Budgetary Impact (in billions)",
-                },
+        if total_revenue_impact == 0:
+            st.markdown("### Revise your policy to see an impact")
+        else:
+            st.markdown(
+                f"### Your policy would {'reduce' if total_revenue_impact > 0 else 'increase'} the deficit by ${abs(total_revenue_impact)/1e12:.2f} trillion over the 10-Year Budget window."
             )
-            fig = format_fig(fig)
-            st.plotly_chart(fig, use_container_width=False)
+            # Create an expander for the 10-year impact graph
+            with st.expander("Show 10-Year Impact Graph"):
+                # Show the 10-year impact graph without the title
+                fig = px.line(
+                    budget_window_impacts_df,
+                    x="year",
+                    y="total_income_change",
+                    labels={
+                        "year": "Year",
+                        "total_income_change": "Budgetary Impact (in billions)",
+                    },
+                )
+                fig = format_fig(fig)
+                st.plotly_chart(fig, use_container_width=False)
     else:
         st.warning("No budget window impacts found for the selected reform.")
 
@@ -145,26 +150,35 @@ with nationwide_tab:
         if reform_impacts.empty:
             st.warning(f"No data available for reform: {reform_name}")
         else:
-            # Display summary metrics
-            filtered_impacts = display_summary_metrics(
-                reform_impacts, st.session_state.baseline
-            )
-
-            # Show single-year impacts
-            single_year_impact = st.session_state.nationwide_impacts.get_reform_impact(
-                reform_name, impact_type="single_year"
-            )
-            if single_year_impact is not None:
-                # Show the single-year impact graph
-                dist_data = st.session_state.nationwide_impacts.get_income_distribution(
-                    reform_name
-                )
-                if dist_data is not None:
-                    with st.expander("Show Distributional Analysis"):
-                        fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                        st.plotly_chart(format_fig(fig), use_container_width=False)
+            if total_revenue_impact == 0:
+                st.markdown("")
             else:
-                st.error("No single-year impact data available for this combination.")
+                # Display summary metrics
+                filtered_impacts = display_summary_metrics(
+                    reform_impacts, st.session_state.baseline
+                )
+
+                # Show single-year impacts
+                single_year_impact = (
+                    st.session_state.nationwide_impacts.get_reform_impact(
+                        reform_name, impact_type="single_year"
+                    )
+                )
+                if single_year_impact is not None:
+                    # Show the single-year impact graph
+                    dist_data = (
+                        st.session_state.nationwide_impacts.get_income_distribution(
+                            reform_name
+                        )
+                    )
+                    if dist_data is not None:
+                        with st.expander("Show Distributional Analysis"):
+                            fig = ImpactCharts.plot_distributional_analysis(dist_data)
+                            st.plotly_chart(format_fig(fig), use_container_width=False)
+                else:
+                    st.error(
+                        "No single-year impact data available for this combination."
+                    )
 
     # Add Notes section
     st.markdown("---")
@@ -173,7 +187,7 @@ with nationwide_tab:
 with calculator_tab:
     st.markdown(
         """
-    This calculator shows the household-level impacts of your policy configuration.
+    This calculator shows the household-level impacts in 2026 of your policy configuration. 
     Input your household characteristics below.
     """
     )
@@ -201,9 +215,7 @@ with calculator_tab:
             state_code=personal_inputs["state_code"],
             employment_income=personal_inputs["employment_income"],
             spouse_income=personal_inputs["spouse_income"],
-            head_age=personal_inputs["head_age"],
             is_married=personal_inputs["is_married"],
-            spouse_age=personal_inputs["spouse_age"],
             num_children=personal_inputs["num_children"],
             child_ages=personal_inputs["child_ages"],
             qualified_dividend_income=personal_inputs["qualified_dividend_income"],

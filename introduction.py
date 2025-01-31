@@ -2,33 +2,29 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import LIGHT_GRAY, DARK_GRAY, BLUE
+from constants import DARK_GRAY, BLUE
 
 
 def display_introduction():
     st.markdown(
         """
+    ## SALT and AMT basics
 
-    ## What is the SALT Deduction?
+    **SALT:** Filers can take an itemized deduction for (a) property taxes, and (b) _either_ state and local income taxes, or sales taxes. TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it will be uncapped.
 
-    The State and Local Tax (SALT) deduction allows taxpayers in the United States to deduct certain state and local taxes from their federal taxable income. These taxes can include:
+    **AMT:** Filers must calculate their tax liability under the regular tax code and the AMT, and pay the higher amount. The AMT disallows certain deductions, including the SALT deduction. The AMT exemption amount is indexed to inflation.
+    
+    ## How SALT and AMT affect a sample household
+    
+    Consider a married filer in Texas with:
+    * $500,000 in employment income
+    * $10,000 in deductible mortgage interest
+    * $20,000 in charitable cash donations
+    * $5,000 in property taxes
 
-    * State and local income taxes
-    * Property taxes 
-    * Sales taxes
-
+    Texas doesn't levy income taxes, but for SALT, the filer can claim their actual sales taxes or estimated from [IRS tables](https://www.irs.gov/instructions/i1040sca#en_US_2023_publink10005349). In this case, they can claim \$3,700. Overall, they can deduct $8,700 in SALT, both under current law and current policy.
     """
     )
-    with st.expander("Show example household description"):
-        st.markdown(
-            """
-            > We will show the respecitve impacts of the SALT deduction and the Alternative Minimum Tax (AMT) in 2026 on a married household in California with:
-            > * Two children (both aged 10)
-            > * $200,000 in capital gains
-            > * $50,000 in property estate taxes
-            """
-        )
-
     # Read the CSV files
     df = pd.read_csv("personal_calculator/data/tax_calculations_2026.csv")
 
@@ -53,8 +49,8 @@ def display_introduction():
         )
     )
     fig.update_layout(
-        title="SALT Deduction by Employment Income",
-        xaxis_title="Employment Income ($)",
+        title="SALT Deduction by Property Taxes",
+        xaxis_title="Property Taxes ($)",
         yaxis_title="SALT Deduction ($)",
         showlegend=True,
         template="simple_white",
@@ -69,23 +65,10 @@ def display_introduction():
 
     The Alternative Minimum Tax (AMT) is a parallel tax system designed to ensure that high-income individuals, corporations, trusts, and estates pay a minimum level of federal taxes, even if they claim numerous deductions or credits under the regular tax system.                
 
-    The AMT operates by following these steps:
+    Based on this household’s specific composition, they will begin itemizing their deductions once their real estate taxes reach $8,000.
 
-    * Calculate Regular Taxable Income: Determine your taxable income under the regular federal tax system, taking into account all applicable deductions and credits.
+    However, at this level, the deduction will be added back under the Alternative Minimum Tax (AMT) and taxed at a rate of 26% or 28%.
 
-    * Adjust for AMT Preferences: Add back specific deductions and tax-preference items that are not allowed under the AMT system. These include:
-        * State and local taxes (SALT deduction)
-        * Certain miscellaneous itemized deductions
-        * Incentive stock option profits
-        * Depreciation adjustments on property
-
-    * Determine Alternative Minimum Taxable Income (AMTI): After adding back the disallowed items, calculate your AMTI.
-
-    * Apply the AMT Exemption: Subtract the AMT exemption amount from your AMTI. The exemption amount is phased out for higher-income taxpayers.
-
-    * Calculate AMT Liability: Apply the AMT tax rates (26% and 28%, depending on your income level) to the AMTI above the exemption threshold.
-
-    * Compare with Regular Tax Liability: Compare the AMT liability with your regular federal tax liability. If the AMT amount is higher, you must pay the AMT.
     """
     )
 
@@ -110,8 +93,8 @@ def display_introduction():
         )
     )
     fig2.update_layout(
-        title="Alternative Minimum Tax by Employment Income",
-        xaxis_title="Employment Income ($)",
+        title="Alternative Minimum Tax by Property Taxes",
+        xaxis_title="Property Taxes ($)",
         yaxis_title="Alternative Minimum Tax ($)",
         showlegend=True,
         template="simple_white",
@@ -124,21 +107,18 @@ def display_introduction():
         """
     ## Current Property Tax Subsidy Rates
 
-    The subsidy rate represents how much the federal government effectively subsidizes property taxes through various provisions. 
-    """
-    )
-    with st.expander("Show example household description"):
-        st.markdown(
-            """
-    > For the marginal subsidy rate computation in 2026, the example household is a married couple in Texas with:
-    > * Two children (both aged 10)
-    > * $100,000 in capital gains
-    > * $200,000 in employment income
-    > * $30,000 in medical expenses
-    > * $20,000 in charitable cash donations
+    One way to assess the impact of these tax policies is by examining how much of a household’s property taxes are offset by reductions in income tax liability:
+
+    Under current policy, the household can deduct up to \$6,000 in property taxes before reaching the state and local tax (SALT) deduction cap. 
+    This effectively provides a marginal subsidy rate of 33% on property taxes up to this limit.
+
+    Under current law, if the SALT cap is removed, the household would be able to deduct property taxes exceeding the previous \$6,000 limit, allowing for greater tax savings.
+    However, at $8,000 in real estate taxes, the SALT deduction is added back under the Alternative Minimum Tax (AMT), which can reduce the overall benefit of the deduction.
+
+    This illustrates how tax policy changes—such as lifting the SALT cap—can impact the extent to which property taxes are deductible and how much tax relief a household receives.
 
     """
-        )
+    )
 
     # Add subsidy rates plot for both years
     df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
