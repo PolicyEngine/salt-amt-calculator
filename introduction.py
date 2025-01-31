@@ -2,41 +2,27 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import LIGHT_GRAY, DARK_GRAY, BLUE
+from constants import DARK_GRAY, BLUE
 
 
 def display_introduction():
     st.markdown(
         """
+    ## SALT and AMT basics
 
-    ## What is the SALT Deduction?
+    **SALT:** Filers can take an itemized deduction for (a) property taxes, and (b) _either_ state and local income taxes, or sales taxes. TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it will be uncapped.
 
-    The State and Local Tax (SALT) deduction allows taxpayers in the United States to deduct certain state and local taxes from their federal taxable income. These taxes can include:
-
-    * State and local income taxes
-    * Property taxes 
-    * Sales taxes
-
-    """
-    )
-    with st.expander("Show example household description"):
-        st.markdown(
-            """
-            > We will show the respecitve impacts of the SALT deduction and the Alternative Minimum Tax (AMT) in 2026 on a married household in Texas with:
-            > * $500,000 in employment income
-            > * $10,000 in deductible mortgage interest
-            > * $20,000 in charitable cash donation
-            """
-        )
-    st.markdown(
-        """
-    For this household, the state and local tax (SALT) deduction is calculated as follows:
-
-    Under current law, the married couple pays \$3,700 in sales taxes, which they can fully deduct because it falls within the allowable SALT deduction limit.
-    If the household starts paying property taxes, they can deduct an additional $5,300, but only up to the current SALT deduction cap.
+    **AMT:** Filers must calculate their tax liability under the regular tax code and the AMT, and pay the higher amount. The AMT disallows certain deductions, including the SALT deduction. The AMT exemption amount is indexed to inflation.
     
-    Under current law, the SALT deduction cap is lifted, which allows the household to fully deduct all of their property taxes without limitation.
+    ## How SALT and AMT affect a sample household
+    
+    Consider a married filer in Texas with:
+    * $500,000 in employment income
+    * $10,000 in deductible mortgage interest
+    * $20,000 in charitable cash donations
+    * $5,000 in property taxes
 
+    Texas doesn't levy income taxes, but for SALT, the filer can claim their actual sales taxes or estimated from [IRS tables](https://www.irs.gov/instructions/i1040sca#en_US_2023_publink10005349). In this case, they can claim \$3,700. Overall, they can deduct $8,700 in SALT, both under current law and current policy.
     """
     )
     # Read the CSV files
@@ -63,8 +49,8 @@ def display_introduction():
         )
     )
     fig.update_layout(
-        title="SALT Deduction by Employment Income",
-        xaxis_title="Employment Income ($)",
+        title="SALT Deduction by Property Taxes",
+        xaxis_title="Property Taxes ($)",
         yaxis_title="SALT Deduction ($)",
         showlegend=True,
         template="simple_white",
@@ -107,8 +93,8 @@ def display_introduction():
         )
     )
     fig2.update_layout(
-        title="Alternative Minimum Tax by Employment Income",
-        xaxis_title="Employment Income ($)",
+        title="Alternative Minimum Tax by Property Taxes",
+        xaxis_title="Property Taxes ($)",
         yaxis_title="Alternative Minimum Tax ($)",
         showlegend=True,
         template="simple_white",

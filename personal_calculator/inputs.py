@@ -14,35 +14,17 @@ def create_personal_inputs():
 
         # Filing status and state in same row
         state_code = st.selectbox(
-            "What state do you live in?", STATE_CODES, index=STATE_CODES.index("CA")
+            "What state do you live in?",
+            STATE_CODES,
+            index=STATE_CODES.index("CA"),
+            help="State income tax varies by state and will impact your SALT deduction.",
         )
 
         # Marriage status and ages
-        is_married = st.checkbox("Are you married?")
-        if is_married:
-            age_col1, age_col2 = st.columns(2)
-            with age_col1:
-                head_age = st.number_input(
-                    "How old are you?",
-                    min_value=18,
-                    max_value=100,
-                    value=35,
-                )
-            with age_col2:
-                spouse_age = st.number_input(
-                    "How old is your spouse?",
-                    min_value=18,
-                    max_value=100,
-                    value=35,
-                )
-        else:
-            head_age = st.number_input(
-                "How old are you?",
-                min_value=18,
-                max_value=100,
-                value=35,
-            )
-            spouse_age = None
+        is_married = st.checkbox(
+            "Are you married?",
+            help="Marital status impacts AMT related provisions such as income thresholds and tax rates.",
+        )
 
         # Children information
         num_children = st.number_input(
@@ -50,7 +32,7 @@ def create_personal_inputs():
             min_value=0,
             max_value=10,
             value=0,
-            help="Each child is assumed to be 10 years old.",
+            help="Each child is assumed to be 10 years old. The AMT exemption amount increases with each child.",
         )
 
     # Income Information Section
@@ -95,13 +77,15 @@ def create_personal_inputs():
                 max_value=10_000_000,
                 value=0,
                 step=1000,
+                help="Different types of income are included in the AMT income definition, inculding qualified dividends.",
             )
             real_estate_taxes = st.number_input(
                 "How much do you pay in property taxes?",
                 min_value=0,
                 max_value=10_000_000,
                 value=30_000,
-                step=1000,
+                step=1_000,
+                help="Property taxes are deductible through your SALT deduction.",
             )
 
         with tax_col2:
@@ -111,7 +95,8 @@ def create_personal_inputs():
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
-                step=1000,
+                step=1_000,
+                help="The AMT is reduced by the tax on capital gains.",
             )
             short_term_gains = st.number_input(
                 "How much income do you make from short term capital gains?",
@@ -119,6 +104,7 @@ def create_personal_inputs():
                 max_value=10_000_000,
                 value=0,
                 step=1000,
+                help="The AMT is reduced by the tax on capital gains.",
             )
 
     # Create a list of child ages (all 10 years old)
@@ -127,8 +113,6 @@ def create_personal_inputs():
     return {
         "is_married": is_married,
         "state_code": state_code,
-        "head_age": head_age,
-        "spouse_age": spouse_age,
         "spouse_income": spouse_income,
         "num_children": num_children,
         "child_ages": child_ages,
