@@ -22,7 +22,7 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from personal_calculator.subsidy_rate import calculate_subsidy_rate
+from personal_calculator.subsidy_rate import calculate_marginal_subsidy_rate
 from constants import CURRENT_POLICY_PARAMS
 from introduction import display_introduction
 import plotly.express as px
@@ -246,11 +246,19 @@ with calculator_tab:
         reform_params = get_reform_params_from_config(st.session_state.policy_config)
         reform_results = calculate_impacts(
             situation, 
-            {"selected_reform": reform_params},  # This key determines the impact suffix
+            {"selected_reform": reform_params},
             baseline_scenario
         )
-        impact_key = "selected_reform_impact"  # CORRECTED: Add '_impact' suffix
+        impact_key = "selected_reform_impact"
         reform_income = reform_results[impact_key] + baseline_income
+
+        # Calculate subsidy rates
+        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
+        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
+            situation,
+            {"selected_reform": reform_params},
+            baseline_scenario
+        )
 
         # Update results with baseline and reform
         st.session_state.results_df, st.session_state.summary_results = update_results(
@@ -272,22 +280,13 @@ with calculator_tab:
             st.session_state.summary_results, 
             baseline_scenario
         )
-        chart_placeholder.plotly_chart(
-            fig, use_container_width=False
-        )  # Enable container width
-
-        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
-        # Calculate and display subsidy rate
-        # subsidy_rates = calculate_subsidy_rate(
-        #     situation, "2026", st.session_state.policy_config, baseline_scenario
-        # )
+        chart_placeholder.plotly_chart(fig, use_container_width=False)
 
         # Create summary table with subsidy rates
         create_summary_table(
             baseline_income,
             st.session_state,
             {"selected_reform": reform_params},
-            # subsidy_rates=subsidy_rates,
             baseline_scenario=baseline_scenario
         )
 

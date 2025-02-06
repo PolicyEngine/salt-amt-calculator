@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from constants import CURRENT_POLICY_PARAMS
+from personal_calculator.subsidy_rate import calculate_marginal_subsidy_rate
 
 
 def _format_value(reform_params, key, label, default_value="N/A"):
@@ -69,7 +70,6 @@ def create_summary_table(
     baseline_income,
     session_state, 
     reform_params_dict, 
-    # subsidy_rates=None,
     baseline_scenario="Current Law"
 ):
     """Create a summary table comparing scenarios based on selected baseline"""
@@ -77,69 +77,29 @@ def create_summary_table(
     # Get scenario names dynamically
     baseline_name = baseline_scenario
     reform_name = "Your Policy"
-    comparison_name = "Current Policy" if baseline_scenario == "Current Law" else "Current Law"
-
-    # Determine parameters for each scenario
-    baseline_params = {} if baseline_scenario == "Current Law" else CURRENT_POLICY_PARAMS
-    comparison_params = CURRENT_POLICY_PARAMS if baseline_scenario == "Current Law" else {}
-    reform_params = reform_params_dict["selected_reform"]
 
     # Create DataFrame for table
     data = {
         baseline_name: [
-            _format_salt_caps(baseline_params),
-            _format_salt_phaseout(baseline_params),
-            _format_amt_exemptions(baseline_params),
-            _format_amt_phaseout(baseline_params),
-            _format_tcja_provisions(baseline_params),
             f"${session_state.summary_results[baseline_name]:,.0f}",
             "$0",  # Baseline comparison
-            f"${session_state.summary_results.get(comparison_name, 0) - session_state.summary_results[baseline_name]:,.0f}",
+            f"{session_state.subsidy_rates['baseline']:.1f}%"
         ],
         reform_name: [
-            _format_salt_caps(reform_params),
-            _format_salt_phaseout(reform_params),
-            _format_amt_exemptions(reform_params),
-            _format_amt_phaseout(reform_params),
-            _format_tcja_provisions(reform_params),
             f"${session_state.summary_results[reform_name]:,.0f}",
             f"${session_state.summary_results[reform_name] - session_state.summary_results[baseline_name]:,.0f}",
-            f"${session_state.summary_results[reform_name] - session_state.summary_results.get(comparison_name, 0):,.0f}",
+            f"{session_state.subsidy_rates['reform']:.1f}%"
         ],
-        comparison_name: [
-            _format_salt_caps(comparison_params),
-            _format_salt_phaseout(comparison_params),
-            _format_amt_exemptions(comparison_params),
-            _format_amt_phaseout(comparison_params),
-            _format_tcja_provisions(comparison_params),
-            f"${session_state.summary_results.get(comparison_name, 0):,.0f}",
-            f"${session_state.summary_results.get(comparison_name, 0) - session_state.summary_results[baseline_name]:,.0f}",
-            "$0"
-        ]
     }
 
     # Create index for the rows
     index = [
-        "SALT Cap",
-        "SALT Phase-out",
-        "AMT Exemption",
-        "AMT Phase-out",
-        "Other TCJA Provisions",
         "Household Income",
         f"Change from {baseline_name}",
-        f"Change from {comparison_name}"
+        "Marginal Subsidy Rate"
     ]
 
     df = pd.DataFrame(data, index=index)
-
-    # # Update subsidy rate display
-    # if subsidy_rates:
-    #     df.loc["Marginal Subsidy Rate"] = [
-    #         f"{subsidy_rates.get(baseline_name, 0):.0%}",
-    #         f"{subsidy_rates.get(reform_name, 0):.0%}",
-    #     ]
-    #     if baseline_scenario == "Current Law":
-    #         df.loc["Marginal Subsidy Rate"].append(f"{subsidy_rates.get('Current Policy', 0):.0%}")
 
     # Display table
     st.markdown("### Summary Table")

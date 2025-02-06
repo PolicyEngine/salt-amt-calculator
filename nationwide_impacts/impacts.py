@@ -5,7 +5,7 @@ from pathlib import Path
 class NationwideImpacts:
     def __init__(self):
         """Initialize nationwide impacts data loader"""
-        self.data_dir = Path(__file__).parent / "data" / "impacts_2026_2035"
+        self.data_dir = Path(__file__).parent / "data" / "impacts_2026_2035_old"
         self.single_year_impacts = self._load_data("impacts_2026.csv")
         self.budget_window_impacts = self._load_budget_window_impacts()
 
