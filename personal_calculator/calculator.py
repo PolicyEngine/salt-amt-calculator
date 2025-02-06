@@ -19,7 +19,7 @@ def calculate_impacts(situation, reform_params_dict, baseline_scenario):
         raise ValueError(f"Invalid baseline scenario: {baseline_scenario}")
 
     baseline_income = baseline_sim.calculate("household_net_income", "2026")[0]
-    
+
     results = {"baseline": baseline_income}
 
     # Calculate each reform against the baseline

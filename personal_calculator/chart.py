@@ -40,7 +40,7 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
     for reform, value in zip(df_sorted["reform"], df_sorted["income"]):
         diff = value - baseline_value
         text_inside = f"${round(value):,}"
-        text_outside = f"+${round(diff):,}" if diff >=0 else f"-${round(-diff):,}"
+        text_outside = f"+${round(diff):,}" if diff >= 0 else f"-${round(-diff):,}"
 
         # Set colors - baseline gets dark gray, reform gets blue
         color = DARK_GRAY if reform == baseline_scenario else BLUE
@@ -74,8 +74,7 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
 
     fig.update_layout(
         title=dict(
-            text=f"Household Net Income vs {baseline_scenario}",
-            font=dict(size=24)
+            text=f"Household Net Income vs {baseline_scenario}", font=dict(size=24)
         ),
     )
 

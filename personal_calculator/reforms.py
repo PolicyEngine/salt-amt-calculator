@@ -307,9 +307,7 @@ def get_reform_params_from_config(policy_config):
             reform_params["salt_phase_out_threshold_joint"] = 400_000
             reform_params["salt_phase_out_threshold_other"] = 200_000
     if policy_config.get("salt_repealed"):
-        reform_params["salt_caps"] = {
-            k: 0 for k in reform_params["salt_caps"].keys()
-        }
+        reform_params["salt_caps"] = {k: 0 for k in reform_params["salt_caps"].keys()}
     # Set AMT parameters
     if policy_config["amt_repealed"]:
         reform_params["amt_exemptions"] = {
@@ -320,7 +318,10 @@ def get_reform_params_from_config(policy_config):
         }
     else:
         # Set AMT exemptions
-        if policy_config["amt_exemption"] == "Current Policy ($89,925 Single, $139,850 Joint)":
+        if (
+            policy_config["amt_exemption"]
+            == "Current Policy ($89,925 Single, $139,850 Joint)"
+        ):
             reform_params["amt_exemptions"] = {
                 "JOINT": 140_565,
                 "SEPARATE": 70_282,
@@ -338,7 +339,10 @@ def get_reform_params_from_config(policy_config):
             }
 
         # Set AMT phase-outs
-        if policy_config["amt_phaseout"] == "Current Policy ($639,300 Single, $1,278,575 Joint)":
+        if (
+            policy_config["amt_phaseout"]
+            == "Current Policy ($639,300 Single, $1,278,575 Joint)"
+        ):
             reform_params["amt_phase_outs"] = {
                 "JOINT": 1_285_409,
                 "SEPARATE": 642_704,

@@ -82,7 +82,7 @@ with nationwide_tab:
         "Include behavioral responses",
         help="When selected, simulations adjust earnings based on how reforms affect net income and marginal tax rates, applying the Congressional Budget Office's assumptions. [Learn more](https://policyengine.org/us/research/us-behavioral-responses).",
     )
-    
+
     # Store behavioral response in session state
     st.session_state.policy_config["behavioral_responses"] = behavioral_responses
 
@@ -221,7 +221,9 @@ with calculator_tab:
             long_term_capital_gains=personal_inputs["long_term_capital_gains"],
             short_term_capital_gains=personal_inputs["short_term_capital_gains"],
             real_estate_taxes=personal_inputs["real_estate_taxes"],
-            deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
+            deductible_mortgage_interest=personal_inputs[
+                "deductible_mortgage_interest"
+            ],
             charitable_cash_donations=personal_inputs["charitable_cash_donations"],
         )
 
@@ -234,9 +236,11 @@ with calculator_tab:
 
         # Get selected baseline from session state
         baseline_scenario = st.session_state.baseline
-        
+
         # Calculate baseline first
-        status_placeholder.info(f"Calculating your 2026 net income under {baseline_scenario}...")
+        status_placeholder.info(
+            f"Calculating your 2026 net income under {baseline_scenario}..."
+        )
         baseline_results = calculate_impacts(situation, {}, baseline_scenario)
         baseline_income = baseline_results["baseline"]
 
@@ -246,9 +250,7 @@ with calculator_tab:
         )
         reform_params = get_reform_params_from_config(st.session_state.policy_config)
         reform_results = calculate_impacts(
-            situation, 
-            {"selected_reform": reform_params},
-            baseline_scenario
+            situation, {"selected_reform": reform_params}, baseline_scenario
         )
         impact_key = "selected_reform_impact"
         reform_income = reform_results[impact_key] + baseline_income
@@ -260,7 +262,7 @@ with calculator_tab:
             baseline_scenario,
             baseline_income,
         )
-        
+
         st.session_state.results_df, st.session_state.summary_results = update_results(
             st.session_state.results_df,
             st.session_state.summary_results,
@@ -270,17 +272,14 @@ with calculator_tab:
 
         # Display chart first
         fig = create_reform_comparison_graph(
-            st.session_state.summary_results, 
-            baseline_scenario
+            st.session_state.summary_results, baseline_scenario
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
 
         # Then calculate and display subsidy rates
         status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
         st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
-            situation,
-            {"selected_reform": reform_params},
-            baseline_scenario
+            situation, {"selected_reform": reform_params}, baseline_scenario
         )
 
         # Display subsidy rates after chart

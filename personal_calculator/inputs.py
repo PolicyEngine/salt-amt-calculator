@@ -36,13 +36,13 @@ def create_personal_inputs():
         )
 
         real_estate_taxes = st.number_input(
-                "How much do you pay in property taxes?",
-                min_value=0,
-                max_value=1_000_000,
-                value=10_000,
-                step=500,
-                help="Property taxes are deductible through your SALT deduction.",
-            )
+            "How much do you pay in property taxes?",
+            min_value=0,
+            max_value=1_000_000,
+            value=10_000,
+            step=500,
+            help="Property taxes are deductible through your SALT deduction.",
+        )
         exepense_col1, exepense_col2 = st.columns(2)
         with exepense_col1:
             mortgage_interest = st.number_input(
@@ -62,49 +62,46 @@ def create_personal_inputs():
             )
     # Income Information Section
     with income_col:
-        st.markdown("""
+        st.markdown(
+            """
             ### Income Information
 
             How much income did you receive from the following sources? 
-                    """)
-
-
+                    """
+        )
 
         employment_income = st.number_input(
-                "Employment Income",
-                min_value=0,
-                max_value=10_000_000,
-                value=0,
-                step=1000,
-                help="All income is attributed to the head of the household",
-            )
+            "Employment Income",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1000,
+            help="All income is attributed to the head of the household",
+        )
         spouse_income = 0
 
-
         qualified_dividends = st.number_input(
-                "Qualified dividends",
-                min_value=0,
-                max_value=10_000_000,
-                value=0,
-                step=1000,
-            )
-            
-
+            "Qualified dividends",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1000,
+        )
 
         long_term_gains = st.number_input(
-                "Long term capital gains",
-                min_value=0,
-                max_value=10_000_000,
-                value=0,
-                step=1_000,
-            )
+            "Long term capital gains",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1_000,
+        )
         short_term_gains = st.number_input(
-                "Short term capital gains",
-                min_value=0,
-                max_value=10_000_000,
-                value=0,
-                step=1000,
-            )
+            "Short term capital gains",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1000,
+        )
 
     # Create a list of child ages (all 10 years old)
     child_ages = [10] * num_children if num_children > 0 else []
