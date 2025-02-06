@@ -12,10 +12,9 @@ def calculate_marginal_subsidy_rate(situation, reform_params_dict, baseline_scen
     
     Returns:
         dict: Dictionary containing marginal subsidy rates for baseline and reform scenarios
-    """
-    
-    print("\n=== Starting Subsidy Rate Calculation ===")
-    
+    """    
+    # First calculate the original situation
+    original_results = calculate_impacts(situation, reform_params_dict, baseline_scenario)
     # Create a copy of the situation for the incremented scenario
     modified_situation = situation.copy()
     
@@ -24,31 +23,30 @@ def calculate_marginal_subsidy_rate(situation, reform_params_dict, baseline_scen
     period = "2026"
     if "real_estate_taxes" in modified_situation["people"][head_key]:
         current_taxes = modified_situation["people"][head_key]["real_estate_taxes"][period]
-        
-        modified_situation["people"][head_key]["real_estate_taxes"][period] = (
-            current_taxes + increment
-        )
+        modified_situation["people"][head_key]["real_estate_taxes"][period] = current_taxes + increment
 
-    # Calculate impacts for both original and incremented situations
-    base_results = calculate_impacts(situation, reform_params_dict, baseline_scenario)
-    incr_results = calculate_impacts(modified_situation, reform_params_dict, baseline_scenario)
 
+    
+    # Then calculate the modified situation
+    modified_results = calculate_impacts(modified_situation, reform_params_dict, baseline_scenario)
 
     # Calculate marginal subsidy rates
     subsidy_rates = {}
     
-    # For baseline
-    baseline_delta = incr_results["baseline"] - base_results["baseline"]
-    baseline_subsidy = (baseline_delta / increment) * 100  # Convert to percentage
+    # For baseline scenario
+    baseline_original = original_results["baseline"]  
+    baseline_modified = modified_results["baseline"]  
+    baseline_delta = baseline_modified - baseline_original
+    
+    baseline_subsidy = (-baseline_delta / increment) * 100
     subsidy_rates["baseline"] = baseline_subsidy
 
-    # For reform
-    reform_base = base_results["baseline"] + base_results["selected_reform_impact"]
-    reform_incr = incr_results["baseline"] + incr_results["selected_reform_impact"]
-    reform_delta = reform_incr - reform_base
-    reform_subsidy = (reform_delta / increment) * 100  # Convert to percentage
+    # For reform scenario
+    reform_original = baseline_original + original_results["selected_reform_impact"]
+    reform_modified = baseline_modified + modified_results["selected_reform_impact"]
+    reform_delta = reform_modified - reform_original
+    
+    reform_subsidy = (reform_delta / increment) * 100
     subsidy_rates["reform"] = reform_subsidy
 
-
     return subsidy_rates
-

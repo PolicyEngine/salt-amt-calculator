@@ -43,7 +43,23 @@ def create_personal_inputs():
                 step=500,
                 help="Property taxes are deductible through your SALT deduction.",
             )
-
+        exepense_col1, exepense_col2 = st.columns(2)
+        with exepense_col1:
+            mortgage_interest = st.number_input(
+                "How much do you pay in mortgage interest?",
+                min_value=0,
+                max_value=1_000_000,
+                value=0,
+                step=500,
+            )
+        with exepense_col2:
+            charitable_cash_donations = st.number_input(
+                "How much do you donate to charity?",
+                min_value=0,
+                max_value=1_000_000,
+                value=0,
+                step=500,
+            )
     # Income Information Section
     with income_col:
         st.markdown("""
@@ -54,10 +70,7 @@ def create_personal_inputs():
 
 
 
-        # Tax-related income in two columns
-        tax_col1, tax_col2 = st.columns(2)
-        with tax_col1:
-            employment_income = st.number_input(
+        employment_income = st.number_input(
                 "Employment Income",
                 min_value=0,
                 max_value=10_000_000,
@@ -65,10 +78,10 @@ def create_personal_inputs():
                 step=1000,
                 help="All income is attributed to the head of the household",
             )
-            spouse_income = 0
+        spouse_income = 0
 
 
-            qualified_dividends = st.number_input(
+        qualified_dividends = st.number_input(
                 "Qualified dividends",
                 min_value=0,
                 max_value=10_000_000,
@@ -77,16 +90,15 @@ def create_personal_inputs():
             )
             
 
-        with tax_col2:
 
-            long_term_gains = st.number_input(
+        long_term_gains = st.number_input(
                 "Long term capital gains",
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
                 step=1_000,
             )
-            short_term_gains = st.number_input(
+        short_term_gains = st.number_input(
                 "Short term capital gains",
                 min_value=0,
                 max_value=10_000_000,
@@ -108,4 +120,6 @@ def create_personal_inputs():
         "long_term_capital_gains": long_term_gains,
         "short_term_capital_gains": short_term_gains,
         "real_estate_taxes": real_estate_taxes,
+        "deductible_mortgage_interest": mortgage_interest,
+        "charitable_cash_donations": charitable_cash_donations,
     }

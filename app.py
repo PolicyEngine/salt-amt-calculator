@@ -9,7 +9,6 @@ from personal_calculator.chart import (
     reset_results,
 )
 import numpy as np
-from personal_calculator.table import create_summary_table
 from nationwide_impacts.impacts import (
     NationwideImpacts,
     get_reform_name,
@@ -222,6 +221,8 @@ with calculator_tab:
             long_term_capital_gains=personal_inputs["long_term_capital_gains"],
             short_term_capital_gains=personal_inputs["short_term_capital_gains"],
             real_estate_taxes=personal_inputs["real_estate_taxes"],
+            deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
+            charitable_cash_donations=personal_inputs["charitable_cash_donations"],
         )
 
         # Display results in a nice format
@@ -282,12 +283,13 @@ with calculator_tab:
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
 
-        # Create summary table with subsidy rates
-        create_summary_table(
-            baseline_income,
-            st.session_state,
-            {"selected_reform": reform_params},
-            baseline_scenario=baseline_scenario
+        # Display subsidy rates
+        st.markdown(
+            f"""
+            ### Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
+            
+            ### Under your policy configuration, your property tax subsidy rate is {st.session_state.subsidy_rates['reform']:.1f}%.
+            """
         )
 
         # Clear status message when complete
