@@ -35,76 +35,63 @@ def create_personal_inputs():
             help="Each child is assumed to be 10 years old. The AMT exemption amount increases with each child.",
         )
 
+        real_estate_taxes = st.number_input(
+                "How much do you pay in property taxes?",
+                min_value=0,
+                max_value=1_000_000,
+                value=10_000,
+                step=500,
+                help="Property taxes are deductible through your SALT deduction.",
+            )
+
     # Income Information Section
     with income_col:
-        st.markdown("### Income Information")
+        st.markdown("""
+            ### Income Information
 
-        # Employment income
-        if is_married:
-            income_col1, income_col2 = st.columns(2)
-            with income_col1:
-                employment_income = st.number_input(
-                    "How much income do you make from employment?",
-                    min_value=0,
-                    max_value=10_000_000,
-                    value=0,
-                    step=1000,
-                )
-            with income_col2:
-                spouse_income = st.number_input(
-                    "How much income does your spouse make from employment?",
-                    min_value=0,
-                    max_value=10_000_000,
-                    value=0,
-                    step=1000,
-                )
-        else:
-            employment_income = st.number_input(
-                "How much income do you make from employment?",
-                min_value=0,
-                max_value=10_000_000,
-                value=0,
-                step=1000,
-            )
-            spouse_income = 0
+            How much income did you receive from the following sources? 
+                    """)
+
+
 
         # Tax-related income in two columns
         tax_col1, tax_col2 = st.columns(2)
         with tax_col1:
-            qualified_dividends = st.number_input(
-                "How much income do you make from qualified dividends?",
+            employment_income = st.number_input(
+                "Employment Income",
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
                 step=1000,
-                help="Different types of income are included in the AMT income definition, inculding qualified dividends.",
+                help="All income is attributed to the head of the household",
             )
-            real_estate_taxes = st.number_input(
-                "How much do you pay in property taxes?",
+            spouse_income = 0
+
+
+            qualified_dividends = st.number_input(
+                "Qualified dividends",
                 min_value=0,
                 max_value=10_000_000,
-                value=30_000,
-                step=1_000,
-                help="Property taxes are deductible through your SALT deduction.",
+                value=0,
+                step=1000,
             )
+            
 
         with tax_col2:
 
             long_term_gains = st.number_input(
-                "How much income do you make from long term capital gains?",
+                "Long term capital gains",
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
                 step=1_000,
-                help="The AMT is reduced by the tax on capital gains.",
             )
             short_term_gains = st.number_input(
-                "How much income do you make from short term capital gains?",
+                "Short term capital gains",
                 min_value=0,
                 max_value=10_000_000,
                 value=0,
                 step=1000,
-                help="The AMT is reduced by the tax on capital gains.",
             )
 
     # Create a list of child ages (all 10 years old)

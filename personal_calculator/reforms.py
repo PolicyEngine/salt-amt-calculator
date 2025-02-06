@@ -51,21 +51,6 @@ def get_other_tcja_provisions():
         "gov.irs.deductions.itemized.limitation.itemized_deduction_rate": {
             "2026-01-01.2026-12-31": 1,
         },
-        "gov.irs.deductions.itemized.salt_and_real_estate.cap.HEAD_OF_HOUSEHOLD": {
-            "2026-01-01.2100-12-31": 10000
-        },
-        "gov.irs.deductions.itemized.salt_and_real_estate.cap.JOINT": {
-            "2026-01-01.2100-12-31": 10000
-        },
-        "gov.irs.deductions.itemized.salt_and_real_estate.cap.SEPARATE": {
-            "2026-01-01.2100-12-31": 5000
-        },
-        "gov.irs.deductions.itemized.salt_and_real_estate.cap.SINGLE": {
-            "2026-01-01.2100-12-31": 10000
-        },
-        "gov.irs.deductions.itemized.salt_and_real_estate.cap.SURVIVING_SPOUSE": {
-            "2026-01-01.2100-12-31": 10000
-        },
         "gov.irs.deductions.qbi.max.business_property.rate": {
             "2026-01-01.2100-12-31": 0.025
         },

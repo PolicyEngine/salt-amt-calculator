@@ -202,9 +202,9 @@ with calculator_tab:
         )
 
     # Create columns for calculate button alignment
-    calc_col1, calc_col2 = st.columns([1, 8])
+    calc_col1, calc_col2 = st.columns([1, 6])
     with calc_col1:
-        calculate_clicked = st.button("Calculate Impacts", use_container_width=False)
+        calculate_clicked = st.button("Calculate Impacts")
 
     if calculate_clicked:
         # Reset results to start fresh
