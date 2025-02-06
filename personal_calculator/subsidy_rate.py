@@ -1,50 +1,61 @@
-from policyengine_us import Simulation
-import numpy as np
 from personal_calculator.calculator import calculate_impacts
-from constants import CURRENT_POLICY_PARAMS
-from personal_calculator.reforms import get_reform_params_from_config
 
 
-def _calculate_income(situation, policy_params):
-    results = calculate_impacts(situation, policy_params)
-    return results["current_law"] + results.get("reform_current_policy_impact", 0)
+def calculate_marginal_subsidy_rate(
+    situation, reform_params_dict, baseline_scenario, increment=500
+):
+    """
+    Calculate the marginal subsidy rate for a $500 increase in real estate taxes
 
+    Args:
+        situation (dict): The baseline tax situation
+        reform_params_dict (dict): Dictionary of reform parameters
+        baseline_scenario (str): The baseline scenario ("Current Law" or "Current Policy")
+        increment (float): The amount to increment real estate taxes by (default $500)
 
-def calculate_subsidy_rate(situation, period, policy_config):
-    """Calculate the marginal subsidy rates for property taxes under different policies"""
-
-    # Calculate baseline net incomes for each policy
-    current_law_base = _calculate_income(situation, {})
-    current_policy_base = _calculate_income(situation, CURRENT_POLICY_PARAMS)
-    reform_params = get_reform_params_from_config(policy_config)
-    your_policy_base = _calculate_income(situation, {"selected_reform": reform_params})
-
-    # Create modified situation with increased real estate taxes
+    Returns:
+        dict: Dictionary containing marginal subsidy rates for baseline and reform scenarios
+    """
+    # First calculate the original situation
+    original_results = calculate_impacts(
+        situation, reform_params_dict, baseline_scenario
+    )
+    # Create a copy of the situation for the incremented scenario
     modified_situation = situation.copy()
-    delta = 500.0  # $500 increment in real estate taxes
 
     # Modify the real estate taxes
     head_key = "head"
+    period = "2026"
     if "real_estate_taxes" in modified_situation["people"][head_key]:
         current_taxes = modified_situation["people"][head_key]["real_estate_taxes"][
             period
         ]
         modified_situation["people"][head_key]["real_estate_taxes"][period] = (
-            current_taxes + delta
+            current_taxes + increment
         )
 
-    # Calculate modified net incomes for each policy
-    current_law_mod = _calculate_income(modified_situation, {})
-    current_policy_mod = _calculate_income(modified_situation, CURRENT_POLICY_PARAMS)
-    your_policy_mod = _calculate_income(
-        modified_situation, {"selected_reform": reform_params}
+    # Then calculate the modified situation
+    modified_results = calculate_impacts(
+        modified_situation, reform_params_dict, baseline_scenario
     )
 
-    # Calculate subsidy rates
-    subsidy_rates = {
-        "Current Law": float(current_law_mod - current_law_base) / delta,
-        "Current Policy": float(current_policy_mod - current_policy_base) / delta,
-        "Your Policy": float(your_policy_mod - your_policy_base) / delta,
-    }
+    # Calculate marginal subsidy rates
+    subsidy_rates = {}
+
+    # For baseline scenario
+    baseline_original = original_results["baseline"]
+    baseline_modified = modified_results["baseline"]
+    baseline_delta = baseline_modified - baseline_original
+
+    baseline_subsidy = (baseline_delta / increment) * 100
+    subsidy_rates["baseline"] = baseline_subsidy
+
+    # For reform scenario
+    reform_original = baseline_original + original_results["selected_reform_impact"]
+    reform_modified = baseline_modified + modified_results["selected_reform_impact"]
+    reform_delta = reform_modified - reform_original
+
+    reform_subsidy = (reform_delta / increment) * 100
+    subsidy_rates["reform"] = reform_subsidy
 
     return subsidy_rates

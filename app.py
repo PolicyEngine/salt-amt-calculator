@@ -9,7 +9,6 @@ from personal_calculator.chart import (
     reset_results,
 )
 import numpy as np
-from personal_calculator.table import create_summary_table
 from nationwide_impacts.impacts import (
     NationwideImpacts,
     get_reform_name,
@@ -22,7 +21,7 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from personal_calculator.subsidy_rate import calculate_subsidy_rate
+from personal_calculator.subsidy_rate import calculate_marginal_subsidy_rate
 from constants import CURRENT_POLICY_PARAMS
 from introduction import display_introduction
 import plotly.express as px
@@ -65,26 +64,26 @@ st.markdown("---")
 
 st.subheader("Impacts")
 
+# Move the baseline radio here
+baseline = st.radio(
+    "Baseline Scenario",
+    ["Current Law", "Current Policy"],
+    help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
+    horizontal=True,
+)
+st.session_state.baseline = baseline
+
+# Create tabs after the baseline selection
 nationwide_tab, calculator_tab = st.tabs(["US", "Household"])
 
-
-# Modify the nationwide_tab section for better width usage
 with nationwide_tab:
-    # Create single column for controls
-    baseline = st.radio(
-        "Baseline Scenario",
-        ["Current Law", "Current Policy"],
-        help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
-        horizontal=True,  # Make radio buttons horizontal
-    )
-
+    # Behavioral responses checkbox remains in tab
     behavioral_responses = st.checkbox(
         "Include behavioral responses",
         help="When selected, simulations adjust earnings based on how reforms affect net income and marginal tax rates, applying the Congressional Budget Office's assumptions. [Learn more](https://policyengine.org/us/research/us-behavioral-responses).",
     )
 
-    # Store baseline and behavioral responses in session state
-    st.session_state.baseline = baseline
+    # Store behavioral response in session state
     st.session_state.policy_config["behavioral_responses"] = behavioral_responses
 
     # Show budget window impacts with full width
@@ -222,6 +221,10 @@ with calculator_tab:
             long_term_capital_gains=personal_inputs["long_term_capital_gains"],
             short_term_capital_gains=personal_inputs["short_term_capital_gains"],
             real_estate_taxes=personal_inputs["real_estate_taxes"],
+            deductible_mortgage_interest=personal_inputs[
+                "deductible_mortgage_interest"
+            ],
+            charitable_cash_donations=personal_inputs["charitable_cash_donations"],
         )
 
         # Display results in a nice format
@@ -231,48 +234,35 @@ with calculator_tab:
         chart_placeholder = st.empty()
         status_placeholder = st.empty()
 
-        # Calculate current law first
-        status_placeholder.info("Calculating your 2026 net income under current law...")
-        results = calculate_impacts(situation, {})
-        current_law_income = results["current_law"]
+        # Get selected baseline from session state
+        baseline_scenario = st.session_state.baseline
 
-        # Update current law results
-        st.session_state.results_df, st.session_state.summary_results = update_results(
-            st.session_state.results_df,
-            st.session_state.summary_results,
-            "Current Law",
-            current_law_income,
-        )
-
-        # Calculate current policy
+        # Calculate baseline first
         status_placeholder.info(
-            "Calculating your 2026 net income under current policy..."
+            f"Calculating your 2026 net income under {baseline_scenario}..."
         )
+        baseline_results = calculate_impacts(situation, {}, baseline_scenario)
+        baseline_income = baseline_results["baseline"]
 
-        current_policy_results = calculate_impacts(situation, CURRENT_POLICY_PARAMS)
-        current_policy_income = (
-            current_law_income + current_policy_results["reform_current_policy_impact"]
-        )
-
-        # Update current policy results
-        st.session_state.results_df, st.session_state.summary_results = update_results(
-            st.session_state.results_df,
-            st.session_state.summary_results,
-            "Current Policy",
-            current_policy_income,
-        )
-
-        # Calculate your policy configuration
+        # Calculate your policy configuration against baseline
         status_placeholder.info(
             "Calculating your 2026 net income under your policy configuration..."
         )
         reform_params = get_reform_params_from_config(st.session_state.policy_config)
         reform_results = calculate_impacts(
-            situation, {"selected_reform": reform_params}
+            situation, {"selected_reform": reform_params}, baseline_scenario
         )
-        reform_income = current_law_income + reform_results["selected_reform_impact"]
+        impact_key = "selected_reform_impact"
+        reform_income = reform_results[impact_key] + baseline_income
 
-        # Update reform results
+        # Update results with baseline and reform
+        st.session_state.results_df, st.session_state.summary_results = update_results(
+            st.session_state.results_df,
+            st.session_state.summary_results,
+            baseline_scenario,
+            baseline_income,
+        )
+
         st.session_state.results_df, st.session_state.summary_results = update_results(
             st.session_state.results_df,
             st.session_state.summary_results,
@@ -280,24 +270,25 @@ with calculator_tab:
             reform_income,
         )
 
-        # Update chart with all results
-        fig = create_reform_comparison_graph(st.session_state.summary_results)
-        chart_placeholder.plotly_chart(
-            fig, use_container_width=False
-        )  # Enable container width
+        # Display chart first
+        fig = create_reform_comparison_graph(
+            st.session_state.summary_results, baseline_scenario
+        )
+        chart_placeholder.plotly_chart(fig, use_container_width=False)
 
+        # Then calculate and display subsidy rates
         status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
-        # Calculate and display subsidy rate
-        subsidy_rates = calculate_subsidy_rate(
-            situation, "2026", st.session_state.policy_config
+        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
+            situation, {"selected_reform": reform_params}, baseline_scenario
         )
 
-        # Create summary table with subsidy rates
-        create_summary_table(
-            current_law_income,
-            st.session_state,
-            {"selected_reform": reform_params},
-            subsidy_rates=subsidy_rates,
+        # Display subsidy rates after chart
+        st.markdown(
+            f"""
+            ### Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
+            
+            ### Under your policy configuration, your property tax subsidy rate is {st.session_state.subsidy_rates['reform']:.1f}%.
+            """
         )
 
         # Clear status message when complete

@@ -8,20 +8,20 @@ from constants import DARK_GRAY, BLUE
 def display_introduction():
     st.markdown(
         """
-    ## SALT and AMT basics
+    ## SALT and AMT Basics
 
-    **SALT:** Filers can take an itemized deduction for (a) property taxes, and (b) _either_ state and local income taxes, or sales taxes. TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it will be uncapped.
+    **SALT:** Filers can take an itemized deduction for (a) property taxes and (b) _either_ state and local income taxes or sales taxes. The TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it will be uncapped.
 
-    **AMT:** Filers must calculate their tax liability under the regular tax code and the AMT, and pay the higher amount. The AMT disallows certain deductions, including the SALT deduction. TCJA has (1) expanded the exemption amount which applies to the AMT specific income and (2) increased the threshold at which this exemption is being phased-out at a 25% rate.
+    **AMT:** Filers must calculate their tax liability under the regular tax code and the AMT and pay the higher amount. The AMT disallows certain deductions, including the SALT deduction. The TCJA has (1) expanded the exemption amount that applies to AMT-specific income and (2) increased the threshold at which this exemption phases out at a rate of 25%.
     
-    ## How SALT and AMT affect a sample household
+    ## How SALT and AMT Affect a Sample Household
     
     ### SALT Deduction
 
     Consider a married filer in Texas with:
-    * $500,000 in employment income
-    * $15,000 in deductible mortgage interest
-    * $10,000 in charitable cash donations
+    * \$500,000 in employment income
+    * \$15,000 in deductible mortgage interest
+    * \$10,000 in charitable cash donations
 
     """
     )
@@ -31,20 +31,18 @@ def display_introduction():
         "Scenario": ["Current law", "Current policy"],
         "$5k property taxes": ["$8,672", "$8,672"],
         "$10k property taxes": ["$13,672", "$10,000"],
-        "Difference": ["$5,000", "$1,328"]
+        "Difference": ["$5,000", "$1,328"],
     }
     df_comparison = pd.DataFrame(comparison_data)
-    
+
     st.table(df_comparison.set_index("Scenario"))
-    
+
     st.markdown(
         """
-    Texas doesn't levy income taxes, but for SALT, the filer can claim their actual sales taxes or estimated from [IRS tables](https://www.irs.gov/instructions/i1040sca#en_US_2023_publink10005349). 
+    Texas doesn't levy income taxes, but for SALT, the filer can claim either their actual sales taxes or an estimated amount based on [IRS tables](https://www.irs.gov/instructions/i1040sca#en_US_2023_publink10005349). 
     In this case, they can claim \$3,672. 
     
-    Under current law and current policy the entire \$5,000 in property taxes is deductible. Under current policy, this amount is subject to the SALT deduction cap of \$10,000. Allowing for a maximum property tax deduction of $6,328.
-
-
+    Under current law and current policy, the entire amount of property taxes is deductible from federal taxable income. Under current policy, however, this amount is subject to the SALT deduction cap of \$10,000, allowing for a maximum property tax deduction of \$6,328.
     """
     )
 
@@ -53,26 +51,23 @@ def display_introduction():
     ### Regular Tax Liability
     The increased SALT deduction will lower the household's taxable income, which in turn results in lower regular tax liabilities.
     """
-    )  
+    )
     comparison_data = {
         "Scenario": ["Current law", "Current policy"],
         "$5k property taxes": ["$116,272", "$102,453"],
         "$10k property taxes": ["$114,622", "$102,028"],
-        "Difference": ["-$1,650", "-$425"]
+        "Difference": ["-$1,650", "-$425"],
     }
     df_comparison = pd.DataFrame(comparison_data)
-    
+
     st.table(df_comparison.set_index("Scenario"))
-
-
 
     st.markdown(
         """
     ### Alternative Minimum Tax (AMT)
 
-    The alternative minimum tax (AMT) is computed by adding the standard or the SALT deduction to the filer's taxable income, depending on the itemization choice. The first $243,800 of AMT specific income, which is reduced by the exemption amount, is taxed at a 26% rate. The remaining amount is taxed at a 28% rate, with specific taxation rules applying for households with capital gains and dividend income.
-    This is used to compute the tentative minimum tax.
-
+    The alternative minimum tax (AMT) begins with the regular taxable income and then makes specific adjustments to compute an alternative taxable income. For filers taking the standard deduction, that amount is simply used. However, for filers who itemize, only the SALT deduction—and a few other select items that are excluded from regular taxable income—is added back. This adjusted income is then reduced by an exemption amount, which phases out for higher levels of AMT income, before a tax rate of either 26% or 28% is applied to determine the tentative minimum tax. (Additional rules may apply for households with capital gains and dividend income.)
+    
     """
     )
 
@@ -80,83 +75,159 @@ def display_introduction():
         "Scenario": ["Current law", "Current policy"],
         "$5k property taxes": ["$115,066", "$88,966"],
         "$10k property taxes": ["$115,066", "$88,966"],
-        "Difference": ["$0", "$0"]
+        "Difference": ["$0", "$0"],
     }
     df_comparison = pd.DataFrame(comparison_data)
-    
+
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
         """
-    
-    The excess of the tentative minimum tax over the regular tax liability is added back to compute the AMT liability. 
-    
-
-    Under current policy, since the SALT deduction is subject to the cap, not reducing tax liability enough to trigger the AMT.
+    The excess of the tentative minimum tax over the regular tax liability is added back to compute the AMT liability.
     """
     )
-    
+
     st.markdown(
         """
     ### Current Property Tax Subsidy Rates
 
-    One way to assess the impact of these tax policies is by examining how much of a household's property taxes are offset by reductions in income tax liability:
+    One way to assess the impact of these tax policies is by examining how much of a household's property taxes is offset by reductions in income tax liability.
 
-
-    This illustrates how tax policy changes—such as lifting the SALT cap—can impact the extent to which property taxes are deductible and how much tax relief a household receives. high
-
+    This illustrates how tax policy changes—such as lifting the SALT cap—can impact the extent to which property taxes are deductible and how much tax relief a household receives.
     """
     )
 
     comparison_data = {
-        "Scenario": ["Current law", "Current policy", "Current law", "Current policy", "Current law", "Current policy", "Current law", "Current policy"],
-        "Quantity": ["SALT deduction", "SALT deduction", "Regular Tax Liability", "Regular Tax Liability", "Tentative Minimum Tax", "Tentative Minimum Tax", "Federal Income Tax", "Federal Income Tax"],
-        "$5k property taxes": ["$8,672", "$8,672", "$116,272", "$102,453", "$115,066", "$88,966", "$116,272", "$102,453"],
-        "$10k property taxes": ["$13,672", "$10,000", "$114,622", "$102,028", "$115,066", "$88,966", "$115,066", "$102,028"],
-        "Difference": ["$5,000", "$1,328", "-$1,650", "-$425", "$0", "$0", "-$1,206", "-$425"],
-        "Property Tax Subsidy Rate": ["-", "-", "-", "-", "-", "-", "24%", "8%"]
+        "Scenario": [
+            "Current law",
+            "Current policy",
+            "Current law",
+            "Current policy",
+            "Current law",
+            "Current policy",
+            "Current law",
+            "Current policy",
+        ],
+        "Quantity": [
+            "SALT deduction",
+            "SALT deduction",
+            "Regular Tax Liability",
+            "Regular Tax Liability",
+            "Tentative Minimum Tax",
+            "Tentative Minimum Tax",
+            "Federal Income Tax",
+            "Federal Income Tax",
+        ],
+        "$5k property taxes": [
+            "$8,672",
+            "$8,672",
+            "$116,272",
+            "$102,453",
+            "$115,066",
+            "$88,966",
+            "$116,272",
+            "$102,453",
+        ],
+        "$10k property taxes": [
+            "$13,672",
+            "$10,000",
+            "$114,622",
+            "$102,028",
+            "$115,066",
+            "$88,966",
+            "$115,066",
+            "$102,028",
+        ],
+        "Difference": [
+            "$5,000",
+            "$1,328",
+            "-$1,650",
+            "-$425",
+            "$0",
+            "$0",
+            "-$1,206",
+            "-$425",
+        ],
+        "Property Tax Subsidy Rate": ["-", "-", "-", "-", "-", "-", "24%", "8%"],
     }
     df_comparison = pd.DataFrame(comparison_data)
-    
+
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
         """
-    ### Now let's examine the same household with \$10k and $15k in property taxes.
+    Under current law, the tentative minimum tax exceeds the regular tax liability when this household pays \$10k or more in property taxes. 
+    Under current policy, the tentative minimum tax is lower than the regular tax liability for this household.
+    
+    ### Now let's examine the same household with \$10k and \$15k in property taxes.
     """
     )
 
     # Add comparison table
     comparison_data = {
-        "Scenario": ["Current law", "Current policy", "Current law", "Current policy", "Current law", "Current policy", "Current law", "Current policy"],
-        "Quantity": ["SALT deduction", "SALT deduction", "Regular Tax Liability", "Regular Tax Liability", "Tentative Minimum Tax", "Tentative Minimum Tax", "Federal Income Tax", "Federal Income Tax"],
-        "$10k property taxes": ["$13,672", "$10,000", "$114,622", "$102,028", "$115,066", "$88,966", "$115,066", "$102,028"],
-        "$15k property taxes": ["$18,672", "$10,000", "$112,972", "$102,028", "$115,066", "$88,966", "$115,066", "$102,028"],
+        "Scenario": [
+            "Current law",
+            "Current policy",
+            "Current law",
+            "Current policy",
+            "Current law",
+            "Current policy",
+            "Current law",
+            "Current policy",
+        ],
+        "Quantity": [
+            "SALT deduction",
+            "SALT deduction",
+            "Regular Tax Liability",
+            "Regular Tax Liability",
+            "Tentative Minimum Tax",
+            "Tentative Minimum Tax",
+            "Federal Income Tax",
+            "Federal Income Tax",
+        ],
+        "$10k property taxes": [
+            "$13,672",
+            "$10,000",
+            "$114,622",
+            "$102,028",
+            "$115,066",
+            "$88,966",
+            "$115,066",
+            "$102,028",
+        ],
+        "$15k property taxes": [
+            "$18,672",
+            "$10,000",
+            "$112,972",
+            "$102,028",
+            "$115,066",
+            "$88,966",
+            "$115,066",
+            "$102,028",
+        ],
         "Difference": ["$5,000", "$0", "-$1,650", "$0", "$0", "$0", "$0", "$0"],
-        "Subsidy Rate": ["-", "-", "-", "-", "-", "-", "0%", "0%"]
+        "Subsidy Rate": ["-", "-", "-", "-", "-", "-", "0%", "0%"],
     }
 
     df_comparison = pd.DataFrame(comparison_data)
-    
+
     st.table(df_comparison.set_index("Scenario"))
-
-
 
     st.markdown(
         """
-    The increased Alternative Minimum Tax liability under current law offsets the effects of the lifted SALT cap, making the property tax subsidy rate neutral.
-
-    Any property taxes that are deducted under the SALT deduction for this hosuehold are fully taxed under the Alternative Minimum Tax.
-
-    ### The Effective SALT cap for this household under Current Law is \$12,184 and $10,000 under Current Policy.
+    The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, making the property tax subsidy rate neutral.
     
+    Any property taxes that are deducted under the SALT deduction for this household are fully taxed under the alternative minimum tax structure.
+    
+    ### The Effective SALT Cap for This Household Is:
+    * **\$12,184 under Current Law**
+    * **\$10,000 under Current Policy**
     """
     )
 
-
     st.markdown(
         """
-    ### We can also look at the SALT deduction, AMT and the Property Tax Subsidy Rate over the a property tax range of 0 to $50k.
+    ### We can also examine the SALT deduction, AMT, and the property tax subsidy rate over a property tax range of \$0 to \$50k.
     """
     )
     # Read the CSV files
@@ -214,8 +285,6 @@ def display_introduction():
 
         st.plotly_chart(format_fig(fig2))
 
-
-
         # Add subsidy rates plot for both years
         df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
 
@@ -252,5 +321,4 @@ def display_introduction():
             height=500,
         )
 
-        # Display the plot in Streamlit
         st.plotly_chart(format_fig(fig3))

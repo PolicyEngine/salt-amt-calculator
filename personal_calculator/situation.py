@@ -9,6 +9,8 @@ def create_situation(
     long_term_capital_gains,
     short_term_capital_gains,
     real_estate_taxes,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
 ):
     """Creates a situation dictionary based on user inputs"""
     situation = {
@@ -20,6 +22,8 @@ def create_situation(
                 "long_term_capital_gains": {"2026": long_term_capital_gains},
                 "short_term_capital_gains": {"2026": short_term_capital_gains},
                 "real_estate_taxes": {"2026": real_estate_taxes},
+                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
+                "charitable_cash_donations": {"2026": charitable_cash_donations},
             }
         },
         "households": {
