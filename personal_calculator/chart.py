@@ -5,7 +5,7 @@ from policyengine_core.charts import format_fig
 from constants import DARK_GRAY, LIGHT_GRAY, BLUE
 
 
-def create_reform_comparison_graph(summary_results):
+def create_reform_comparison_graph(summary_results, baseline_scenario):
     """Create a horizontal bar chart comparing household income across reforms"""
     if not summary_results:  # If no results, return empty figure
         fig = go.Figure()
@@ -19,16 +19,14 @@ def create_reform_comparison_graph(summary_results):
     # Convert to DataFrame and sort
     df = pd.DataFrame(summary_results.items(), columns=["reform", "income"])
 
-    # Custom sorting function to ensure Current Law always shows up on top
+    # Custom sorting function to prioritize baseline
     def custom_sort(row):
-        if row.reform == "Current Law":
+        if row.reform == baseline_scenario:
             return (2, -row.income)
-        elif row.reform == "Current Policy":
-            return (1, -row.income)
         else:
             return (0, -row.income)
 
-    # Sort the DataFrame using the custom sorting function
+    # Sort the DataFrame
     df_sorted = df.sort_values(
         by=["reform", "income"],
         key=lambda x: pd.Series(
@@ -37,33 +35,16 @@ def create_reform_comparison_graph(summary_results):
     )
 
     fig = go.Figure()
+    baseline_value = summary_results[baseline_scenario]
 
-    # Get baseline (Current Law) value for calculating differences
-    baseline_value = summary_results["Current Law"]
-
-    # Counter for custom reforms to assign different shades of blue
-    reform_counter = 0
-
-    # Add bars for each reform
     for reform, value in zip(df_sorted["reform"], df_sorted["income"]):
-        # Calculate difference from baseline
         diff = value - baseline_value
-
-        # Format text labels
         text_inside = f"${round(value):,}"
-        text_outside = f"+${round(diff):,}" if diff >= 0 else f"-${round(-diff):,}"
+        text_outside = f"+${round(diff):,}" if diff >=0 else f"-${round(-diff):,}"
 
-        # Set color based on reform type
-        if reform == "Current Law":
-            color = DARK_GRAY
-        elif reform == "Current Policy":
-            color = LIGHT_GRAY
-        else:
-            # Assign different shades of blue to custom reforms
-            color = BLUE
-            reform_counter += 1
+        # Set colors - baseline gets dark gray, reform gets blue
+        color = DARK_GRAY if reform == baseline_scenario else BLUE
 
-        # Add bar with black text for reform names
         fig.add_trace(
             go.Bar(
                 y=[reform],
@@ -78,8 +59,8 @@ def create_reform_comparison_graph(summary_results):
             )
         )
 
-        # Add difference annotation in matching bar color for non-baseline reforms
-        if reform != "Current Law":
+        # Add difference annotation for reform
+        if reform != baseline_scenario:
             fig.add_annotation(
                 y=reform,
                 x=value,
@@ -88,14 +69,13 @@ def create_reform_comparison_graph(summary_results):
                 xanchor="left",
                 yanchor="middle",
                 xshift=5,
-                font=dict(size=16, color=color),  # Match the bar color
+                font=dict(size=16, color=color),
             )
 
-    # Update layout without specifying text colors
     fig.update_layout(
         title=dict(
-            text="Household Net Income after Income Taxes and Transfers by Reform",
-            font=dict(size=24),  # Remove color to inherit from theme
+            text=f"Household Net Income vs {baseline_scenario}",
+            font=dict(size=24)
         ),
     )
 

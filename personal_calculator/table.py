@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+from constants import CURRENT_POLICY_PARAMS
 
 
 def _format_value(reform_params, key, label, default_value="N/A"):
@@ -65,44 +66,56 @@ def _format_tcja_provisions(reform_params):
 
 
 def create_summary_table(
-    current_law_income, session_state, reform_params_dict, subsidy_rates=None
+    baseline_income,
+    session_state, 
+    reform_params_dict, 
+    # subsidy_rates=None,
+    baseline_scenario="Current Law"
 ):
-    """Create a summary table comparing current law, current policy, and your policy"""
+    """Create a summary table comparing scenarios based on selected baseline"""
+    
+    # Get scenario names dynamically
+    baseline_name = baseline_scenario
+    reform_name = "Your Policy"
+    comparison_name = "Current Policy" if baseline_scenario == "Current Law" else "Current Law"
+
+    # Determine parameters for each scenario
+    baseline_params = {} if baseline_scenario == "Current Law" else CURRENT_POLICY_PARAMS
+    comparison_params = CURRENT_POLICY_PARAMS if baseline_scenario == "Current Law" else {}
+    reform_params = reform_params_dict["selected_reform"]
 
     # Create DataFrame for table
     data = {
-        "Current Law": [
-            "Joint: Unlimited<br>Other: Unlimited",  # SALT Cap
-            "N/A",  # SALT Phase-out
-            "Joint: $109,700<br>Other: $70,500",  # AMT Exemption
-            "Joint: $209,000<br>Other: $156,700",  # AMT Phase-out
-            "Repealed",  # Other TCJA Provisions
-            f"${current_law_income:,.0f}",  # Household Income
-            "$0",  # Change from Current Law
-            f"${session_state.summary_results['Current Law'] - session_state.summary_results['Current Policy']:,.0f}",  # Change from Current Policy
+        baseline_name: [
+            _format_salt_caps(baseline_params),
+            _format_salt_phaseout(baseline_params),
+            _format_amt_exemptions(baseline_params),
+            _format_amt_phaseout(baseline_params),
+            _format_tcja_provisions(baseline_params),
+            f"${session_state.summary_results[baseline_name]:,.0f}",
+            "$0",  # Baseline comparison
+            f"${session_state.summary_results.get(comparison_name, 0) - session_state.summary_results[baseline_name]:,.0f}",
         ],
-        "Current Policy": [
-            "Joint: $10,000<br>Other: $10,000",
-            "N/A",
-            "Joint: $140,565<br>Other: $90,394",
-            "Joint: $1,285,409<br>Other: $642,705",
-            "Extended",  # Other TCJA Provisions
-            f"${session_state.summary_results['Current Policy']:,.0f}",
-            f"${session_state.summary_results['Current Policy'] - current_law_income:,.0f}",
-            "$0",
+        reform_name: [
+            _format_salt_caps(reform_params),
+            _format_salt_phaseout(reform_params),
+            _format_amt_exemptions(reform_params),
+            _format_amt_phaseout(reform_params),
+            _format_tcja_provisions(reform_params),
+            f"${session_state.summary_results[reform_name]:,.0f}",
+            f"${session_state.summary_results[reform_name] - session_state.summary_results[baseline_name]:,.0f}",
+            f"${session_state.summary_results[reform_name] - session_state.summary_results.get(comparison_name, 0):,.0f}",
         ],
-        "Your Policy": [
-            _format_salt_caps(reform_params_dict["selected_reform"]),
-            _format_salt_phaseout(reform_params_dict["selected_reform"]),
-            _format_amt_exemptions(reform_params_dict["selected_reform"]),
-            _format_amt_phaseout(reform_params_dict["selected_reform"]),
-            _format_tcja_provisions(
-                reform_params_dict["selected_reform"]
-            ),  # Other TCJA Provisions
-            f"${session_state.summary_results['Your Policy']:,.0f}",
-            f"${session_state.summary_results['Your Policy'] - current_law_income:,.0f}",
-            f"${session_state.summary_results['Your Policy'] - session_state.summary_results['Current Policy']:,.0f}",
-        ],
+        comparison_name: [
+            _format_salt_caps(comparison_params),
+            _format_salt_phaseout(comparison_params),
+            _format_amt_exemptions(comparison_params),
+            _format_amt_phaseout(comparison_params),
+            _format_tcja_provisions(comparison_params),
+            f"${session_state.summary_results.get(comparison_name, 0):,.0f}",
+            f"${session_state.summary_results.get(comparison_name, 0) - session_state.summary_results[baseline_name]:,.0f}",
+            "$0"
+        ]
     }
 
     # Create index for the rows
@@ -113,19 +126,20 @@ def create_summary_table(
         "AMT Phase-out",
         "Other TCJA Provisions",
         "Household Income",
-        "Change from Current Law",
-        "Change from Current Policy",
+        f"Change from {baseline_name}",
+        f"Change from {comparison_name}"
     ]
 
     df = pd.DataFrame(data, index=index)
 
-    # Add subsidy rates if provided
-    if subsidy_rates:
-        df.loc["Marginal Subsidy Rate"] = [
-            f"{subsidy_rates.get('Current Law', 0):.0%}",
-            f"{subsidy_rates.get('Current Policy', 0):.0%}",
-            f"{subsidy_rates.get('Your Policy', 0):.0%}",
-        ]
+    # # Update subsidy rate display
+    # if subsidy_rates:
+    #     df.loc["Marginal Subsidy Rate"] = [
+    #         f"{subsidy_rates.get(baseline_name, 0):.0%}",
+    #         f"{subsidy_rates.get(reform_name, 0):.0%}",
+    #     ]
+    #     if baseline_scenario == "Current Law":
+    #         df.loc["Marginal Subsidy Rate"].append(f"{subsidy_rates.get('Current Policy', 0):.0%}")
 
     # Display table
     st.markdown("### Summary Table")
