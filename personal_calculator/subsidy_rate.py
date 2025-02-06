@@ -38,7 +38,7 @@ def calculate_marginal_subsidy_rate(situation, reform_params_dict, baseline_scen
     baseline_modified = modified_results["baseline"]  
     baseline_delta = baseline_modified - baseline_original
     
-    baseline_subsidy = (-baseline_delta / increment) * 100
+    baseline_subsidy = (baseline_delta / increment) * 100
     subsidy_rates["baseline"] = baseline_subsidy
 
     # For reform scenario

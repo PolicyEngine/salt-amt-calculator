@@ -253,14 +253,6 @@ with calculator_tab:
         impact_key = "selected_reform_impact"
         reform_income = reform_results[impact_key] + baseline_income
 
-        # Calculate subsidy rates
-        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
-        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
-            situation,
-            {"selected_reform": reform_params},
-            baseline_scenario
-        )
-
         # Update results with baseline and reform
         st.session_state.results_df, st.session_state.summary_results = update_results(
             st.session_state.results_df,
@@ -276,14 +268,22 @@ with calculator_tab:
             reform_income,
         )
 
-        # Update chart with all results
+        # Display chart first
         fig = create_reform_comparison_graph(
             st.session_state.summary_results, 
             baseline_scenario
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
 
-        # Display subsidy rates
+        # Then calculate and display subsidy rates
+        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
+        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
+            situation,
+            {"selected_reform": reform_params},
+            baseline_scenario
+        )
+
+        # Display subsidy rates after chart
         st.markdown(
             f"""
             ### Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
