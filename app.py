@@ -21,7 +21,6 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from personal_calculator.subsidy_rate import calculate_marginal_subsidy_rate
 from constants import CURRENT_POLICY_PARAMS
 from introduction import display_introduction
 import plotly.express as px
@@ -278,23 +277,6 @@ with calculator_tab:
             st.session_state.summary_results, baseline_scenario
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
-
-
-
-        # Then calculate and display subsidy rates
-        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
-        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
-            situation, {"selected_reform": reform_params}, baseline_scenario
-        )
-
-        # Display subsidy rates after chart
-        st.markdown(
-            f"""
-            ### Property Tax Subsidy Rates
-            - Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
-            - Under your policy configuration, your property tax subsidy rate is {st.session_state.subsidy_rates['reform']:.1f}%.
-            """
-        )
 
         # Calculate and display effective SALT caps
         status_placeholder.info("Calculating your effective SALT cap...")
