@@ -276,32 +276,38 @@ class NationwideImpacts:
 
 
 def get_reform_name(policy_config, baseline, year=None):
-    """Construct reform name to match CSV format based on policy config and baseline.
-
-    Parameters:
-        policy_config (dict): The policy configuration.
-        baseline (str): The baseline scenario ("Current Law" or "Current Policy").
-        year (int, optional): The year for budget window impacts (2027-2035). If None, assumes 2026.
-
-    Returns:
-        str: The reform name.
-    """
+    """Construct reform name to match CSV format based on policy config and baseline."""
     # Determine SALT component of the reform name
-    if policy_config["salt_cap"] == "Current Law (Uncapped)":
+    if policy_config["salt_cap"] == "Repeal SALT":
+        salt_full = "salt_0_cap"
+    elif policy_config["salt_cap"] == "Current Law (Uncapped)":
         salt_full = "salt_uncapped"
     elif policy_config["salt_cap"] == "$15k":
+        # Handle $15k case with marriage bonus and phaseout options
         if policy_config.get("salt_marriage_bonus"):
+            salt_full = "salt_15_30_k"
             if policy_config.get("salt_phaseout") != "None":
-                salt_full = "salt_15_30_k_with_phaseout"
+                salt_full += "_with_phaseout"
             else:
-                salt_full = "salt_15_30_k_without_phaseout"
+                salt_full += "_without_phaseout"
         else:
+            salt_full = "salt_15_k"
             if policy_config.get("salt_phaseout") != "None":
-                salt_full = "salt_15_k_with_phaseout"
+                salt_full += "_with_phaseout"
             else:
-                salt_full = "salt_15_k_without_phaseout"
-    else:  # Current Policy for SALT cap
-        salt_full = "salt_tcja_base"
+                salt_full += "_without_phaseout"
+    elif policy_config["salt_cap"] == "Current Policy ($10k)":
+        # Handle $10k case with marriage bonus
+        if policy_config.get("salt_marriage_bonus"):
+            salt_full = "salt_tcja_base_with_married_bonus"
+            if policy_config.get("salt_phaseout") != "None":
+                salt_full = "salt_tcja_married_bonus_and_phase_out"
+        else:
+            salt_full = "salt_tcja_base"
+            if policy_config.get("salt_phaseout") != "None":
+                salt_full = "salt_tcja_base_with_phaseout"
+    else:
+        salt_full = "salt_uncapped"
 
     # Handle AMT suffix based on configuration
     if policy_config.get("amt_repealed"):
@@ -345,6 +351,7 @@ def get_reform_name(policy_config, baseline, year=None):
 
     # Append baseline suffix
     baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
+    
     # Append year suffix for budget window impacts (2027-2035)
     if year is not None and year >= 2027:
         year_suffix = f"_year_{year}"
@@ -352,6 +359,7 @@ def get_reform_name(policy_config, baseline, year=None):
         year_suffix = ""
 
     reform_name = f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{year_suffix}{baseline_suffix}"
+    
     return reform_name
 
 

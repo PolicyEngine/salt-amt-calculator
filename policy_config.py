@@ -23,6 +23,10 @@ def display_policy_config():
             disabled=salt_repealed,
         )
 
+        # If SALT is repealed, override the salt_cap value
+        if salt_repealed:
+            salt_cap = "Repeal SALT"
+
         salt_marriage_bonus = st.checkbox(
             "Double the SALT cap for married couples",
             disabled=salt_repealed or salt_cap == "Uncapped",
