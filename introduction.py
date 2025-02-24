@@ -19,9 +19,10 @@ def display_introduction():
     ### SALT Deduction
 
     Consider a married filer in Texas with:
-    * \$500,000 in employment income
+    * \$400,000 in employment income
     * \$15,000 in deductible mortgage interest
     * \$10,000 in charitable cash donations
+    * One child aged 10
 
     """
     )
@@ -54,9 +55,9 @@ def display_introduction():
     )
     comparison_data = {
         "Scenario": ["Current law", "Current policy"],
-        "$5k property taxes": ["$116,272", "$102,453"],
-        "$10k property taxes": ["$114,622", "$102,028"],
-        "Difference": ["-$1,650", "-$425"],
+        "$5k property taxes": ["$83,334", "$73,281"],
+        "$10k property taxes": ["$81,684", "$73,035"],
+        "Difference": ["-1,650", "-$246"],
     }
     df_comparison = pd.DataFrame(comparison_data)
 
@@ -73,8 +74,8 @@ def display_introduction():
 
     comparison_data = {
         "Scenario": ["Current law", "Current policy"],
-        "$5k property taxes": ["$115,066", "$88,966"],
-        "$10k property taxes": ["$115,066", "$88,966"],
+        "$5k property taxes": ["$80,982", "$61,139"],
+        "$10k property taxes": ["$80,982", "$61,139"],
         "Difference": ["$0", "$0"],
     }
     df_comparison = pd.DataFrame(comparison_data)
@@ -121,34 +122,34 @@ def display_introduction():
         "$5k property taxes": [
             "$8,672",
             "$8,672",
-            "$116,272",
-            "$102,453",
-            "$115,066",
-            "$88,966",
-            "$116,272",
-            "$102,453",
+            "$83,334",
+            "$73,281",
+            "$80,982",
+            "$61,139",
+            "$83,334",
+            "$73,281",
         ],
         "$10k property taxes": [
             "$13,672",
             "$10,000",
-            "$114,622",
-            "$102,028",
-            "$115,066",
-            "$88,966",
-            "$115,066",
-            "$102,028",
+            "$81,684",
+            "$73,035",
+            "$80,982",
+            "$61,139",
+            "$81,684",
+            "$73,035",
         ],
         "Difference": [
             "$5,000",
             "$1,328",
             "-$1,650",
-            "-$425",
+            "-$246",
             "$0",
             "$0",
-            "-$1,206",
-            "-$425",
+            "-$1,650",
+            "-$246",
         ],
-        "Property Tax Subsidy Rate": ["-", "-", "-", "-", "-", "-", "24%", "8%"],
+        "Property Tax Subsidy Rate": ["-", "-", "-", "-", "-", "-", "33%", "5%"],
     }
     df_comparison = pd.DataFrame(comparison_data)
 
@@ -188,25 +189,25 @@ def display_introduction():
         "$10k property taxes": [
             "$13,672",
             "$10,000",
-            "$114,622",
-            "$102,028",
-            "$115,066",
-            "$88,966",
-            "$115,066",
-            "$102,028",
+            "$81,684",
+            "$73,035",
+            "$80,982",
+            "$61,139",
+            "$81,684",
+            "$73,035",
         ],
         "$15k property taxes": [
             "$18,672",
             "$10,000",
-            "$112,972",
-            "$102,028",
-            "$115,066",
-            "$88,966",
-            "$115,066",
-            "$102,028",
+            "$80,034",
+            "$73,035",
+            "$80,982",
+            "$61,139",
+            "$80,982",
+            "$73,035",
         ],
-        "Difference": ["$5,000", "$0", "-$1,650", "$0", "$0", "$0", "$0", "$0"],
-        "Subsidy Rate": ["-", "-", "-", "-", "-", "-", "0%", "0%"],
+        "Difference": ["$5,000", "$0", "-$1,650", "$0", "$0", "$0", "$702", "$0"],
+        "Subsidy Rate": ["-", "-", "-", "-", "-", "-", "14%", "0%"],
     }
 
     df_comparison = pd.DataFrame(comparison_data)
@@ -215,12 +216,12 @@ def display_introduction():
 
     st.markdown(
         """
-    The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, making the property tax subsidy rate neutral.
+    The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate.
     
-    Any property taxes that are deducted under the SALT deduction for this household are fully taxed under the alternative minimum tax structure.
+    Any additional property taxes that are deducted under the SALT deduction for this household are fully taxed under the alternative minimum tax structure.
     
     ### The Effective SALT Cap for This Household Is:
-    * **\$12,184 under Current Law**
+    * **\$15,623 under Current Law**
     * **\$10,000 under Current Policy**
     """
     )
