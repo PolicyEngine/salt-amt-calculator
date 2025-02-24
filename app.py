@@ -26,6 +26,7 @@ from constants import CURRENT_POLICY_PARAMS
 from introduction import display_introduction
 import plotly.express as px
 from policyengine_core.charts import format_fig
+from personal_calculator.salt_cap_calculator import find_effective_salt_cap
 
 
 # Set up the Streamlit page
@@ -275,6 +276,40 @@ with calculator_tab:
             st.session_state.summary_results, baseline_scenario
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
+
+        # Calculate and display effective SALT caps
+        status_placeholder.info("Calculating your effective SALT cap...")
+
+        # Create situation with axes using the same inputs
+        situation_with_axes = create_situation(
+            state_code=personal_inputs["state_code"],
+            employment_income=personal_inputs["employment_income"],
+            spouse_income=personal_inputs["spouse_income"],
+            is_married=personal_inputs["is_married"],
+            num_children=personal_inputs["num_children"],
+            child_ages=personal_inputs["child_ages"],
+            qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+            long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+            short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+            real_estate_taxes=personal_inputs["real_estate_taxes"],
+            deductible_mortgage_interest=personal_inputs[
+                "deductible_mortgage_interest"
+            ],
+            charitable_cash_donations=personal_inputs["charitable_cash_donations"],
+        )
+
+        # Calculate caps using the imported function
+        caps = find_effective_salt_cap(
+            situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
+        )
+
+        st.markdown(
+            f"""
+            ### Effective SALT Caps
+            - Under {baseline_scenario}, your effective SALT cap is ${caps['baseline_cap']:,.0f}
+            - Under your policy configuration, your effective SALT cap is ${caps['reform_cap']:,.0f}
+            """
+        )
 
         # Then calculate and display subsidy rates
         status_placeholder.info("Calculating your 2026 property tax subsidy rates...")

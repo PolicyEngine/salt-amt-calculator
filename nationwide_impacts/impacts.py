@@ -5,7 +5,7 @@ from pathlib import Path
 class NationwideImpacts:
     def __init__(self):
         """Initialize nationwide impacts data loader"""
-        self.data_dir = Path(__file__).parent / "data" / "impacts_2026_2035_old"
+        self.data_dir = Path(__file__).parent / "data" / "impacts_2026_2035"
         self.single_year_impacts = self._load_data("impacts_2026.csv")
         self.budget_window_impacts = self._load_budget_window_impacts()
 
@@ -286,11 +286,9 @@ def get_reform_name(policy_config, baseline, year=None):
     Returns:
         str: The reform name.
     """
-    # Handle SALT cap base option
+    # Determine SALT component of the reform name
     if policy_config["salt_cap"] == "Current Law (Uncapped)":
         salt_full = "salt_uncapped"
-    elif policy_config["salt_repealed"]:
-        salt_full = "salt_0_cap"
     elif policy_config["salt_cap"] == "$15k":
         if policy_config.get("salt_marriage_bonus"):
             if policy_config.get("salt_phaseout") != "None":
@@ -302,7 +300,7 @@ def get_reform_name(policy_config, baseline, year=None):
                 salt_full = "salt_15_k_with_phaseout"
             else:
                 salt_full = "salt_15_k_without_phaseout"
-    else:  # Current Policy selected
+    else:  # Current Policy for SALT cap
         salt_full = "salt_tcja_base"
 
     # Handle AMT suffix based on configuration
@@ -311,54 +309,49 @@ def get_reform_name(policy_config, baseline, year=None):
     else:
         exemption = policy_config.get("amt_exemption")
         phaseout = policy_config.get("amt_phaseout")
+        # Check for elimination of the marriage penalty
+        if exemption == "Current Law ($70,500 Single, $109,500 Joint)":
+            if policy_config.get("amt_eliminate_marriage_penalty"):
+                amt_suffix = "_amt_nmp"  # New suffix for "no marriage penalty"
+            else:
+                if phaseout == "Current Law ($156,700 Single, $209,000 Joint)":
+                    amt_suffix = "_amt_tcja_both"
+                elif phaseout == "Current Policy ($639,300 Single, $1,278,575 Joint)":
+                    amt_suffix = "_amt_pre_tcja_ex_tcja_po"
+                else:
+                    amt_suffix = ""
+        elif exemption == "Current Policy ($89,925 Single, $139,850 Joint)":
+            if phaseout == "Current Policy ($639,300 Single, $1,278,575 Joint)":
+                amt_suffix = "_amt_pre_tcja_ex_pre_tcja_po"
+            elif phaseout == "Current Law ($156,700 Single, $209,000 Joint)":
+                amt_suffix = "_amt_tcja_ex_pre_tcja_po"
+            else:
+                amt_suffix = ""
+        else:
+            amt_suffix = ""
 
-        # Map the combinations to their correct suffixes
-        if (
-            exemption == "Current Law ($70,500 Single, $109,500 Joint)"
-            and phaseout == "Current Law ($156,700 Single, $209,000 Joint)"
-        ):
-            amt_suffix = "_amt_tcja_both"
-        elif (
-            exemption == "Current Law ($70,500 Single, $109,500 Joint)"
-            and phaseout == "Current Policy ($639,300 Single, $1,278,575 Joint)"
-        ):
-            amt_suffix = "_amt_pre_tcja_ex_tcja_po"
-        elif (
-            exemption == "Current Policy ($89,925 Single, $139,850 Joint)"
-            and phaseout == "Current Policy ($639,300 Single, $1,278,575 Joint)"
-        ):
-            amt_suffix = "_amt_pre_tcja_ex_pre_tcja_po"
-        elif (
-            exemption == "Current Policy ($89,925 Single, $139,850 Joint)"
-            and phaseout == "Current Law ($156,700 Single, $209,000 Joint)"
-        ):
-            amt_suffix = "_amt_tcja_ex_pre_tcja_po"
-
-    # Add behavioral response suffix
+    # Append additional suffixes for behavioral responses and other TCJA provisions
     behavioral_suffix = (
         "_behavioral_responses_yes"
         if policy_config.get("behavioral_responses")
         else "_behavioral_responses_no"
     )
 
-    # Add other TCJA provisions suffix
     other_tcja_provisions_suffix = (
         "_other_tcja_provisions_extended_no"
         if policy_config.get("other_tcja_provisions_extended") == "Current Law"
         else "_other_tcja_provisions_extended_yes"
     )
 
-    # Add baseline suffix
+    # Append baseline suffix
     baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
-
-    # Add year suffix for budget window impacts (2027-2035)
+    # Append year suffix for budget window impacts (2027-2035)
     if year is not None and year >= 2027:
         year_suffix = f"_year_{year}"
     else:
         year_suffix = ""
 
     reform_name = f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{year_suffix}{baseline_suffix}"
-
     return reform_name
 
 

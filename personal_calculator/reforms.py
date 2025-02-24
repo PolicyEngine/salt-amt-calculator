@@ -224,7 +224,24 @@ class PolicyReforms:
 
 
 def get_reform_params_from_config(policy_config):
-    """Get reform parameters based on policy configuration"""
+    """Get reform parameters based on policy configuration.
+
+    Note:
+        To eliminate the marriage penalty for AMT parameters in Current Law,
+        add `"amt_eliminate_marriage_penalty": True` to your policy config.
+        This sets the AMT exemptions as follows:
+            - SINGLE, HEAD_OF_HOUSEHOLD, SURVIVING_SPOUSE: 70,500
+            - JOINT: 141,000 (and SEPARATE: 70,500)
+        and the AMT phase‐out thresholds as:
+            - SINGLE, HEAD_OF_HOUSEHOLD, SURVIVING_SPOUSE: 156,700
+            - JOINT: 313,400 (and SEPARATE: 156,700).
+
+        For the Current Policy configuration, we now also supply
+        phase‐out thresholds based on scaled values from current law:
+            - SINGLE, HEAD_OF_HOUSEHOLD, SURVIVING_SPOUSE: 200,700
+            - JOINT: 268,000 (and SEPARATE: 134,000).
+        These changes are also highlighted in the accompanying notebooks.
+    """
     reform_params = {
         # Initialize with default values
         "salt_phase_out_enabled": False,
@@ -275,7 +292,6 @@ def get_reform_params_from_config(policy_config):
             reform_params["salt_phase_out_rate"] = 0.1
             reform_params["salt_phase_out_threshold_joint"] = 400_000
             reform_params["salt_phase_out_threshold_other"] = 200_000
-
     elif policy_config["salt_cap"] == "$0 Cap":
         reform_params["salt_caps"] = {
             "JOINT": 0,
@@ -317,11 +333,11 @@ def get_reform_params_from_config(policy_config):
             k: np.inf for k in reform_params["salt_caps"].keys()
         }
     else:
-        # Set AMT exemptions
         if (
             policy_config["amt_exemption"]
             == "Current Policy ($89,925 Single, $139,850 Joint)"
         ):
+            # Current Policy configuration for AMT: exemptions and phase-out thresholds.
             reform_params["amt_exemptions"] = {
                 "JOINT": 140_565,
                 "SEPARATE": 70_282,
@@ -329,34 +345,43 @@ def get_reform_params_from_config(policy_config):
                 "HEAD_OF_HOUSEHOLD": 90_394,
                 "SURVIVING_SPOUSE": 90_394,
             }
-        else:  # Current Law
-            reform_params["amt_exemptions"] = {
-                "JOINT": 109_700,
-                "SEPARATE": 54_850,
-                "SINGLE": 70_500,
-                "HEAD_OF_HOUSEHOLD": 70_500,
-                "SURVIVING_SPOUSE": 70_500,
-            }
-
-        # Set AMT phase-outs
-        if (
-            policy_config["amt_phaseout"]
-            == "Current Policy ($639,300 Single, $1,278,575 Joint)"
-        ):
             reform_params["amt_phase_outs"] = {
-                "JOINT": 1_285_409,
-                "SEPARATE": 642_704,
-                "SINGLE": 642_705,
-                "HEAD_OF_HOUSEHOLD": 642_705,
-                "SURVIVING_SPOUSE": 642_705,
+                "JOINT": 268_000,
+                "SEPARATE": 134_000,
+                "SINGLE": 200_700,
+                "HEAD_OF_HOUSEHOLD": 200_700,
+                "SURVIVING_SPOUSE": 200_700,
             }
         else:  # Current Law
-            reform_params["amt_phase_outs"] = {
-                "JOINT": 209_000,
-                "SEPARATE": 104_500,
-                "SINGLE": 156_700,
-                "HEAD_OF_HOUSEHOLD": 156_700,
-                "SURVIVING_SPOUSE": 156_700,
-            }
+            if policy_config.get("amt_eliminate_marriage_penalty"):
+                reform_params["amt_exemptions"] = {
+                    "JOINT": 141_000,
+                    "SEPARATE": 70_500,
+                    "SINGLE": 70_500,
+                    "HEAD_OF_HOUSEHOLD": 70_500,
+                    "SURVIVING_SPOUSE": 70_500,
+                }
+                reform_params["amt_phase_outs"] = {
+                    "JOINT": 313_400,
+                    "SEPARATE": 156_700,
+                    "SINGLE": 156_700,
+                    "HEAD_OF_HOUSEHOLD": 156_700,
+                    "SURVIVING_SPOUSE": 156_700,
+                }
+            else:
+                reform_params["amt_exemptions"] = {
+                    "JOINT": 109_700,
+                    "SEPARATE": 54_850,
+                    "SINGLE": 70_500,
+                    "HEAD_OF_HOUSEHOLD": 70_500,
+                    "SURVIVING_SPOUSE": 70_500,
+                }
+                reform_params["amt_phase_outs"] = {
+                    "JOINT": 209_000,
+                    "SEPARATE": 104_500,
+                    "SINGLE": 156_700,
+                    "HEAD_OF_HOUSEHOLD": 156_700,
+                    "SURVIVING_SPOUSE": 156_700,
+                }
 
     return reform_params

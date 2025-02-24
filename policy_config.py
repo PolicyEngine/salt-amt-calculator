@@ -60,6 +60,22 @@ def display_policy_config():
             ],
             disabled=amt_repealed,
         )
+
+        # New option: allow eliminating the marriage penalty if using Current Law
+        amt_eliminate_marriage_penalty = st.checkbox(
+            "Eliminate marriage penalty for AMT (Current Law only)",
+            disabled=amt_repealed
+            or (amt_exemption != "Current Law ($70,500 Single, $109,500 Joint)"),
+            help=(
+                "When selected, for Current Law the AMT exemptions are set as follows:\n"
+                "    - Single, Head of Household, Surviving Spouse: 70,500\n"
+                "    - Joint: 141,000 (and Married Filing Separately: 70,500)\n\n"
+                "Similarly, the phase‐out thresholds are adjusted to:\n"
+                "    - Single, Head of Household, Surviving Spouse: 156,700\n"
+                "    - Joint: 313,400 (and Married Filing Separately: 156,700)"
+            ),
+        )
+
     # Behavioral responses section
     st.markdown("**General**")
     # Add other TCJA provisions selector
@@ -86,6 +102,7 @@ def display_policy_config():
         "amt_exemption": amt_exemption,
         "amt_phaseout": amt_phaseout,
         "amt_repealed": amt_repealed,
+        "amt_eliminate_marriage_penalty": amt_eliminate_marriage_penalty,
         "other_tcja_provisions_extended": other_tcja_provisions_extended,
     }
 
