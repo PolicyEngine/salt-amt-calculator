@@ -312,7 +312,7 @@ def get_reform_name(policy_config, baseline, year=None):
         # Check for elimination of the marriage penalty
         if exemption == "Current Law ($70,500 Single, $109,500 Joint)":
             if policy_config.get("amt_eliminate_marriage_penalty"):
-                amt_suffix = "_amt_nmp"  # New suffix for "no marriage penalty"
+                amt_suffix = "_amt_tcja_nmp"  # New suffix for "no marriage penalty"
             else:
                 if phaseout == "Current Law ($156,700 Single, $209,000 Joint)":
                     amt_suffix = "_amt_tcja_both"
