@@ -27,6 +27,7 @@ from introduction import display_introduction
 import plotly.express as px
 from policyengine_core.charts import format_fig
 from personal_calculator.salt_cap_calculator import find_effective_salt_cap
+from personal_calculator.salt_cap_calculator import create_situation_with_axes
 
 
 # Set up the Streamlit page
@@ -52,6 +53,7 @@ if "nationwide_impacts" not in st.session_state:
 
 # Display baseline impacts section first
 display_baseline_impacts()
+
 
 # Display policy configuration section after baseline impacts
 st.markdown("---")
@@ -277,11 +279,28 @@ with calculator_tab:
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
 
+
+
+        # Then calculate and display subsidy rates
+        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
+        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
+            situation, {"selected_reform": reform_params}, baseline_scenario
+        )
+
+        # Display subsidy rates after chart
+        st.markdown(
+            f"""
+            ### Property Tax Subsidy Rates
+            - Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
+            - Under your policy configuration, your property tax subsidy rate is {st.session_state.subsidy_rates['reform']:.1f}%.
+            """
+        )
+
         # Calculate and display effective SALT caps
         status_placeholder.info("Calculating your effective SALT cap...")
 
         # Create situation with axes using the same inputs
-        situation_with_axes = create_situation(
+        situation_with_axes = create_situation_with_axes(
             state_code=personal_inputs["state_code"],
             employment_income=personal_inputs["employment_income"],
             spouse_income=personal_inputs["spouse_income"],
@@ -291,7 +310,6 @@ with calculator_tab:
             qualified_dividend_income=personal_inputs["qualified_dividend_income"],
             long_term_capital_gains=personal_inputs["long_term_capital_gains"],
             short_term_capital_gains=personal_inputs["short_term_capital_gains"],
-            real_estate_taxes=personal_inputs["real_estate_taxes"],
             deductible_mortgage_interest=personal_inputs[
                 "deductible_mortgage_interest"
             ],
@@ -306,23 +324,8 @@ with calculator_tab:
         st.markdown(
             f"""
             ### Effective SALT Caps
-            - Under {baseline_scenario}, your effective SALT cap is ${caps['baseline_cap']:,.0f}
-            - Under your policy configuration, your effective SALT cap is ${caps['reform_cap']:,.0f}
-            """
-        )
-
-        # Then calculate and display subsidy rates
-        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
-        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
-            situation, {"selected_reform": reform_params}, baseline_scenario
-        )
-
-        # Display subsidy rates after chart
-        st.markdown(
-            f"""
-            ### Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
-            
-            ### Under your policy configuration, your property tax subsidy rate is {st.session_state.subsidy_rates['reform']:.1f}%.
+            - Under {baseline_scenario}, your effective SALT cap is ${caps['baseline_salt_cap']:,.0f}
+            - Under your policy configuration, your effective SALT cap is ${caps['reform_salt_cap']:,.0f}
             """
         )
 
