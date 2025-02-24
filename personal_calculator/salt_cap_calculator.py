@@ -7,21 +7,19 @@ import pandas as pd
 import streamlit as st
 
 
-
 def create_situation_with_axes(
-        state_code,
-        employment_income,
-        is_married,
-        spouse_income,
-        num_children,
-        child_ages,
-        qualified_dividend_income,
-        long_term_capital_gains,
-        short_term_capital_gains,
-        deductible_mortgage_interest,
-        charitable_cash_donations,
+    state_code,
+    employment_income,
+    is_married,
+    spouse_income,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
 ):
-
 
     situation_with_axes = {
         "people": {
@@ -44,7 +42,6 @@ def create_situation_with_axes(
             "employment_income": {"2026": spouse_income},
         }
         members.append("spouse")
-    
 
     for i in range(num_children):
         child_id = f"child_{i}"
@@ -52,58 +49,29 @@ def create_situation_with_axes(
             "age": {"2026": child_ages[i]},
         }
         members.append(child_id)
-    
+
     situation_with_axes.update(
         {
-            "families": {
-                "your family": {
-                    "members": members.copy()
-                }
-            },
-            "marital_units": {
-                "your marital unit": {
-                    "members": members.copy()
-                }
-            },
-            "tax_units": {
-                "your tax unit": {
-                    "members": members.copy()
-                }
-            },
-            "spm_units": {
-                "your household": {
-                    "members": members.copy()
-                }
-            },
+            "families": {"your family": {"members": members.copy()}},
+            "marital_units": {"your marital unit": {"members": members.copy()}},
+            "tax_units": {"your tax unit": {"members": members.copy()}},
+            "spm_units": {"your household": {"members": members.copy()}},
             "households": {
                 "your household": {
                     "members": members.copy(),
-                    "state_name": {"2026": state_code}
+                    "state_name": {"2026": state_code},
                 }
             },
             "axes": [
-                [
-                    {
-                        "name": "real_estate_taxes",
-                        "count": 500,
-                        "min": 0,
-                        "max": 50000
-                    }
-                ]
-            ]
+                [{"name": "real_estate_taxes", "count": 500, "min": 0, "max": 50000}]
+            ],
         }
     )
-
 
     return situation_with_axes
 
 
-
-def find_effective_salt_cap(
-    situation_with_axes,
-    reform_params_dict,
-    baseline_scenario
-):
+def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_scenario):
     """
     Find the effective SALT cap by incrementing real estate taxes until tax liability stops changing
 
@@ -120,7 +88,7 @@ def find_effective_salt_cap(
             - 'baseline_tax_at_cap': Tax liability at baseline cap
             - 'reform_tax_at_cap': Tax liability at reform cap
     """
-    
+
     if baseline_scenario == "Current Law":
         baseline_simulation = Simulation(situation=situation_with_axes)
     elif baseline_scenario == "Current Policy":
@@ -131,20 +99,23 @@ def find_effective_salt_cap(
         raise ValueError(f"Invalid baseline scenario: {baseline_scenario}")
 
     baseline_amt = baseline_simulation.calculate("amt_base_tax", "2026")
-    baseline_regular_tax = baseline_simulation.calculate("regular_tax_before_credits", "2026")
+    baseline_regular_tax = baseline_simulation.calculate(
+        "regular_tax_before_credits", "2026"
+    )
     filing_status = baseline_simulation.calculate("filing_status", "2026")[0]
     is_married = filing_status == 1
     real_estate_taxes = np.linspace(
         start=situation_with_axes["axes"][0][0]["min"],
         stop=situation_with_axes["axes"][0][0]["max"],
-        num=situation_with_axes["axes"][0][0]["count"]
-    )    
-    results_df = pd.DataFrame({
-        "real_estate_taxes": real_estate_taxes,
-        "baseline_regular_tax": baseline_regular_tax,
-        "baseline_amt": baseline_amt,
-    })
-
+        num=situation_with_axes["axes"][0][0]["count"],
+    )
+    results_df = pd.DataFrame(
+        {
+            "real_estate_taxes": real_estate_taxes,
+            "baseline_regular_tax": baseline_regular_tax,
+            "baseline_amt": baseline_amt,
+        }
+    )
 
     # Add single reform net income
     for reform_key, reform_params in reform_params_dict.items():
@@ -152,7 +123,9 @@ def find_effective_salt_cap(
             reform_dict = PolicyReforms.policy_reforms(reform_params)
             reform = Reform.from_dict(reform_dict, country_id="us")
             reform_simulation = Simulation(situation=situation_with_axes, reform=reform)
-            reform_regular_tax = reform_simulation.calculate("regular_tax_before_credits", "2026")
+            reform_regular_tax = reform_simulation.calculate(
+                "regular_tax_before_credits", "2026"
+            )
             reform_amt = reform_simulation.calculate("amt_base_tax", "2026")
             results_df["reform_regular_tax"] = reform_regular_tax
             results_df["reform_amt"] = reform_amt
@@ -160,10 +133,11 @@ def find_effective_salt_cap(
             results_df["reform_regular_tax"] = None
             results_df["reform_amt"] = None
 
-
     # Find where AMT exceeds regular tax for baseline
-    baseline_crossover_mask = results_df["baseline_amt"] > results_df["baseline_regular_tax"]
-    baseline_crossover = float('inf')
+    baseline_crossover_mask = (
+        results_df["baseline_amt"] > results_df["baseline_regular_tax"]
+    )
+    baseline_crossover = float("inf")
     if any(baseline_crossover_mask):
         # Get the first point where AMT exceeds regular tax
         crossover_idx = np.where(baseline_crossover_mask)[0][0]
@@ -171,26 +145,42 @@ def find_effective_salt_cap(
 
     # Find where AMT exceeds regular tax for reform
     reform_crossover_mask = results_df["reform_amt"] > results_df["reform_regular_tax"]
-    reform_crossover = float('inf')
+    reform_crossover = float("inf")
     if any(reform_crossover_mask):
         # Get the first point where AMT exceeds regular tax
         crossover_idx = np.where(reform_crossover_mask)[0][0]
         reform_crossover = results_df["real_estate_taxes"].iloc[crossover_idx]
     # Get baseline SALT cap
     if baseline_scenario == "Current Law":
-        baseline_salt_cap = float('inf')
+        baseline_salt_cap = float("inf")
     else:  # Current Policy
-        baseline_salt_cap = 10_000 if (is_married and st.session_state.policy_config["salt_marriage_bonus"]) else 10_000
+        baseline_salt_cap = (
+            10_000
+            if (is_married and st.session_state.policy_config["salt_marriage_bonus"])
+            else 10_000
+        )
     # Get reform SALT cap from policy config
-    reform_salt_cap = float('inf')  # Default to uncapped
+    reform_salt_cap = float("inf")  # Default to uncapped
     if reform_params_dict:
-        salt_cap_setting = st.session_state.policy_config["salt_cap"]        
+        salt_cap_setting = st.session_state.policy_config["salt_cap"]
         if salt_cap_setting == "Current Policy ($10k)":
-            reform_salt_cap = 20_000 if (is_married and st.session_state.policy_config["salt_marriage_bonus"]) else 10_000
+            reform_salt_cap = (
+                20_000
+                if (
+                    is_married and st.session_state.policy_config["salt_marriage_bonus"]
+                )
+                else 10_000
+            )
         elif salt_cap_setting == "$15k":
-            reform_salt_cap = 30_000 if (is_married and st.session_state.policy_config["salt_marriage_bonus"]) else 15_000
+            reform_salt_cap = (
+                30_000
+                if (
+                    is_married and st.session_state.policy_config["salt_marriage_bonus"]
+                )
+                else 15_000
+            )
         # "Current Law (Uncapped)" will use the default float('inf')
-        
+
         # Apply repeal if selected
         if st.session_state.policy_config["salt_repealed"]:
             reform_salt_cap = 0
