@@ -324,8 +324,14 @@ with calculator_tab:
         st.markdown(
             f"""
             ### Effective SALT Caps
-            - Under {baseline_scenario}, your effective SALT cap is ${caps['baseline_salt_cap']:,.0f}
-            - Under your policy configuration, your effective SALT cap is ${caps['reform_salt_cap']:,.0f}
+            - Under {baseline_scenario}, {
+                "no effective SALT cap applies" if np.isinf(caps['baseline_salt_cap']) 
+                else f"your effective SALT cap is ${caps['baseline_salt_cap']:,.0f}"
+            }
+            - Under your policy configuration, {
+                "no effective SALT cap applies" if np.isinf(caps['reform_salt_cap']) 
+                else f"your effective SALT cap is ${caps['reform_salt_cap']:,.0f}"
+            }
             """
         )
 
