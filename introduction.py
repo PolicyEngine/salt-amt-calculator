@@ -14,16 +14,26 @@ def display_introduction():
 
     **AMT:** Filers must calculate their tax liability under the regular tax code and the AMT and pay the higher amount. The AMT disallows certain deductions, including the SALT deduction. The TCJA has (1) expanded the exemption amount that applies to AMT-specific income and (2) increased the threshold at which this exemption phases out at a rate of 25%.
     
+    ## What We'll Demonstrate
+
+    In this analysis, we'll show how the interaction between SALT deductions and AMT creates an **effective SALT cap** even when the explicit SALT cap expires in 2026 (current law). We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much property tax high-income households can deduct, creating a de facto cap that's different from the explicit \$10,000 cap under current policy (2025).
+    
+    We'll examine this through:
+    1. A detailed case study of an upper-middle-class household
+    2. Analysis of property tax subsidy rates (how much tax relief households get per dollar of property tax)
+    3. Visualization of these effects across different property tax amounts
+    
     ## How SALT and AMT Affect a Sample Household
     
     ### SALT Deduction
 
     Consider a married filer in Texas with:
-    * \$400,000 in employment income
-    * \$15,000 in deductible mortgage interest
-    * \$10,000 in charitable cash donations
+    * \$400,000 in wages and salaries 
+    * \$15,000 in deductible mortgage interest 
+    * \$10,000 in charitable cash donations 
     * One child aged 10
 
+    We chose Texas because it has no state income tax, which simplifies our analysis of property tax effects. This household represents those most likely to be affected by SALT and AMT interactions.
     """
     )
 
@@ -36,21 +46,28 @@ def display_introduction():
     }
     df_comparison = pd.DataFrame(comparison_data)
 
+    st.markdown(
+        """
+    #### SALT Deduction Amount by Scenario
+    The table below shows how much of the property taxes plus sales taxes can be deducted under each scenario:
+    """
+    )
+
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
         """
     Texas doesn't levy income taxes, but for SALT, the filer can claim either their actual sales taxes or an estimated amount based on [IRS tables](https://www.irs.gov/instructions/i1040sca#en_US_2023_publink10005349). 
-    In this case, they can claim \$3,672. 
+    In this case, they can claim \$3,672 in sales taxes. 
     
-    Under current law and current policy, the entire amount of property taxes is deductible from federal taxable income. Under current policy, however, this amount is subject to the SALT deduction cap of \$10,000, allowing for a maximum property tax deduction of \$6,328.
+    Under current law (2026), the entire amount of property taxes plus sales taxes is deductible. Under current policy (2025), this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction.
     """
     )
 
     st.markdown(
         """
     ### Regular Tax Liability
-    The increased SALT deduction will lower the household's taxable income, which in turn results in lower regular tax liabilities.
+    The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities. The table below shows the regular tax liability (before considering AMT) for each scenario:
     """
     )
     comparison_data = {
@@ -67,8 +84,9 @@ def display_introduction():
         """
     ### Alternative Minimum Tax (AMT)
 
-    The alternative minimum tax (AMT) begins with the regular taxable income and then makes specific adjustments to compute an alternative taxable income. For filers taking the standard deduction, that amount is simply used. However, for filers who itemize, only the SALT deduction—and a few other select items that are excluded from regular taxable income—is added back. This adjusted income is then reduced by an exemption amount, which phases out for higher levels of AMT income, before a tax rate of either 26% or 28% is applied to determine the tentative minimum tax. (Additional rules may apply for households with capital gains and dividend income.)
+    The alternative minimum tax (AMT) begins with the regular taxable income and then makes specific adjustments to compute an alternative taxable income. For filers taking the standard deduction, that amount is simply used. However, for filers who itemize, only the SALT deduction—and a few other select items that are excluded from regular taxable income—is added back. This adjusted income is then reduced by an exemption amount, which phases out for higher levels of AMT income, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.)
     
+    The table below shows the tentative minimum tax for each scenario:
     """
     )
 
@@ -84,17 +102,17 @@ def display_introduction():
 
     st.markdown(
         """
-    The excess of the tentative minimum tax over the regular tax liability is added back to compute the AMT liability.
+    The excess of the tentative minimum tax over the regular tax liability is added back to compute the AMT liability. The household must pay the higher of the regular tax or the tentative minimum tax.
     """
     )
 
     st.markdown(
         """
-    ### Current Property Tax Subsidy Rates
+    ### Property Tax Subsidy Rates
 
-    One way to assess the impact of these tax policies is by examining how much of a household's property taxes is offset by reductions in income tax liability.
-
-    This illustrates how tax policy changes—such as lifting the SALT cap—can impact the extent to which property taxes are deductible and how much tax relief a household receives.
+    One way to assess the impact of these tax policies is by examining how much of a household's property taxes is offset by reductions in income tax liability. The **property tax subsidy rate** measures what percentage of each additional dollar in property taxes is effectively subsidized through tax savings.
+    
+    The table below summarizes all the key tax calculations and shows the resulting property tax subsidy rates:
     """
     )
 
@@ -157,8 +175,9 @@ def display_introduction():
 
     st.markdown(
         """
-    Under current law, the tentative minimum tax exceeds the regular tax liability when this household pays \$10k or more in property taxes. 
-    Under current policy, the tentative minimum tax is lower than the regular tax liability for this household.
+    **Key Insight:** Under current law, the tentative minimum tax exceeds the regular tax liability when this household pays \$10k or more in property taxes. This means the AMT kicks in and limits the benefit of the SALT deduction.
+    
+    Under current policy, the tentative minimum tax is lower than the regular tax liability for this household, but the explicit SALT cap of \$10,000 limits the deduction.
     
     ### Now let's examine the same household with \$10k and \$15k in property taxes.
     """
@@ -216,23 +235,27 @@ def display_introduction():
 
     st.markdown(
         """
-    The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate.
+    **Key Finding:** The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate from 33% to 14% as property taxes increase.
     
-    Any additional property taxes that are deducted under the SALT deduction for this household are fully taxed under the alternative minimum tax structure.
+    Any additional property taxes that are deducted under the SALT deduction for this household are partially taxed under the alternative minimum tax structure, creating an effective cap.
     
     ### The Effective SALT Cap for This Household Is:
-    * **\$15,775 under Current Law**
-    * **\$10,000 under Current Policy**
+    * **\$15,775 under Current Law** (due to the AMT)
+    * **\$10,000 under Current Policy** (due to the explicit SALT deductioncap)
+    
+    This demonstrates that even when the SALT cap officially expires, the AMT creates an effective cap for certain households.
     """
     )
 
     st.markdown(
         """
-    ### We can also examine the SALT deduction, AMT, and the property tax subsidy rate over a property tax range of \$0 to \$50k.
+    ### Visualizing These Effects Across Different Property Tax Amounts
+    
+    The charts below show how tax liabilities and subsidy rates change as property taxes increase from \$0 to \$50k, helping us understand the broader implications of these policies.
     """
     )
     # Read the CSV files
-    with st.expander("See detailed tax calculations"):
+    with st.expander("See detailed tax calculations and charts"):
         df = pd.read_csv("personal_calculator/data/tax_calculations_2026_new.csv")
 
         # Create tax liability comparison plot
@@ -284,6 +307,13 @@ def display_introduction():
             height=500,
         )
 
+        st.markdown(
+            """
+        #### Tax Liability Chart
+        This chart shows how regular tax and AMT change as property taxes increase. Where the dashed line (AMT) is above the solid line (regular tax), the household pays the AMT amount, limiting the benefit of SALT deductions.
+        """
+        )
+
         st.plotly_chart(format_fig(fig2))
 
         # Add subsidy rates plot for both years
@@ -322,4 +352,17 @@ def display_introduction():
             height=500,
         )
 
+        st.markdown(
+            """
+        #### Subsidy Rate Chart
+        This chart shows the percentage of each additional dollar of property tax that is effectively subsidized through tax savings. The declining subsidy rate under current law demonstrates how the AMT creates an effective cap on SALT deductions.
+        """
+        )
+
         st.plotly_chart(format_fig(fig3))
+
+        st.markdown(
+            """
+        These charts confirm our key finding: even when the explicit SALT cap expires in 2026, the AMT creates an effective cap that limits the tax benefits of property tax deductions for high-income households.
+        """
+        )
