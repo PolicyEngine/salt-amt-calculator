@@ -11,7 +11,6 @@ def create_situation_with_axes(
     state_code,
     employment_income,
     is_married,
-    spouse_income,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -39,7 +38,6 @@ def create_situation_with_axes(
     if is_married:
         situation_with_axes["people"]["spouse"] = {
             "age": {"2026": 40},
-            "employment_income": {"2026": spouse_income},
         }
         members.append("spouse")
 
@@ -63,7 +61,7 @@ def create_situation_with_axes(
                 }
             },
             "axes": [
-                [{"name": "real_estate_taxes", "count": 500, "min": 0, "max": 50000}]
+                [{"name": "real_estate_taxes", "count": 501, "min": 0, "max": 50000}]
             ],
         }
     )
@@ -88,7 +86,6 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             - 'baseline_tax_at_cap': Tax liability at baseline cap
             - 'reform_tax_at_cap': Tax liability at reform cap
     """
-
     if baseline_scenario == "Current Law":
         baseline_simulation = Simulation(situation=situation_with_axes)
     elif baseline_scenario == "Current Policy":
@@ -97,7 +94,6 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
         baseline_simulation = Simulation(situation=situation_with_axes, reform=reform)
     else:
         raise ValueError(f"Invalid baseline scenario: {baseline_scenario}")
-
     baseline_amt = baseline_simulation.calculate("amt_base_tax", "2026")
     baseline_regular_tax = baseline_simulation.calculate(
         "regular_tax_before_credits", "2026"
@@ -109,9 +105,13 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
         stop=situation_with_axes["axes"][0][0]["max"],
         num=situation_with_axes["axes"][0][0]["count"],
     )
+    state_local_tax = baseline_simulation.calculate("state_and_local_sales_or_income_tax", "2026")
+    total_salt = real_estate_taxes + state_local_tax
     results_df = pd.DataFrame(
         {
             "real_estate_taxes": real_estate_taxes,
+            "state_local_tax": state_local_tax,
+            "total_salt": total_salt,
             "baseline_regular_tax": baseline_regular_tax,
             "baseline_amt": baseline_amt,
         }
@@ -129,11 +129,24 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             reform_amt = reform_simulation.calculate("amt_base_tax", "2026")
             results_df["reform_regular_tax"] = reform_regular_tax
             results_df["reform_amt"] = reform_amt
+            results_df["reform_state_local_tax"] = reform_simulation.calculate("state_and_local_sales_or_income_tax", "2026")
+            results_df["reform_total_salt"] = results_df["reform_state_local_tax"] + results_df["real_estate_taxes"]
         except Exception as e:
             results_df["reform_regular_tax"] = None
             results_df["reform_amt"] = None
+            results_df["reform_state_local_tax"] = None
+            results_df["reform_total_salt"] = None
 
-    # Find where AMT exceeds regular tax for baseline
+    # Print the entire DataFrame with all rows
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', 1000)
+    print("\n\n===== FULL RESULTS DATAFRAME =====")
+    print(results_df)
+    print("===== END OF DATAFRAME =====\n\n")
+    pd.reset_option('display.max_rows')
+    pd.reset_option('display.max_columns')
+    pd.reset_option('display.width')    # Find where AMT exceeds regular tax for baseline
     baseline_crossover_mask = (
         results_df["baseline_amt"] > results_df["baseline_regular_tax"]
     )

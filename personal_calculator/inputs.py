@@ -78,7 +78,6 @@ def create_personal_inputs():
             step=1000,
             help="All income is attributed to the head of the household",
         )
-        spouse_income = 0
 
         qualified_dividends = st.number_input(
             "Qualified dividends",
@@ -109,7 +108,6 @@ def create_personal_inputs():
     return {
         "is_married": is_married,
         "state_code": state_code,
-        "spouse_income": spouse_income,
         "num_children": num_children,
         "child_ages": child_ages,
         "employment_income": employment_income,

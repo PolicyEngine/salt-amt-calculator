@@ -215,7 +215,6 @@ with calculator_tab:
         situation = create_situation(
             state_code=personal_inputs["state_code"],
             employment_income=personal_inputs["employment_income"],
-            spouse_income=personal_inputs["spouse_income"],
             is_married=personal_inputs["is_married"],
             num_children=personal_inputs["num_children"],
             child_ages=personal_inputs["child_ages"],
@@ -285,7 +284,6 @@ with calculator_tab:
         situation_with_axes = create_situation_with_axes(
             state_code=personal_inputs["state_code"],
             employment_income=personal_inputs["employment_income"],
-            spouse_income=personal_inputs["spouse_income"],
             is_married=personal_inputs["is_married"],
             num_children=personal_inputs["num_children"],
             child_ages=personal_inputs["child_ages"],
@@ -302,6 +300,7 @@ with calculator_tab:
         caps = find_effective_salt_cap(
             situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
         )
+        print(baseline_scenario)
 
         st.markdown(
             f"""

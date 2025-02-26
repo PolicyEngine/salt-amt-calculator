@@ -355,33 +355,33 @@ def get_reform_params_from_config(policy_config):
         else:  # Current Law
             if policy_config.get("amt_eliminate_marriage_penalty"):
                 reform_params["amt_exemptions"] = {
-                    "JOINT": 141_000,
-                    "SEPARATE": 70_500,
-                    "SINGLE": 70_500,
-                    "HEAD_OF_HOUSEHOLD": 70_500,
-                    "SURVIVING_SPOUSE": 70_500,
+                    "JOINT": 141_200,
+                    "SEPARATE": 70_600,
+                    "SINGLE": 70_600,
+                    "HEAD_OF_HOUSEHOLD": 70_600,
+                    "SURVIVING_SPOUSE": 70_600,
                 }
                 reform_params["amt_phase_outs"] = {
-                    "JOINT": 313_400,
-                    "SEPARATE": 156_700,
-                    "SINGLE": 156_700,
-                    "HEAD_OF_HOUSEHOLD": 156_700,
-                    "SURVIVING_SPOUSE": 156_700,
+                    "JOINT": 313_800,
+                    "SEPARATE": 156_900,
+                    "SINGLE": 156_900,
+                    "HEAD_OF_HOUSEHOLD": 156_900,
+                    "SURVIVING_SPOUSE": 156_900,
                 }
             else:
                 reform_params["amt_exemptions"] = {
-                    "JOINT": 109_700,
-                    "SEPARATE": 54_850,
-                    "SINGLE": 70_500,
-                    "HEAD_OF_HOUSEHOLD": 70_500,
-                    "SURVIVING_SPOUSE": 70_500,
+                    "JOINT": 109_800,
+                    "SEPARATE": 54_900,
+                    "SINGLE": 70_600,
+                    "HEAD_OF_HOUSEHOLD": 70_600,
+                    "SURVIVING_SPOUSE": 70_600,
                 }
                 reform_params["amt_phase_outs"] = {
-                    "JOINT": 209_000,
-                    "SEPARATE": 104_500,
-                    "SINGLE": 156_700,
-                    "HEAD_OF_HOUSEHOLD": 156_700,
-                    "SURVIVING_SPOUSE": 156_700,
+                    "JOINT": 209_200,
+                    "SEPARATE": 104_600,
+                    "SINGLE": 156_900,
+                    "HEAD_OF_HOUSEHOLD": 156_900,
+                    "SURVIVING_SPOUSE": 156_900,
                 }
 
     return reform_params

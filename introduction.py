@@ -221,7 +221,7 @@ def display_introduction():
     Any additional property taxes that are deducted under the SALT deduction for this household are fully taxed under the alternative minimum tax structure.
     
     ### The Effective SALT Cap for This Household Is:
-    * **\$15,623 under Current Law**
+    * **\$17,200 under Current Law**
     * **\$10,000 under Current Policy**
     """
     )
