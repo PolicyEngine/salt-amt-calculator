@@ -2,7 +2,6 @@ def create_situation(
     state_code,
     employment_income,
     is_married,
-    spouse_income,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -45,7 +44,6 @@ def create_situation(
     if is_married:
         situation["people"]["spouse"] = {
             "age": {"2026": 40},
-            "employment_income": {"2026": spouse_income},
         }
         # Add spouse to all units
         for unit in ["households", "tax_units", "families", "marital_units"]:

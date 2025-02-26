@@ -21,11 +21,12 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from personal_calculator.subsidy_rate import calculate_marginal_subsidy_rate
 from constants import CURRENT_POLICY_PARAMS
 from introduction import display_introduction
 import plotly.express as px
 from policyengine_core.charts import format_fig
+from personal_calculator.salt_cap_calculator import find_effective_salt_cap
+from personal_calculator.salt_cap_calculator import create_situation_with_axes
 
 
 # Set up the Streamlit page
@@ -51,6 +52,7 @@ if "nationwide_impacts" not in st.session_state:
 
 # Display baseline impacts section first
 display_baseline_impacts()
+
 
 # Display policy configuration section after baseline impacts
 st.markdown("---")
@@ -213,7 +215,6 @@ with calculator_tab:
         situation = create_situation(
             state_code=personal_inputs["state_code"],
             employment_income=personal_inputs["employment_income"],
-            spouse_income=personal_inputs["spouse_income"],
             is_married=personal_inputs["is_married"],
             num_children=personal_inputs["num_children"],
             child_ages=personal_inputs["child_ages"],
@@ -276,18 +277,41 @@ with calculator_tab:
         )
         chart_placeholder.plotly_chart(fig, use_container_width=False)
 
-        # Then calculate and display subsidy rates
-        status_placeholder.info("Calculating your 2026 property tax subsidy rates...")
-        st.session_state.subsidy_rates = calculate_marginal_subsidy_rate(
-            situation, {"selected_reform": reform_params}, baseline_scenario
+        # Calculate and display effective SALT caps
+        status_placeholder.info("Calculating your effective SALT cap...")
+
+        # Create situation with axes using the same inputs
+        situation_with_axes = create_situation_with_axes(
+            state_code=personal_inputs["state_code"],
+            employment_income=personal_inputs["employment_income"],
+            is_married=personal_inputs["is_married"],
+            num_children=personal_inputs["num_children"],
+            child_ages=personal_inputs["child_ages"],
+            qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+            long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+            short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+            deductible_mortgage_interest=personal_inputs[
+                "deductible_mortgage_interest"
+            ],
+            charitable_cash_donations=personal_inputs["charitable_cash_donations"],
         )
 
-        # Display subsidy rates after chart
+        # Calculate caps using the imported function
+        caps = find_effective_salt_cap(
+            situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
+        )
+
         st.markdown(
             f"""
-            ### Under {baseline_scenario}, your property tax subsidy rate is {st.session_state.subsidy_rates['baseline']:.1f}%.
-            
-            ### Under your policy configuration, your property tax subsidy rate is {st.session_state.subsidy_rates['reform']:.1f}%.
+            ### Effective SALT Caps
+            - Under {baseline_scenario}, {
+                "no effective SALT cap applies" if np.isinf(caps['baseline_salt_cap']) 
+                else f"your effective SALT cap is ${caps['baseline_salt_cap']:,.0f}"
+            }
+            - Under your policy configuration, {
+                "no effective SALT cap applies" if np.isinf(caps['reform_salt_cap']) 
+                else f"your effective SALT cap is ${caps['reform_salt_cap']:,.0f}"
+            }
             """
         )
 
