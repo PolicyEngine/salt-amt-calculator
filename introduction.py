@@ -33,7 +33,6 @@ def display_introduction():
     * \$10,000 in charitable cash donations 
     * One child aged 10
 
-    We chose Texas because it has no state income tax, which simplifies our analysis of property tax effects. This household represents those most likely to be affected by SALT and AMT interactions.
     """
     )
 
@@ -49,7 +48,7 @@ def display_introduction():
     st.markdown(
         """
     #### SALT Deduction Amount by Scenario
-    The table below shows how much of the property taxes plus sales taxes can be deducted under each scenario:
+    The table below shows how much of the property taxes as well as sales taxes can be deducted under each scenario:
     """
     )
 
@@ -175,10 +174,8 @@ def display_introduction():
 
     st.markdown(
         """
-    **Key Insight:** Under current law, the tentative minimum tax exceeds the regular tax liability when this household pays \$10k or more in property taxes. This means the AMT kicks in and limits the benefit of the SALT deduction.
-    
-    Under current policy, the tentative minimum tax is lower than the regular tax liability for this household, but the explicit SALT cap of \$10,000 limits the deduction.
-    
+    **Key Insight:** Under both current law and current policy, the regular tax liability exceeds the tentative minimum tax. The AMT does not apply in either scenario, allows the household to take full advantage of the SALT deduction under current law.
+        
     ### Now let's examine the same household with \$10k and \$15k in property taxes.
     """
     )
@@ -241,7 +238,7 @@ def display_introduction():
     
     ### The Effective SALT Cap for This Household Is:
     * **\$15,775 under Current Law** (due to the AMT)
-    * **\$10,000 under Current Policy** (due to the explicit SALT deductioncap)
+    * **\$10,000 under Current Policy** (due to the explicit SALT deduction cap)
     
     This demonstrates that even when the SALT cap officially expires, the AMT creates an effective cap for certain households.
     """
