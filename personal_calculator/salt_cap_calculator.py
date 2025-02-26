@@ -137,16 +137,6 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             results_df["reform_state_local_tax"] = None
             results_df["reform_total_salt"] = None
 
-    # # Print the entire DataFrame with all rows
-    # pd.set_option('display.max_rows', None)
-    # pd.set_option('display.max_columns', None)
-    # pd.set_option('display.width', 1000)
-    # print("\n\n===== FULL RESULTS DATAFRAME =====")
-    # print(results_df)
-    # print("===== END OF DATAFRAME =====\n\n")
-    # pd.reset_option('display.max_rows')
-    # pd.reset_option('display.max_columns')
-    # pd.reset_option('display.width')    # Find where AMT exceeds regular tax for baseline
     baseline_crossover_mask = (
         results_df["baseline_amt"] > results_df["baseline_regular_tax"]
     )
