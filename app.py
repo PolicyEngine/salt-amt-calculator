@@ -300,7 +300,6 @@ with calculator_tab:
         caps = find_effective_salt_cap(
             situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
         )
-        print(baseline_scenario)
 
         st.markdown(
             f"""
