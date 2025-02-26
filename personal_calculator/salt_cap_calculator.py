@@ -105,7 +105,9 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
         stop=situation_with_axes["axes"][0][0]["max"],
         num=situation_with_axes["axes"][0][0]["count"],
     )
-    state_local_tax = baseline_simulation.calculate("state_and_local_sales_or_income_tax", "2026")
+    state_local_tax = baseline_simulation.calculate(
+        "state_and_local_sales_or_income_tax", "2026"
+    )
     total_salt = real_estate_taxes + state_local_tax
     results_df = pd.DataFrame(
         {
@@ -129,8 +131,12 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             reform_amt = reform_simulation.calculate("amt_base_tax", "2026")
             results_df["reform_regular_tax"] = reform_regular_tax
             results_df["reform_amt"] = reform_amt
-            results_df["reform_state_local_tax"] = reform_simulation.calculate("state_and_local_sales_or_income_tax", "2026")
-            results_df["reform_total_salt"] = results_df["reform_state_local_tax"] + results_df["real_estate_taxes"]
+            results_df["reform_state_local_tax"] = reform_simulation.calculate(
+                "state_and_local_sales_or_income_tax", "2026"
+            )
+            results_df["reform_total_salt"] = (
+                results_df["reform_state_local_tax"] + results_df["real_estate_taxes"]
+            )
         except Exception as e:
             results_df["reform_regular_tax"] = None
             results_df["reform_amt"] = None

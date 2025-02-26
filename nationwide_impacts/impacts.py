@@ -351,7 +351,7 @@ def get_reform_name(policy_config, baseline, year=None):
 
     # Append baseline suffix
     baseline_suffix = f"_vs_{baseline.lower().replace(' ', '_')}"
-    
+
     # Append year suffix for budget window impacts (2027-2035)
     if year is not None and year >= 2027:
         year_suffix = f"_year_{year}"
@@ -359,7 +359,7 @@ def get_reform_name(policy_config, baseline, year=None):
         year_suffix = ""
 
     reform_name = f"{salt_full}{amt_suffix}{behavioral_suffix}{other_tcja_provisions_suffix}{year_suffix}{baseline_suffix}"
-    
+
     return reform_name
 
 
