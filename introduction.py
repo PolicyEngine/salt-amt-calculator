@@ -85,7 +85,7 @@ def display_introduction():
         f"""
     {state_tax_description}
     
-    Under current law (2026), the entire amount of property taxes plus state and local taxes is deductible. Under current policy (2025), this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction.
+    Under current law (2026), the entire amount of property taxes plus state and local taxes is deductible. Under current policy (2025), this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction amount.
     """
     )
 

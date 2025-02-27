@@ -1077,7 +1077,7 @@ def get_state_tax_description(state, income):
         "NJ": "New Jersey"
     }
     
-    return f"{state_names[state]} levies state and local taxes of ${state_local_tax:,}, which can be deducted under the SALT deduction."
+    return f"{state_names[state]} levies state income taxes of ${state_local_tax:,} for this household, which can be deducted under the SALT deduction, in addition to the property taxes."
 
 def get_comprehensive_tax_table(state, income):
     """
