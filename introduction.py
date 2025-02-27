@@ -40,6 +40,8 @@ def display_introduction():
     st.markdown(
         """
     **Please select a state and income level to see how SALT and AMT affect a sample household.**
+
+    *Please note - we can calculate the effective SALT cap for any household in the personal calculator below.*
     """)
 
     # Add state and income selectors
@@ -208,6 +210,10 @@ def display_introduction():
         "current_policy": tax_calcs["effective_salt_cap"]["current_policy"]
     }
     
+    # Create formatted strings for the effective SALT caps
+    current_law_cap_str = "No effective SALT cap" if effective_caps['current_law'] == float('inf') else f"**${effective_caps['current_law']:,}**"
+    current_policy_cap_str = "No effective SALT cap" if effective_caps['current_policy'] == float('inf') else f"**${effective_caps['current_policy']:,}**"
+    
     st.markdown(
         f"""
     **Key Finding:** The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate from 33% to 14% as property taxes increase.
@@ -215,8 +221,8 @@ def display_introduction():
     Any additional property taxes that are deducted under the SALT deduction for this household are partially taxed under the alternative minimum tax structure, creating an effective cap.
     
     ### The Effective SALT Cap for This Household Is:
-    * **\${effective_caps['current_law']:,} under Current Law** 
-    * **\${effective_caps['current_policy']:,} under Current Policy** 
+    * {current_law_cap_str} under Current Law 
+    * {current_policy_cap_str} under Current Policy 
     
     This demonstrates that even when the SALT cap officially expires, the AMT creates an effective cap for certain households.
 
@@ -285,6 +291,8 @@ def display_introduction():
             showlegend=True,
             template="simple_white",
             height=500,
+            xaxis=dict(range=[0, None]),
+            yaxis=dict(range=[0, None]),
         )
 
         st.markdown(
@@ -339,14 +347,8 @@ def display_introduction():
         st.markdown(
             """
         #### Subsidy Rate Chart
-        This chart shows the percentage of each additional dollar of property tax that is effectively subsidized through tax savings. The declining subsidy rate under current law demonstrates how the AMT creates an effective cap on SALT deductions.
+        This chart shows the percentage of each additional dollar of property tax that is effectively subsidized through tax savings.
         """
         )
 
         st.plotly_chart(format_fig(fig3))
-
-        st.markdown(
-            """
-        These charts confirm our key finding: even when the explicit SALT cap expires in 2026, the AMT creates an effective cap that limits the tax benefits of property tax deductions for high-income households.
-        """
-        )
