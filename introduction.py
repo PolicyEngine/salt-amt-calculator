@@ -142,7 +142,6 @@ def display_introduction():
 
     st.table(df_comparison.set_index(["Scenario", "Quantity"]))
 
-    # Determine if AMT applies based on the data
     # Extract the Federal Income Tax rows for Current Law and Current Policy
     federal_tax_rows = df_comparison[df_comparison["Quantity"] == "Federal Income Tax"]
     current_law_5k = float(
@@ -164,42 +163,23 @@ def display_introduction():
         .replace(",", "")
     )
 
-    # Extract the Tentative Minimum Tax rows
+    # Extract only the AMT and regular tax values needed for determining if AMT applies
     amt_rows = df_comparison[df_comparison["Quantity"] == "Tentative Minimum Tax"]
     current_law_5k_amt = float(
         amt_rows["$5k property taxes"].iloc[0].replace("$", "").replace(",", "")
     )
-    current_law_10k_amt = float(
-        amt_rows["$10k property taxes"].iloc[0].replace("$", "").replace(",", "")
-    )
     current_policy_5k_amt = float(
         amt_rows["$5k property taxes"].iloc[1].replace("$", "").replace(",", "")
     )
-    current_policy_10k_amt = float(
-        amt_rows["$10k property taxes"].iloc[1].replace("$", "").replace(",", "")
-    )
 
-    # Extract the Regular Tax Liability rows
     regular_tax_rows = df_comparison[
         df_comparison["Quantity"] == "Regular Tax Liability"
     ]
     current_law_5k_regular = float(
         regular_tax_rows["$5k property taxes"].iloc[0].replace("$", "").replace(",", "")
     )
-    current_law_10k_regular = float(
-        regular_tax_rows["$10k property taxes"]
-        .iloc[0]
-        .replace("$", "")
-        .replace(",", "")
-    )
     current_policy_5k_regular = float(
         regular_tax_rows["$5k property taxes"].iloc[1].replace("$", "").replace(",", "")
-    )
-    current_policy_10k_regular = float(
-        regular_tax_rows["$10k property taxes"]
-        .iloc[1]
-        .replace("$", "")
-        .replace(",", "")
     )
 
     # Check if AMT applies (when AMT >= Regular Tax)
@@ -214,30 +194,35 @@ def display_introduction():
         current_policy_10k - current_policy_5k < 0.35 * 5000
     )  # Less than 35% subsidy rate
 
-    if amt_applies_current_law and amt_applies_current_policy:
-        key_insight = "Under both current law and current policy, the AMT applies, limiting the benefit of the SALT deduction."
-    elif amt_applies_current_law:
-        key_insight = "Under current law, the AMT applies, limiting the benefit of the SALT deduction. Under current policy, the regular tax liability exceeds the tentative minimum tax."
-    elif amt_applies_current_policy:
-        key_insight = "Under current policy, the AMT applies, limiting the benefit of the SALT deduction. Under current law, the regular tax liability exceeds the tentative minimum tax."
+    # Create detailed explanations based on AMT application
+    if amt_applies_current_law:
+        current_law_explanation = "Under current law, the AMT applies for this household. Even though the explicit SALT cap is removed, additional property taxes are not fully subsidized because the AMT disallows the SALT deduction."
     else:
-        key_insight = "Under both current law and current policy, the regular tax liability exceeds the tentative minimum tax. The AMT does not apply in either scenario."
+        current_law_explanation = "Under current law, the regular tax applies for this household. Property taxes are subsidized through the SALT deduction with no explicit cap."
+        
+    if amt_applies_current_policy:
+        current_policy_explanation = "Under current policy, the AMT applies for this household. Property taxes are not fully subsidized due to both the explicit $10,000 SALT cap and the AMT disallowing the SALT deduction."
+    else:
+        current_policy_explanation = "Under current policy, the regular tax applies for this household. Property taxes are subsidized through the SALT deduction but limited by the explicit $10,000 SALT cap."
 
-    # Add information about property tax subsidy limitation
-    if property_tax_limited_current_law and property_tax_limited_current_policy:
-        subsidy_insight = "Both current law and current policy show limited property tax subsidy rates (less than 35%), indicating constraints on SALT deduction benefits."
-    elif property_tax_limited_current_law:
-        subsidy_insight = "Under current law, the property tax subsidy rate is limited (less than 35%), despite the removal of the explicit SALT cap."
-    elif property_tax_limited_current_policy:
-        subsidy_insight = "Under current policy, the property tax subsidy rate is limited (less than 35%), primarily due to the explicit SALT cap of $10,000."
+    # Create findings for the Property Tax Subsidy Rates table
+    if amt_applies_current_law and amt_applies_current_policy:
+        subsidy_finding = "Under both current law and current policy, the AMT applies, limiting the benefit of the SALT deduction."
+    elif amt_applies_current_law:
+        subsidy_finding = "Under current law, the AMT applies, limiting the benefit of the SALT deduction. Under current policy, the regular tax liability exceeds the tentative minimum tax."
+    elif amt_applies_current_policy:
+        subsidy_finding = "Under current policy, the AMT applies, limiting the benefit of the SALT deduction. Under current law, the regular tax liability exceeds the tentative minimum tax."
     else:
-        subsidy_insight = "Both current law and current policy show substantial property tax subsidy rates (35% or higher)."
+        subsidy_finding = "Under both current law and current policy, the regular tax liability exceeds the tentative minimum tax. The AMT does not apply in either scenario."
 
     st.markdown(
         f"""
-    **Key Insight:** {key_insight}
     
-    **Subsidy Rate Insight:** {subsidy_insight}
+    {subsidy_finding}
+    
+    {current_law_explanation}
+    
+    {current_policy_explanation}
         
     ### Now let's examine the same household with \$10k and \$15k in property taxes.
     """
@@ -269,9 +254,13 @@ def display_introduction():
         else f"**${effective_caps['current_policy']:,}**"
     )
 
+    # Create finding for the higher property tax comparison
+    higher_property_tax_finding = "The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate as property taxes increase."
+
     st.markdown(
         f"""
-    **Key Finding:** The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate from 33% to 14% as property taxes increase.
+    
+    {higher_property_tax_finding}
     
     Any additional property taxes that are deducted under the SALT deduction for this household are partially taxed under the alternative minimum tax structure, creating an effective cap.
     
@@ -280,7 +269,6 @@ def display_introduction():
     * {current_policy_cap_str} under Current Policy 
     
     This demonstrates that even when the SALT cap officially expires, the AMT creates an effective cap for certain households.
-
     """
     )
 
@@ -411,6 +399,7 @@ def display_introduction():
             """
         #### Subsidy Rate Chart
         This chart shows the percentage of each additional dollar of property tax that is effectively subsidized through tax savings.
+        Some of the marginal subsidy rates reflect state level property tax related deductions and credits.
         """
         )
 
