@@ -3,6 +3,17 @@ import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
 from constants import DARK_GRAY, BLUE
+from household_examples import (
+    STATE_CODES, 
+    INCOME_LEVELS, 
+    TAX_CALCULATIONS,
+    get_salt_deduction_table,
+    get_tax_liability_table,
+    get_amt_table,
+    get_state_tax_description,
+    get_higher_property_tax_comparison,
+    get_comprehensive_tax_table
+)
 
 
 def display_introduction():
@@ -24,42 +35,52 @@ def display_introduction():
     3. Visualization of these effects across different property tax amounts
     
     ## How SALT and AMT Affect a Sample Household
+    """
+    )
     
+    # Add state and income selectors
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_state = st.selectbox("Select State", list(STATE_CODES.keys()), index=0)
+    with col2:
+        selected_income = st.selectbox("Select Income Level", list(INCOME_LEVELS.keys()), index=1)
+    
+    # Get the state code and income value
+    state_code = STATE_CODES[selected_state]
+    income_value = INCOME_LEVELS[selected_income]
+    
+    st.markdown(
+        f"""
     ### SALT Deduction
 
-    Consider a married filer in Texas with:
-    * \$400,000 in wages and salaries 
+    Consider a married filer in {selected_state} with:
+    * {selected_income} in wages and salaries 
     * \$15,000 in deductible mortgage interest 
     * \$10,000 in charitable cash donations 
-    * One child aged 10
 
     """
     )
 
-    # Add comparison table
-    comparison_data = {
-        "Scenario": ["Current law", "Current policy"],
-        "$5k property taxes": ["$8,672", "$8,672"],
-        "$10k property taxes": ["$13,672", "$10,000"],
-        "Difference": ["$5,000", "$1,328"],
-    }
-    df_comparison = pd.DataFrame(comparison_data)
+    # Get the SALT deduction comparison table
+    df_comparison = get_salt_deduction_table(state_code, income_value)
 
     st.markdown(
         """
     #### SALT Deduction Amount by Scenario
-    The table below shows how much of the property taxes as well as sales taxes can be deducted under each scenario:
+    The table below shows how much of the property taxes plus state and local taxes can be deducted under each scenario:
     """
     )
 
     st.table(df_comparison.set_index("Scenario"))
 
-    st.markdown(
-        """
-    Texas doesn't levy income taxes, but for SALT, the filer can claim either their actual sales taxes or an estimated amount based on [IRS tables](https://www.irs.gov/instructions/i1040sca#en_US_2023_publink10005349). 
-    In this case, they can claim \$3,672 in sales taxes. 
+    # Get state tax description
+    state_tax_description = get_state_tax_description(state_code, income_value)
     
-    Under current law (2026), the entire amount of property taxes plus sales taxes is deductible. Under current policy (2025), this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction.
+    st.markdown(
+        f"""
+    {state_tax_description}
+    
+    Under current law (2026), the entire amount of property taxes plus state and local taxes is deductible. Under current policy (2025), this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction.
     """
     )
 
@@ -69,13 +90,9 @@ def display_introduction():
     The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities. The table below shows the regular tax liability (before considering AMT) for each scenario:
     """
     )
-    comparison_data = {
-        "Scenario": ["Current law", "Current policy"],
-        "$5k property taxes": ["$83,334", "$73,281"],
-        "$10k property taxes": ["$81,684", "$73,035"],
-        "Difference": ["-1,650", "-$246"],
-    }
-    df_comparison = pd.DataFrame(comparison_data)
+    
+    # Get the tax liability comparison table
+    df_comparison = get_tax_liability_table(state_code, income_value)
 
     st.table(df_comparison.set_index("Scenario"))
 
@@ -89,13 +106,8 @@ def display_introduction():
     """
     )
 
-    comparison_data = {
-        "Scenario": ["Current law", "Current policy"],
-        "$5k property taxes": ["$80,982", "$61,139"],
-        "$10k property taxes": ["$80,982", "$61,139"],
-        "Difference": ["$0", "$0"],
-    }
-    df_comparison = pd.DataFrame(comparison_data)
+    # Get the AMT comparison table
+    df_comparison = get_amt_table(state_code, income_value)
 
     st.table(df_comparison.set_index("Scenario"))
 
@@ -115,132 +127,94 @@ def display_introduction():
     """
     )
 
-    comparison_data = {
-        "Scenario": [
-            "Current law",
-            "Current policy",
-            "Current law",
-            "Current policy",
-            "Current law",
-            "Current policy",
-            "Current law",
-            "Current policy",
-        ],
-        "Quantity": [
-            "SALT deduction",
-            "SALT deduction",
-            "Regular Tax Liability",
-            "Regular Tax Liability",
-            "Tentative Minimum Tax",
-            "Tentative Minimum Tax",
-            "Federal Income Tax",
-            "Federal Income Tax",
-        ],
-        "$5k property taxes": [
-            "$8,672",
-            "$8,672",
-            "$83,334",
-            "$73,281",
-            "$80,982",
-            "$61,139",
-            "$83,334",
-            "$73,281",
-        ],
-        "$10k property taxes": [
-            "$13,672",
-            "$10,000",
-            "$81,684",
-            "$73,035",
-            "$80,982",
-            "$61,139",
-            "$81,684",
-            "$73,035",
-        ],
-        "Difference": [
-            "$5,000",
-            "$1,328",
-            "-$1,650",
-            "-$246",
-            "$0",
-            "$0",
-            "-$1,650",
-            "-$246",
-        ],
-        "Property Tax Subsidy Rate": ["-", "-", "-", "-", "-", "-", "33%", "5%"],
-    }
-    df_comparison = pd.DataFrame(comparison_data)
+    # Get the comprehensive tax table with subsidy rates
+    df_comparison = get_comprehensive_tax_table(state_code, income_value)
 
-    st.table(df_comparison.set_index("Scenario"))
+    st.table(df_comparison.set_index(["Scenario", "Quantity"]))
 
+    # Determine if AMT applies based on the data
+    # Extract the Federal Income Tax rows for Current Law and Current Policy
+    federal_tax_rows = df_comparison[df_comparison["Quantity"] == "Federal Income Tax"]
+    current_law_5k = float(federal_tax_rows["$5k property taxes"].iloc[0].replace("$", "").replace(",", ""))
+    current_law_10k = float(federal_tax_rows["$10k property taxes"].iloc[0].replace("$", "").replace(",", ""))
+    current_policy_5k = float(federal_tax_rows["$5k property taxes"].iloc[1].replace("$", "").replace(",", ""))
+    current_policy_10k = float(federal_tax_rows["$10k property taxes"].iloc[1].replace("$", "").replace(",", ""))
+    
+    # Extract the Tentative Minimum Tax rows
+    amt_rows = df_comparison[df_comparison["Quantity"] == "Tentative Minimum Tax"]
+    current_law_5k_amt = float(amt_rows["$5k property taxes"].iloc[0].replace("$", "").replace(",", ""))
+    current_law_10k_amt = float(amt_rows["$10k property taxes"].iloc[0].replace("$", "").replace(",", ""))
+    current_policy_5k_amt = float(amt_rows["$5k property taxes"].iloc[1].replace("$", "").replace(",", ""))
+    current_policy_10k_amt = float(amt_rows["$10k property taxes"].iloc[1].replace("$", "").replace(",", ""))
+    
+    # Extract the Regular Tax Liability rows
+    regular_tax_rows = df_comparison[df_comparison["Quantity"] == "Regular Tax Liability"]
+    current_law_5k_regular = float(regular_tax_rows["$5k property taxes"].iloc[0].replace("$", "").replace(",", ""))
+    current_law_10k_regular = float(regular_tax_rows["$10k property taxes"].iloc[0].replace("$", "").replace(",", ""))
+    current_policy_5k_regular = float(regular_tax_rows["$5k property taxes"].iloc[1].replace("$", "").replace(",", ""))
+    current_policy_10k_regular = float(regular_tax_rows["$10k property taxes"].iloc[1].replace("$", "").replace(",", ""))
+    
+    # Check if AMT applies (when AMT >= Regular Tax)
+    amt_applies_current_law = current_law_5k_amt >= current_law_5k_regular
+    amt_applies_current_policy = current_policy_5k_amt >= current_policy_5k_regular
+    
+    # Check if property tax subsidy is limited
+    property_tax_limited_current_law = current_law_10k - current_law_5k < 0.35 * 5000  # Less than 35% subsidy rate
+    property_tax_limited_current_policy = current_policy_10k - current_policy_5k < 0.35 * 5000  # Less than 35% subsidy rate
+    
+    if amt_applies_current_law and amt_applies_current_policy:
+        key_insight = "Under both current law and current policy, the AMT applies, limiting the benefit of the SALT deduction."
+    elif amt_applies_current_law:
+        key_insight = "Under current law, the AMT applies, limiting the benefit of the SALT deduction. Under current policy, the regular tax liability exceeds the tentative minimum tax."
+    elif amt_applies_current_policy:
+        key_insight = "Under current policy, the AMT applies, limiting the benefit of the SALT deduction. Under current law, the regular tax liability exceeds the tentative minimum tax."
+    else:
+        key_insight = "Under both current law and current policy, the regular tax liability exceeds the tentative minimum tax. The AMT does not apply in either scenario."
+    
+    # Add information about property tax subsidy limitation
+    if property_tax_limited_current_law and property_tax_limited_current_policy:
+        subsidy_insight = "Both current law and current policy show limited property tax subsidy rates (less than 35%), indicating constraints on SALT deduction benefits."
+    elif property_tax_limited_current_law:
+        subsidy_insight = "Under current law, the property tax subsidy rate is limited (less than 35%), despite the removal of the explicit SALT cap."
+    elif property_tax_limited_current_policy:
+        subsidy_insight = "Under current policy, the property tax subsidy rate is limited (less than 35%), primarily due to the explicit SALT cap of $10,000."
+    else:
+        subsidy_insight = "Both current law and current policy show substantial property tax subsidy rates (35% or higher)."
+    
     st.markdown(
-        """
-    **Key Insight:** Under both current law and current policy, the regular tax liability exceeds the tentative minimum tax. The AMT does not apply in either scenario, allows the household to take full advantage of the SALT deduction under current law.
+        f"""
+    **Key Insight:** {key_insight}
+    
+    **Subsidy Rate Insight:** {subsidy_insight}
         
     ### Now let's examine the same household with \$10k and \$15k in property taxes.
     """
     )
 
-    # Add comparison table
-    comparison_data = {
-        "Scenario": [
-            "Current law",
-            "Current policy",
-            "Current law",
-            "Current policy",
-            "Current law",
-            "Current policy",
-            "Current law",
-            "Current policy",
-        ],
-        "Quantity": [
-            "SALT deduction",
-            "SALT deduction",
-            "Regular Tax Liability",
-            "Regular Tax Liability",
-            "Tentative Minimum Tax",
-            "Tentative Minimum Tax",
-            "Federal Income Tax",
-            "Federal Income Tax",
-        ],
-        "$10k property taxes": [
-            "$13,672",
-            "$10,000",
-            "$81,684",
-            "$73,035",
-            "$80,982",
-            "$61,139",
-            "$81,684",
-            "$73,035",
-        ],
-        "$15k property taxes": [
-            "$18,672",
-            "$10,000",
-            "$80,034",
-            "$73,035",
-            "$80,982",
-            "$61,139",
-            "$80,982",
-            "$73,035",
-        ],
-        "Difference": ["$5,000", "$0", "-$1,650", "$0", "$0", "$0", "-$702", "$0"],
-        "Subsidy Rate": ["-", "-", "-", "-", "-", "-", "14%", "0%"],
-    }
-
-    df_comparison = pd.DataFrame(comparison_data)
+    # Get the higher property tax comparison table
+    df_comparison = get_higher_property_tax_comparison(state_code, income_value)
 
     st.table(df_comparison.set_index("Scenario"))
 
+    # Get effective SALT caps directly from TAX_CALCULATIONS
+    tax_calcs = TAX_CALCULATIONS.get(state_code, TAX_CALCULATIONS["NY"]).get(income_value, TAX_CALCULATIONS["NY"][250000])
+    effective_caps = {
+        "current_law": tax_calcs["effective_salt_cap"]["current_law"],
+        "current_policy": tax_calcs["effective_salt_cap"]["current_policy"]
+    }
+    
     st.markdown(
-        """
+        f"""
     **Key Finding:** The increased alternative minimum tax liability under current law offsets the effects of the lifted SALT cap, reducing the property tax subsidy rate from 33% to 14% as property taxes increase.
     
     Any additional property taxes that are deducted under the SALT deduction for this household are partially taxed under the alternative minimum tax structure, creating an effective cap.
     
     ### The Effective SALT Cap for This Household Is:
-    * **\$15,775 under Current Law** (due to the AMT)
-    * **\$10,000 under Current Policy** (due to the explicit SALT deduction cap)
+    * **\${effective_caps['current_law']:,} under Current Law** 
+    * **\${effective_caps['current_policy']:,} under Current Policy** 
     
     This demonstrates that even when the SALT cap officially expires, the AMT creates an effective cap for certain households.
+
     """
     )
 
@@ -253,7 +227,11 @@ def display_introduction():
     )
     # Read the CSV files
     with st.expander("See detailed tax calculations and charts"):
-        df = pd.read_csv("personal_calculator/data/tax_calculations_2026_new.csv")
+        # Load the data for all states and income levels
+        df_all = pd.read_csv("personal_calculator/data/all_state_income_tax_calculations_2026.csv")
+        
+        # Filter the data based on the selected state and income
+        df = df_all[(df_all["state"] == state_code) & (df_all["income"] == income_value)]
 
         # Create tax liability comparison plot
         fig2 = go.Figure()
@@ -261,7 +239,7 @@ def display_introduction():
         fig2.add_trace(
             go.Scatter(
                 x=df["real_estate_taxes"],
-                y=df["current_policy_regular_tax_before_credits"],
+                y=df["current_policy_regular_tax"],
                 mode="lines",
                 name="Current Policy Regular Tax",
                 line=dict(color=DARK_GRAY, dash="solid"),
@@ -270,7 +248,7 @@ def display_introduction():
         fig2.add_trace(
             go.Scatter(
                 x=df["real_estate_taxes"],
-                y=df["current_policy_tentative_minimum_tax"],
+                y=df["current_policy_amt"],
                 mode="lines",
                 name="Current Policy Tentative AMT",
                 line=dict(color=DARK_GRAY, dash="dash"),
@@ -280,7 +258,7 @@ def display_introduction():
         fig2.add_trace(
             go.Scatter(
                 x=df["real_estate_taxes"],
-                y=df["current_law_regular_tax_before_credits"],
+                y=df["current_law_regular_tax"],
                 mode="lines",
                 name="Current Law Regular Tax",
                 line=dict(color=BLUE, dash="solid"),
@@ -289,14 +267,14 @@ def display_introduction():
         fig2.add_trace(
             go.Scatter(
                 x=df["real_estate_taxes"],
-                y=df["current_law_tentative_minimum_tax"],
+                y=df["current_law_amt"],
                 mode="lines",
                 name="Current Law Tentative AMT",
                 line=dict(color=BLUE, dash="dash"),
             )
         )
         fig2.update_layout(
-            title="Tax Liability Comparison by Property Taxes",
+            title=f"Tax Liability Comparison by Property Taxes ({selected_state}, {selected_income})",
             xaxis_title="Property Taxes ($)",
             yaxis_title="Tax Liability ($)",
             showlegend=True,

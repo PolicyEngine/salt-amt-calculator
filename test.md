@@ -1,0 +1,2 @@
+        real_estate_taxes  state_local_tax  total_salt  baseline_regular_tax  baseline_amt  reform_regular_tax  reform_amt  reform_state_local_tax  reform_total_salt
+100            10000.0          4951.75    14951.75           6154.657715           0.0         6154.657715         0.0                 4951.75           14951.75
