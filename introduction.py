@@ -142,7 +142,6 @@ def display_introduction():
 
     st.table(df_comparison.set_index(["Scenario", "Quantity"]))
 
-
     # Extract only the AMT and regular tax values needed for determining if AMT applies
     amt_rows = df_comparison[df_comparison["Quantity"] == "Tentative Minimum Tax"]
     current_law_5k_amt = float(
@@ -171,7 +170,7 @@ def display_introduction():
         current_law_explanation = "Under current law, the AMT applies for this household. Even though the explicit SALT cap is removed, additional property taxes are not fully subsidized because the AMT disallows the SALT deduction."
     else:
         current_law_explanation = "Under current law, the regular tax applies for this household. Property taxes are subsidized through the SALT deduction with no explicit cap."
-        
+
     if amt_applies_current_policy:
         current_policy_explanation = "Under current policy, the AMT applies for this household. Property taxes are not fully subsidized due to both the explicit $10,000 SALT cap and the AMT disallowing the SALT deduction."
     else:
