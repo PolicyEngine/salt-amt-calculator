@@ -30,14 +30,18 @@ def display_introduction():
     In this analysis, we'll show how the interaction between SALT deductions and AMT creates an **effective SALT cap** even when the explicit SALT cap expires in 2026 (current law). We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much property tax high-income households can deduct, creating a de facto cap that's different from the explicit \$10,000 cap under current policy (2025).
     
     We'll examine this through:
-    1. A detailed case study of an upper-middle-class household
+    1. Detailed case study of mutliple households at different income levels
     2. Analysis of property tax subsidy rates (how much tax relief households get per dollar of property tax)
     3. Visualization of these effects across different property tax amounts
     
     ## How SALT and AMT Affect a Sample Household
     """
     )
-    
+    st.markdown(
+        """
+    **Please select a state and income level to see how SALT and AMT affect a sample household.**
+    """)
+
     # Add state and income selectors
     col1, col2 = st.columns(2)
     with col1:
@@ -51,13 +55,15 @@ def display_introduction():
     
     st.markdown(
         f"""
-    ### SALT Deduction
+    
 
-    Consider a married filer in {selected_state} with:
+    Let's consider a married filer in {selected_state} with:
     * {selected_income} in wages and salaries 
     * \$15,000 in deductible mortgage interest 
     * \$10,000 in charitable cash donations 
 
+    
+    ### SALT Deduction
     """
     )
 
@@ -66,7 +72,6 @@ def display_introduction():
 
     st.markdown(
         """
-    #### SALT Deduction Amount by Scenario
     The table below shows how much of the property taxes plus state and local taxes can be deducted under each scenario:
     """
     )
