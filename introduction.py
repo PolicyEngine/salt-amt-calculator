@@ -142,26 +142,6 @@ def display_introduction():
 
     st.table(df_comparison.set_index(["Scenario", "Quantity"]))
 
-    # Extract the Federal Income Tax rows for Current Law and Current Policy
-    federal_tax_rows = df_comparison[df_comparison["Quantity"] == "Federal Income Tax"]
-    current_law_5k = float(
-        federal_tax_rows["$5k property taxes"].iloc[0].replace("$", "").replace(",", "")
-    )
-    current_law_10k = float(
-        federal_tax_rows["$10k property taxes"]
-        .iloc[0]
-        .replace("$", "")
-        .replace(",", "")
-    )
-    current_policy_5k = float(
-        federal_tax_rows["$5k property taxes"].iloc[1].replace("$", "").replace(",", "")
-    )
-    current_policy_10k = float(
-        federal_tax_rows["$10k property taxes"]
-        .iloc[1]
-        .replace("$", "")
-        .replace(",", "")
-    )
 
     # Extract only the AMT and regular tax values needed for determining if AMT applies
     amt_rows = df_comparison[df_comparison["Quantity"] == "Tentative Minimum Tax"]
@@ -185,14 +165,6 @@ def display_introduction():
     # Check if AMT applies (when AMT >= Regular Tax)
     amt_applies_current_law = current_law_5k_amt >= current_law_5k_regular
     amt_applies_current_policy = current_policy_5k_amt >= current_policy_5k_regular
-
-    # Check if property tax subsidy is limited
-    property_tax_limited_current_law = (
-        current_law_10k - current_law_5k < 0.35 * 5000
-    )  # Less than 35% subsidy rate
-    property_tax_limited_current_policy = (
-        current_policy_10k - current_policy_5k < 0.35 * 5000
-    )  # Less than 35% subsidy rate
 
     # Create detailed explanations based on AMT application
     if amt_applies_current_law:
