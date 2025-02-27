@@ -292,9 +292,13 @@ def display_introduction():
         st.plotly_chart(format_fig(fig2))
 
         # Add subsidy rates plot for both years
-        df_subsidy = pd.read_csv("personal_calculator/data/subsidy_rates.csv")
+        df_all_subsidy = pd.read_csv("personal_calculator/data/all_state_income_subsidy_rates_2026.csv")
 
-        # Filter data for 2025 and 2026
+        # Filter data based on selected state and income
+        df_subsidy = df_all_subsidy[(df_all_subsidy["state"] == state_code) & 
+                                (df_all_subsidy["income"] == income_value)]
+
+        # Filter data for current policy and current law
         df_2025 = df_subsidy[df_subsidy["Simulation"] == "Current Policy"]
         df_2026 = df_subsidy[df_subsidy["Simulation"] == "Current Law"]
 
@@ -319,7 +323,7 @@ def display_introduction():
             )
         )
         fig3.update_layout(
-            title="Property Tax Marginal Subsidy Rate",
+            title=f"Property Tax Marginal Subsidy Rate ({selected_state}, {selected_income})",
             xaxis_title="Property Taxes ($)",
             yaxis_title="Subsidy Rate (%)",
             showlegend=True,
