@@ -25,7 +25,15 @@ showErrorDetails = true
 gatherUsageStats = true
 
 [theme.button]
-backgroundColor = "#39C6C0"
+backgroundColor = "#39C6C0"  # TEAL_ACCENT
+
+[theme.primaryButton]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT
+borderColor = "#39C6C0"  # TEAL_ACCENT
+
+[theme.radio]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT 
+checkColor = "#39C6C0"  # TEAL_ACCENT
 
 [theme.input]
 backgroundColor = "#F7FDFC"  # TEAL_LIGHT
@@ -35,3 +43,6 @@ backgroundColor = "#F7FDFC"  # TEAL_LIGHT
 
 [theme.numberInput]
 backgroundColor = "#F7FDFC"  # TEAL_LIGHT
+
+[theme.checkbox]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT

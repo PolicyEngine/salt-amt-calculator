@@ -59,15 +59,37 @@ div[data-testid="stRadio"] label:has(input:checked)::before {
     border-color: #39C6C0 !important;
 }
 
-/* Target all radio buttons to ensure there's no red */
-div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div::before {
+/* Target all radio buttons to ensure there's no red - more specific selectors from GiveCalc */
+div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div {
+    border-color: #39C6C0 !important;
+}
+
+div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div div {
+    background-color: #39C6C0 !important;
+}
+
+/* Radio button dot and border */
+.st-emotion-cache-1h5t4nn .st-emotion-cache-1wmy9hl, 
+.st-emotion-cache-1xseyk6 .st-emotion-cache-1taf2pk {
+    color: #39C6C0 !important;
+    background-color: #39C6C0 !important;
+}
+
+/* More specific selector for radio buttons */
+label[data-baseweb="radio"] div[data-testid="stRadio"] div {
+    background-color: #39C6C0 !important;
+}
+
+/* Ensure button primary color is teal */
+button[kind="primary"], button[data-baseweb="button"] {
     background-color: #39C6C0 !important;
     border-color: #39C6C0 !important;
 }
 
-/* Inside dot for radio buttons */
-div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div::after {
+/* Target the form button with more specific selectors */
+button.st-emotion-cache-ws946t, button.st-emotion-cache-13izhka {
     background-color: #39C6C0 !important;
+    border-color: #39C6C0 !important;
 }
 
 /* Tab styling */

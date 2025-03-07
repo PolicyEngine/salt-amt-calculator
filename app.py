@@ -46,6 +46,35 @@ st.set_page_config(page_title="SALT and AMT Policy Calculator")
 # Load custom CSS for form styling
 load_custom_css()
 
+# Inject additional CSS directly to handle radio buttons and primary buttons
+st.markdown(
+    """
+<style>
+    /* Override radio button colors */
+    div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div {
+        border-color: #39C6C0 !important;
+    }
+    
+    div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div div {
+        background-color: #39C6C0 !important;
+    }
+    
+    /* Override primary button color */
+    button[kind="primary"] {
+        background-color: #39C6C0 !important;
+        border-color: #39C6C0 !important;
+    }
+    
+    /* Target buttons by Streamlit's generated classes */
+    button.stButton button {
+        background-color: #39C6C0 !important;
+        border-color: #39C6C0 !important;
+    }
+</style>
+""",
+    unsafe_allow_html=True
+)
+
 # Title
 st.title("What's the SALTernative?")
 st.markdown(
@@ -244,7 +273,7 @@ with calculator_tab:
     # Create columns for calculate button alignment
     calc_col1, calc_col2 = st.columns([1, 6])
     with calc_col1:
-        calculate_clicked = st.button("Calculate Impacts")
+        calculate_clicked = st.button("Calculate Impacts", type="primary")
 
     if calculate_clicked:
         # Reset results to start fresh
