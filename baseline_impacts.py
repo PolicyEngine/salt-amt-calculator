@@ -63,7 +63,7 @@ class BaselineImpacts:
         y_axis_title = title
 
         fig.update_layout(
-            title=f"Figure 5: {title} Over Time",
+            title=f"Figure 3: {title} Over Time",
             xaxis_title="Year",
             yaxis_title=y_axis_title,
             hovermode="x unified",
