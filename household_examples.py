@@ -470,22 +470,22 @@ TAX_CALCULATIONS = {
         250000: {
             "current_law": {
                 "5k_property_taxes": {
-                    "salt_deduction": 18735,
-                    "regular_tax": 37802,
+                    "salt_deduction": 12675,
+                    "regular_tax": 39394,
                     "amt": 30979,
-                    "federal_tax": 37802,
+                    "federal_tax": 39394,
                 },
                 "10k_property_taxes": {
-                    "salt_deduction": 23735,
-                    "regular_tax": 36512,
+                    "salt_deduction": 17675,
+                    "regular_tax": 38027,
                     "amt": 30979,
-                    "federal_tax": 36512,
+                    "federal_tax": 38027,
                 },
                 "15k_property_taxes": {
-                    "salt_deduction": 28735,
-                    "regular_tax": 35222,
+                    "salt_deduction": 22675,
+                    "regular_tax": 36737,
                     "amt": 30979,
-                    "federal_tax": 35222,
+                    "federal_tax": 36737,
                 },
             },
             "current_policy": {
@@ -508,7 +508,7 @@ TAX_CALCULATIONS = {
                     "federal_tax": 37035,
                 },
             },
-            "effective_salt_cap": {"current_law": 44875, "current_policy": 10000},
+            "effective_salt_cap": {"current_law": 45075, "current_policy": 10000},
         },
         500000: {
             "current_law": {

@@ -37,7 +37,7 @@ st.title("What's the SALTernative?")
 st.markdown(
     """
     _The state and local tax (SALT) deduction and alternative minimum tax (AMT) will change next year. We'll walk you through these policies and model your custom reform._\n
-    This tool starts by describing SALT and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act in 2026) and under current policy (if the TCJA were extended). Then we'll explain these policies in the context of a sample filer. Finally, we'll put you in the driver's seat--you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
+    This tool starts by describing SALT and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026) and under _current policy_ (if the TCJA were extended). Then we'll explain these policies in the context of sample households. Finally, we'll put you in the driver's seat - you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
     """
 )
 

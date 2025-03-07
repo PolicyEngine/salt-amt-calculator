@@ -27,14 +27,14 @@ def display_introduction():
     
     ## What We'll Demonstrate
 
-    In this analysis, we'll show how the interaction between SALT deductions and AMT creates an **effective SALT cap** even when the explicit SALT cap expires in 2026 (current law). We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much property tax high-income households can deduct, creating a de facto cap that's different from the explicit \$10,000 cap under current policy (2025).
+    In this analysis, we'll show how the interaction between the SALT deduction and AMT creates an **effective SALT cap**. We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much property tax certain households can deduct, creating a de facto cap that's different from the current explicit \$10,000 cap.
     
     We'll examine this through:
-    1. Detailed case study of mutliple households at different income levels
+    1. Detailed case studies of multiple households at different income levels
     2. Analysis of property tax subsidy rates (how much tax relief households get per dollar of property tax)
     3. Visualization of these effects across different property tax amounts
     
-    ## How SALT and AMT Affect a Sample Household
+    ## How SALT and AMT Affect Sample Households
     """
     )
     st.markdown(
@@ -51,7 +51,7 @@ def display_introduction():
         selected_state = st.selectbox("Select State", list(STATE_CODES.keys()), index=0)
     with col2:
         selected_income = st.selectbox(
-            "Select Income Level", list(INCOME_LEVELS.keys()), index=1
+            "Select Earnings Level", list(INCOME_LEVELS.keys()), index=1
         )
 
     # Get the state code and income value
