@@ -74,7 +74,7 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
 
     fig.update_layout(
         title=dict(
-            text=f"Household Net Income vs {baseline_scenario}", font=dict(size=24)
+            text=f"Figure 5: Household Net Income vs {baseline_scenario}", font=dict(size=24)
         ),
     )
 

@@ -121,6 +121,8 @@ with nationwide_tab:
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
+                st.markdown("**Figure 3: Budgetary Impact Over the 10-Year Window**")
+                
                 # Show the 10-year impact graph without the title
                 fig = px.line(
                     budget_window_impacts_df,
@@ -178,6 +180,8 @@ with nationwide_tab:
                     )
                     if dist_data is not None:
                         with st.expander("Show Average Household Net Income Change Chart"):
+                            st.markdown("**Figure 4: Average Household Net Income Change by Income Decile**")
+                            
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
                             fig = format_fig(fig)
                             # Add margin to ensure logo is visible

@@ -82,8 +82,10 @@ def display_introduction():
 
     st.markdown(
         """
+    **Table 1: SALT Deduction Comparison for a Household in {0} with {1} in Earnings**
+    
     The table below shows how much of the property taxes plus state and local taxes can be deducted under each scenario:
-    """
+    """.format(selected_state, selected_income)
     )
 
     st.table(df_comparison.set_index("Scenario"))
@@ -102,8 +104,12 @@ def display_introduction():
     st.markdown(
         """
     ### Regular Tax Liability
-    The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities. The table below shows the regular tax liability (before considering AMT) for each scenario:
-    """
+    The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities.
+    
+    **Table 2: Regular Tax Liability Comparison for a Household in {0} with {1} in Earnings**
+    
+    The table below shows the regular tax liability (before considering AMT) for each scenario:
+    """.format(selected_state, selected_income)
     )
 
     # Get the tax liability comparison table
@@ -119,8 +125,10 @@ def display_introduction():
     
     The AMTI is then reduced by an exemption amount, which phases out for higher income levels, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.)
     
+    **Table 3: AMT Comparison for a Household in {0} with {1} in Earnings**
+    
     The table below shows the tentative minimum tax for each scenario:
-    """
+    """.format(selected_state, selected_income)
     )
 
     # Get the AMT comparison table
@@ -144,8 +152,10 @@ def display_introduction():
     
     When a household is subject to the AMT or hits the SALT deduction cap, their property tax subsidy rate can drop significantly or even reach zero, meaning they receive no federal tax benefit from additional property tax payments.
     
+    **Table 4: Tax Calculations and Property Tax Subsidy Rates for a Household in {0} with {1} in Earnings**
+    
     The table below summarizes the key tax calculations and shows the resulting property tax subsidy rates:
-    """
+    """.format(selected_state, selected_income)
     )
 
     # Get the comprehensive tax table with subsidy rates
@@ -206,7 +216,9 @@ def display_introduction():
     1. How the property tax subsidy rate changes as property taxes increase
     2. Whether the AMT begins to apply at higher property tax levels
     3. The point at which additional property taxes no longer provide tax benefits (the effective SALT cap)
-    """
+    
+    **Table 5: Tax Liability Comparison at Different Property Tax Levels for a Household in {0} with {1} in Earnings**
+    """.format(selected_state, selected_income)
     )
 
     # Get the higher property tax comparison table
@@ -365,7 +377,7 @@ def display_introduction():
             )
         )
         fig2.update_layout(
-            title=f"Tax Liability Comparison by Property Taxes ({selected_state}, {selected_income})",
+            title=f"Figure 1: Tax Liability Comparison by Property Taxes ({selected_state}, {selected_income})",
             xaxis_title="Property Taxes ($)",
             yaxis_title="Tax Liability ($)",
             showlegend=True,
@@ -377,7 +389,7 @@ def display_introduction():
 
         st.markdown(
             """
-        #### Tax Liability Chart
+        #### Figure 1: Tax Liability Chart
         This chart shows how regular tax and AMT change as property taxes increase. Where the dashed line (AMT) is above the solid line (regular tax), the household pays the AMT amount, potentially limiting the benefit of the SALT deduction.
         """
         )
@@ -420,7 +432,7 @@ def display_introduction():
             )
         )
         fig3.update_layout(
-            title=f"Property Tax Marginal Subsidy Rate ({selected_state}, {selected_income})",
+            title=f"Figure 2: Property Tax Marginal Subsidy Rate ({selected_state}, {selected_income})",
             xaxis_title="Property Taxes ($)",
             yaxis_title="Subsidy Rate (%)",
             showlegend=True,
@@ -430,7 +442,7 @@ def display_introduction():
 
         st.markdown(
             """
-        #### Subsidy Rate Chart
+        #### Figure 2: Subsidy Rate Chart
         This chart shows the property tax subsidy rate - the percentage of each additional dollar of property tax that is effectively subsidized through tax savings. 
         
         Several key patterns to observe:
