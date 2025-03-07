@@ -194,7 +194,7 @@ TAX_CALCULATIONS = {
                     "federal_tax": 103252,
                 },
             },
-            "effective_salt_cap": {"current_law": 32782, "current_policy": 10000},
+            "effective_salt_cap": {"current_law": 29824, "current_policy": 10000},
         },
         1000000: {
             "current_law": {
