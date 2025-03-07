@@ -72,7 +72,7 @@ st.markdown(
     }
 </style>
 """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # Title
@@ -172,7 +172,7 @@ with nationwide_tab:
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
-                st.markdown("**Figure 3: Budgetary Impact Over the 10-Year Window**")
+                st.markdown("**Figure 2: Budgetary Impact Over the 10-Year Window**")
 
                 # Show the 10-year impact graph without the title
                 fig = px.line(
@@ -234,7 +234,7 @@ with nationwide_tab:
                             "Show Average Household Net Income Change Chart"
                         ):
                             st.markdown(
-                                "**Figure 4: Average Household Net Income Change by Income Decile**"
+                                "**Figure 3: Average Household Net Income Change by Income Decile**"
                             )
 
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
