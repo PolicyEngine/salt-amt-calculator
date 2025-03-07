@@ -30,50 +30,9 @@ from personal_calculator.salt_cap_calculator import create_situation_with_axes
 import os
 
 
-def load_custom_css():
-    """Load custom CSS to apply styling to inputs"""
-    css_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), ".streamlit", "custom.css"
-    )
-    with open(css_file, "r") as f:
-        css = f.read()
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
-
-
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
-# Load custom CSS for form styling
-load_custom_css()
-
-# Inject additional CSS directly to handle radio buttons and primary buttons
-st.markdown(
-    """
-<style>
-    /* Override radio button colors */
-    div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div {
-        border-color: #39C6C0 !important;
-    }
-    
-    div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div div {
-        background-color: #39C6C0 !important;
-    }
-    
-    /* Override primary button color */
-    button[kind="primary"] {
-        background-color: #39C6C0 !important;
-        border-color: #39C6C0 !important;
-    }
-    
-    /* Target buttons by Streamlit's generated classes */
-    button.stButton button {
-        background-color: #39C6C0 !important;
-        border-color: #39C6C0 !important;
-    }
-</style>
-""",
-    unsafe_allow_html=True,
-)
 
 # Title
 st.title("What's the SALTernative?")
