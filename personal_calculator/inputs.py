@@ -4,6 +4,18 @@ from constants import STATE_CODES
 
 def create_personal_inputs():
     """Create inputs for personal information"""
+    
+    # Apply custom styling for form inputs
+    custom_css = """
+    <style>
+    div[data-testid="stSelectbox"] > div:first-child,
+    div[data-testid="stNumberInput"] input,
+    div[data-testid="stTextInput"] input {
+        background-color: #F7FDFC;
+    }
+    </style>
+    """
+    st.markdown(custom_css, unsafe_allow_html=True)
 
     # Create two main columns for Personal and Income Information
     personal_col, income_col = st.columns(2)

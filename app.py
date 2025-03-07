@@ -21,16 +21,28 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT
+from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT, TEAL_LIGHT
 from introduction import display_introduction
 import plotly.express as px
 from policyengine_core.charts import format_fig
 from personal_calculator.salt_cap_calculator import find_effective_salt_cap
 from personal_calculator.salt_cap_calculator import create_situation_with_axes
+import os
+
+
+def load_custom_css():
+    """Load custom CSS to apply styling to inputs"""
+    css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".streamlit", "custom.css")
+    with open(css_file, "r") as f:
+        css = f.read()
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
+
+# Load custom CSS for form styling
+load_custom_css()
 
 # Title
 st.title("What's the SALTernative?")

@@ -1,0 +1,50 @@
+/* Custom styling for all form inputs with !important to override Streamlit defaults */
+div[data-testid="stTextInput"] input,
+div[data-testid="stNumberInput"] input,
+div[data-testid="stSelectbox"] > div > div[role="button"],
+div[data-testid="stMultiselect"] > div > div[role="button"],
+div[data-baseweb="select"] > div {
+    background-color: #F7FDFC !important;
+    border-color: #CCCCCC !important;
+}
+
+/* Styling for select boxes dropdown button */
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:first-child {
+    background-color: #F7FDFC !important;
+}
+
+/* Styling for number inputs wrapper */
+div[data-testid="stNumberInput"] > div > div > div {
+    background-color: #F7FDFC !important;
+}
+
+/* Ensure the number input itself has the background color */
+div[data-testid="stNumberInput"] > div > div > div > input {
+    background-color: #F7FDFC !important;
+}
+
+/* Checkbox background */
+.stCheckbox label {
+    background-color: transparent !important;
+}
+
+/* Radio button background */
+.stRadio label {
+    background-color: transparent !important;
+}
+
+/* Styling for sliders */
+.stSlider > div {
+    background-color: transparent !important;
+}
+
+/* Dropdown options */
+div[role="listbox"] {
+    background-color: #FFFFFF !important;
+}
+
+/* Input focus states */
+.stTextInput input:focus, .stNumberInput input:focus {
+    border-color: #39C6C0 !important;
+    box-shadow: 0 0 0 1px #39C6C0 !important;
+}
