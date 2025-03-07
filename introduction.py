@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import DARK_GRAY, BLUE
+from constants import DARK_GRAY, BLUE, TEAL_ACCENT, TEAL_LIGHT, TEAL_PRESSED
 from household_examples import (
     STATE_CODES,
     INCOME_LEVELS,
@@ -292,12 +292,12 @@ def display_introduction():
     current_law_cap_str = (
         "No effective SALT cap"
         if effective_caps["current_law"] == float("inf")
-        else f"**${effective_caps['current_law']:,}**"
+        else f"<span style='color: #39C6C0; font-weight: bold;'>${effective_caps['current_law']:,}</span>"
     )
     current_policy_cap_str = (
         "No effective SALT cap"
         if effective_caps["current_policy"] == float("inf")
-        else f"**${effective_caps['current_policy']:,}**"
+        else f"<span style='color: #39C6C0; font-weight: bold;'>${effective_caps['current_policy']:,}</span>"
     )
 
     st.markdown(
@@ -305,12 +305,12 @@ def display_introduction():
     
     {higher_property_tax_finding}
         
-    ### The Effective SALT Cap for This Household Is:
+    ### <span style='color: #39C6C0;'>The Effective SALT Cap for This Household Is:</span>
     * {current_law_cap_str} under Current Law 
     * {current_policy_cap_str} under Current Policy 
     
     """
-    )
+    , unsafe_allow_html=True)
 
     st.markdown(
         """
@@ -359,7 +359,7 @@ def display_introduction():
                 y=df["current_law_regular_tax"],
                 mode="lines",
                 name="Current Law Regular Tax",
-                line=dict(color=BLUE, dash="solid"),
+                line=dict(color=TEAL_ACCENT, dash="solid"),
             )
         )
         fig2.add_trace(
@@ -368,7 +368,7 @@ def display_introduction():
                 y=df["current_law_amt"],
                 mode="lines",
                 name="Current Law Tentative AMT",
-                line=dict(color=BLUE, dash="dash"),
+                line=dict(color=TEAL_ACCENT, dash="dash"),
             )
         )
         fig2.update_layout(
@@ -423,7 +423,7 @@ def display_introduction():
                 y=df_2026["Subsidy Rate (%)"],
                 mode="lines",
                 name="Current Law",
-                line=dict(color=BLUE),
+                line=dict(color=TEAL_ACCENT),
             )
         )
         fig3.update_layout(

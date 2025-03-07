@@ -21,7 +21,7 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from constants import CURRENT_POLICY_PARAMS
+from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT
 from introduction import display_introduction
 import plotly.express as px
 from policyengine_core.charts import format_fig
@@ -116,8 +116,12 @@ with nationwide_tab:
         if total_revenue_impact == 0:
             st.markdown("### Revise your policy to see an impact")
         else:
+            impact_word = 'reduce' if total_revenue_impact > 0 else 'increase'
+            impact_amount = abs(total_revenue_impact)/1e12
+            
             st.markdown(
-                f"### Your policy would {'reduce' if total_revenue_impact > 0 else 'increase'} the deficit by ${abs(total_revenue_impact)/1e12:.2f} trillion over the 10-Year Budget window."
+                f"### Your policy would {impact_word} the deficit by <span style='color: {TEAL_ACCENT}; font-weight: bold;'>${impact_amount:.2f} trillion</span> over the 10-Year Budget window.",
+                unsafe_allow_html=True
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
@@ -314,18 +318,26 @@ with calculator_tab:
             situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
         )
 
+        # Format the SALT cap values with teal color and bold
+        baseline_salt_cap_str = (
+            "no effective SALT cap applies" 
+            if np.isinf(caps['baseline_salt_cap']) 
+            else f"your effective SALT cap is <span style='color: {TEAL_ACCENT}; font-weight: bold;'>${caps['baseline_salt_cap']:,.0f}</span>"
+        )
+        
+        reform_salt_cap_str = (
+            "no effective SALT cap applies" 
+            if np.isinf(caps['reform_salt_cap']) 
+            else f"your effective SALT cap is <span style='color: {TEAL_ACCENT}; font-weight: bold;'>${caps['reform_salt_cap']:,.0f}</span>"
+        )
+        
         st.markdown(
             f"""
-            ### Effective SALT Caps
-            - Under {baseline_scenario}, {
-                "no effective SALT cap applies" if np.isinf(caps['baseline_salt_cap']) 
-                else f"your effective SALT cap is ${caps['baseline_salt_cap']:,.0f}"
-            }
-            - Under your policy configuration, {
-                "no effective SALT cap applies" if np.isinf(caps['reform_salt_cap']) 
-                else f"your effective SALT cap is ${caps['reform_salt_cap']:,.0f}"
-            }
-            """
+            ### <span style='color: {TEAL_ACCENT};'>Effective SALT Caps</span>
+            - Under {baseline_scenario}, {baseline_salt_cap_str}
+            - Under your policy configuration, {reform_salt_cap_str}
+            """,
+            unsafe_allow_html=True
         )
 
         # Clear status message when complete

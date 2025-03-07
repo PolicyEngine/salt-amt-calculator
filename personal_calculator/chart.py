@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import DARK_GRAY, LIGHT_GRAY, BLUE
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE, TEAL_ACCENT, TEAL_LIGHT, TEAL_PRESSED
 
 
 def create_reform_comparison_graph(summary_results, baseline_scenario):
@@ -42,8 +42,8 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
         text_inside = f"${round(value):,}"
         text_outside = f"+${round(diff):,}" if diff >= 0 else f"-${round(-diff):,}"
 
-        # Set colors - baseline gets dark gray, reform gets blue
-        color = DARK_GRAY if reform == baseline_scenario else BLUE
+        # Set colors - baseline gets dark gray, reform gets teal
+        color = DARK_GRAY if reform == baseline_scenario else TEAL_ACCENT
 
         fig.add_trace(
             go.Bar(

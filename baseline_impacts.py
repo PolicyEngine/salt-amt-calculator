@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import DARK_GRAY, LIGHT_GRAY, BLUE
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE, TEAL_ACCENT, TEAL_LIGHT, TEAL_PRESSED
 
 
 class BaselineImpacts:
@@ -44,7 +44,7 @@ class BaselineImpacts:
         for data, name, color in zip(
             [current_law_data, current_policy_data],
             ["Current Law", "Current Policy"],
-            [BLUE, DARK_GRAY],
+            [TEAL_ACCENT, DARK_GRAY],
         ):
             fig.add_trace(
                 go.Scatter(

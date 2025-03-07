@@ -32,6 +32,11 @@ BLUE = "#3378b2"
 RED = "#f45959"
 LIGHT_GRAY = "#bababa"
 
+# Teal color palette
+TEAL_ACCENT = "#39C6C0"
+TEAL_LIGHT = "#F7FDFC"
+TEAL_PRESSED = "#227773"
+
 STATE_CODES = [
     "AL",
     "AK",

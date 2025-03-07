@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import BLUE
+from constants import BLUE, TEAL_ACCENT, TEAL_LIGHT, TEAL_PRESSED
 
 
 class ImpactCharts:
@@ -48,7 +48,7 @@ class ImpactCharts:
                 name="Average Impact",
                 text=[f"${x:,.0f}" for x in impact_data.values],
                 textposition="auto",
-                marker_color=BLUE,
+                marker_color=TEAL_ACCENT,
             )
         )
 
@@ -107,8 +107,8 @@ class ImpactCharts:
                 x=impact_data["year"],
                 y=y_values,
                 mode="lines+markers",
-                line=dict(color=BLUE),
-                marker=dict(color=BLUE),
+                line=dict(color=TEAL_ACCENT),
+                marker=dict(color=TEAL_ACCENT),
             )
         )
 
