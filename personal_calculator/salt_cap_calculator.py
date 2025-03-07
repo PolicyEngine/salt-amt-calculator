@@ -142,11 +142,6 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             results_df["reform_state_local_tax"] = None
             results_df["reform_total_salt"] = None
         #     Print full DataFrame without truncation
-        with pd.option_context(
-            "display.max_rows", None, "display.max_columns", None, "display.width", None
-        ):
-            print("--------------------------------")
-            print(results_df)
 
     baseline_crossover_mask = (
         results_df["baseline_amt"] > results_df["baseline_regular_tax"]

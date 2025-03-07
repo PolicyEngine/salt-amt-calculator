@@ -135,7 +135,7 @@ def display_introduction():
 
     One way to assess the impact of these tax policies is by examining how much of a household's property taxes is offset by reductions in income tax liability. The **property tax subsidy rate** measures what percentage of each additional dollar in property taxes is effectively subsidized through tax savings.
     
-    The table below summarizes all the key tax calculations and shows the resulting property tax subsidy rates:
+    The table below summarizes the key tax calculations and shows the resulting property tax subsidy rates:
     """
     )
 
