@@ -42,8 +42,8 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
         text_inside = f"${round(value):,}"
         text_outside = f"+${round(diff):,}" if diff >= 0 else f"-${round(-diff):,}"
 
-        # Set colors - baseline gets dark gray, reform gets teal
-        color = DARK_GRAY if reform == baseline_scenario else TEAL_ACCENT
+        # Set colors - baseline gets dark gray, reform gets blue
+        color = DARK_GRAY if reform == baseline_scenario else BLUE
 
         fig.add_trace(
             go.Bar(
@@ -61,6 +61,9 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
 
         # Add difference annotation for reform
         if reform != baseline_scenario:
+            # Calculate percentage change
+            pct_change = (diff / baseline_value) * 100
+            # Format dollar amount annotation
             fig.add_annotation(
                 y=reform,
                 x=value,
@@ -70,6 +73,22 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
                 yanchor="middle",
                 xshift=5,
                 font=dict(size=16, color=color),
+            )
+            
+            # Add a separate annotation for the percentage in teal
+            # Calculate an appropriate x-shift based on the dollar amount length
+            dollar_text_length = len(text_outside)
+            x_shift = 10 + (dollar_text_length * 8)  # Estimate 8px per character
+            
+            fig.add_annotation(
+                y=reform,
+                x=value,
+                text=f"({abs(pct_change):.1f}%)",
+                showarrow=False,
+                xanchor="left",
+                yanchor="middle",
+                xshift=x_shift,  # Dynamic position based on dollar amount length
+                font=dict(size=16, color=TEAL_ACCENT, family="Arial, sans-serif", weight="bold"),
             )
 
     fig.update_layout(
