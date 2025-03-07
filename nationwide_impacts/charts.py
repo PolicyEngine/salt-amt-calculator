@@ -53,7 +53,6 @@ class ImpactCharts:
         )
 
         fig.update_layout(
-            title="Average household net income change by income decile in 2026",
             xaxis_title="Income group",
             yaxis_title="Average household net income change ($)",
             template="simple_white",

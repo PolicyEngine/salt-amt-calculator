@@ -132,6 +132,10 @@ with nationwide_tab:
                     },
                 )
                 fig = format_fig(fig)
+                # Add margin to ensure logo is visible
+                fig.update_layout(
+                    margin=dict(l=20, r=60, t=20, b=80),  # Increase bottom margin
+                )
                 st.plotly_chart(fig, use_container_width=False)
     else:
         st.warning("No budget window impacts found for the selected reform.")
@@ -173,9 +177,14 @@ with nationwide_tab:
                         )
                     )
                     if dist_data is not None:
-                        with st.expander("Show Distributional Analysis"):
+                        with st.expander("Show Average Household Net Income Change Chart"):
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                            st.plotly_chart(format_fig(fig), use_container_width=False)
+                            fig = format_fig(fig)
+                            # Add margin to ensure logo is visible
+                            fig.update_layout(
+                                margin=dict(l=20, r=60, t=20, b=80), 
+                            )
+                            st.plotly_chart(fig, use_container_width=False)
                 else:
                     st.error(
                         "No single-year impact data available for this combination."
