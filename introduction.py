@@ -82,7 +82,7 @@ def display_introduction():
 
     st.markdown(
         """
-    The table below shows how much of the property taxes plus state and local taxes can be deducted under each scenario:
+    Table 1 shows how much of the property taxes plus state and local taxes can be deducted under each scenario.
     """
     )
     
@@ -103,9 +103,7 @@ def display_introduction():
     st.markdown(
         """
     ### Regular Tax Liability
-    The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities.
-    
-    The table below shows the regular tax liability (before considering AMT) for each scenario:
+    The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities. Table 2 shows the regular tax liability (before considering AMT) for each scenario.
     """
     )
 
@@ -121,9 +119,7 @@ def display_introduction():
 
     The alternative minimum tax computation begins with the regular taxable income which is increased to compute the alternative minimum taxable income (AMTI). Firstly, the personal exemption amount, which was reduced to $0 under the TCJA, is added back to the taxable income. For non-itemizers the standard deduction amount is also added back. For filers who itemize, the SALT deduction and other preference items, which are excluded from regular taxable income, are included in the AMTI calculation.
     
-    The AMTI is then reduced by an exemption amount, which phases out for higher income levels, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.)
-    
-    The table below shows the tentative minimum tax for each scenario:
+    The AMTI is then reduced by an exemption amount, which phases out for higher income levels, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.) Table 3 shows the tentative minimum tax for each scenario.
     """
     )
 
@@ -147,9 +143,7 @@ def display_introduction():
     
     For example, if a household pays an additional \$5,000 in property taxes and their federal tax bill decreases by \$1,250, their property tax subsidy rate is 25% (\$1,250 ÷ \$5,000). This means 25% of each additional property tax dollar is effectively subsidized through federal tax savings.
     
-    When a household is subject to the AMT or hits the SALT deduction cap, their property tax subsidy rate can drop significantly or even reach zero, meaning they receive no federal tax benefit from additional property tax payments.
-    
-    The table below summarizes the key tax calculations and shows the resulting property tax subsidy rates:
+    When a household is subject to the AMT or hits the SALT deduction cap, their property tax subsidy rate can drop significantly or even reach zero, meaning they receive no federal tax benefit from additional property tax payments. Table 4 summarizes the key tax calculations and shows the resulting property tax subsidy rates.
     """
     )
 
