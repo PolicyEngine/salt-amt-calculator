@@ -82,12 +82,11 @@ def display_introduction():
 
     st.markdown(
         """
-    **Table 1: SALT Deduction Comparison for a Household in {0} with {1} in Earnings**
-    
     The table below shows how much of the property taxes plus state and local taxes can be deducted under each scenario:
-    """.format(selected_state, selected_income)
+    """
     )
-
+    
+    st.markdown(f"**Table 1: SALT Deduction Comparison for a Household in {selected_state} with {selected_income} in Earnings**")
     st.table(df_comparison.set_index("Scenario"))
 
     # Get state tax description
@@ -106,15 +105,14 @@ def display_introduction():
     ### Regular Tax Liability
     The increased SALT deduction under current law will lower the household's taxable income, which in turn results in lower regular tax liabilities.
     
-    **Table 2: Regular Tax Liability Comparison for a Household in {0} with {1} in Earnings**
-    
     The table below shows the regular tax liability (before considering AMT) for each scenario:
-    """.format(selected_state, selected_income)
+    """
     )
 
     # Get the tax liability comparison table
     df_comparison = get_tax_liability_table(state_code, income_value)
-
+    
+    st.markdown(f"**Table 2: Regular Tax Liability Comparison for a Household in {selected_state} with {selected_income} in Earnings**")
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
@@ -125,15 +123,14 @@ def display_introduction():
     
     The AMTI is then reduced by an exemption amount, which phases out for higher income levels, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.)
     
-    **Table 3: AMT Comparison for a Household in {0} with {1} in Earnings**
-    
     The table below shows the tentative minimum tax for each scenario:
-    """.format(selected_state, selected_income)
+    """
     )
 
     # Get the AMT comparison table
     df_comparison = get_amt_table(state_code, income_value)
-
+    
+    st.markdown(f"**Table 3: AMT Comparison for a Household in {selected_state} with {selected_income} in Earnings**")
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
@@ -152,15 +149,14 @@ def display_introduction():
     
     When a household is subject to the AMT or hits the SALT deduction cap, their property tax subsidy rate can drop significantly or even reach zero, meaning they receive no federal tax benefit from additional property tax payments.
     
-    **Table 4: Tax Calculations and Property Tax Subsidy Rates for a Household in {0} with {1} in Earnings**
-    
     The table below summarizes the key tax calculations and shows the resulting property tax subsidy rates:
-    """.format(selected_state, selected_income)
+    """
     )
 
     # Get the comprehensive tax table with subsidy rates
     df_comparison = get_comprehensive_tax_table(state_code, income_value)
-
+    
+    st.markdown(f"**Table 4: Tax Calculations and Property Tax Subsidy Rates for a Household in {selected_state} with {selected_income} in Earnings**")
     st.table(df_comparison.set_index(["Scenario", "Quantity"]))
 
     # Extract only the AMT and regular tax values needed for determining if AMT applies
@@ -216,14 +212,13 @@ def display_introduction():
     1. How the property tax subsidy rate changes as property taxes increase
     2. Whether the AMT begins to apply at higher property tax levels
     3. The point at which additional property taxes no longer provide tax benefits (the effective SALT cap)
-    
-    **Table 5: Tax Liability Comparison at Different Property Tax Levels for a Household in {0} with {1} in Earnings**
-    """.format(selected_state, selected_income)
+    """
     )
 
     # Get the higher property tax comparison table
     df_comparison = get_higher_property_tax_comparison(state_code, income_value)
-
+    
+    st.markdown(f"**Table 5: Tax Liability Comparison at Different Property Tax Levels for a Household in {selected_state} with {selected_income} in Earnings**")
     st.table(df_comparison.set_index("Scenario"))
 
     # Extract AMT and regular tax values for 10k and 15k property taxes
