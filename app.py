@@ -28,6 +28,7 @@ from policyengine_core.charts import format_fig
 from personal_calculator.salt_cap_calculator import find_effective_salt_cap
 from personal_calculator.salt_cap_calculator import create_situation_with_axes
 import os
+from household_examples import TAX_CALCULATIONS, STATE_CODES, INCOME_LEVELS
 
 
 # Set up the Streamlit page
@@ -44,6 +45,53 @@ st.markdown(
 )
 
 display_introduction()
+
+# Create a table showing effective SALT caps for each state and income level
+st.markdown("## Effective SALT Caps by State and Income Level")
+st.markdown("""
+This table shows the effective SALT cap for married households across different states and income levels under current law (2026). 
+Each household has \$15,000 in mortgage interest and $10,000 in charitable donations.
+The "∞" symbol indicates no effective SALT cap exists for that combination - these households can deduct all their state and local taxes.
+""")
+
+st.markdown(
+    f"**Table 6: Effective SALT Caps by State and Income Level**"
+)
+
+# Extract data from TAX_CALCULATIONS in household_examples.py
+from household_examples import TAX_CALCULATIONS, STATE_CODES, INCOME_LEVELS
+
+# Create a DataFrame to hold the effective SALT caps
+import pandas as pd
+import numpy as np
+
+# Get state codes and income levels
+states = list(STATE_CODES.values())
+incomes = list(INCOME_LEVELS.values())
+income_labels = list(INCOME_LEVELS.keys())
+
+# Create empty DataFrame with states as rows and income levels as columns
+effective_salt_caps = pd.DataFrame(index=states, columns=income_labels)
+
+# Fill the DataFrame with effective SALT cap values
+for state in states:
+    for i, income in enumerate(incomes):
+        if state in TAX_CALCULATIONS and income in TAX_CALCULATIONS[state]:
+            cap = TAX_CALCULATIONS[state][income]["effective_salt_cap"]["current_law"]
+            # Format the cap value
+            if cap == float("inf"):
+                effective_salt_caps.loc[state, income_labels[i]] = "∞"
+            else:
+                effective_salt_caps.loc[state, income_labels[i]] = f"${cap:,.0f}"
+        else:
+            effective_salt_caps.loc[state, income_labels[i]] = "N/A"
+
+# Create a mapping of state codes to state names for better readability
+state_names = {v: k for k, v in STATE_CODES.items()}
+effective_salt_caps.index = [state_names.get(state, state) for state in effective_salt_caps.index]
+
+# Display the table
+st.table(effective_salt_caps)
 
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:
@@ -131,7 +179,7 @@ with nationwide_tab:
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
-                st.markdown("**Figure 2: Budgetary Impact Over the 10-Year Window**")
+                st.markdown("**Figure 4: Budgetary Impact Over the 10-Year Window**")
 
                 # Show the 10-year impact graph without the title
                 fig = px.line(
@@ -193,7 +241,7 @@ with nationwide_tab:
                             "Show Average Household Net Income Change Chart"
                         ):
                             st.markdown(
-                                "**Figure 3: Average Household Net Income Change by Income Decile**"
+                                "**Figure 5: Average Household Net Income Change by Income Decile**"
                             )
 
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
