@@ -21,13 +21,13 @@ def display_introduction():
         """
     ## SALT and AMT Basics
 
-    **SALT:** Filers can take an itemized deduction for (a) property taxes and (b) _either_ state and local income taxes or sales taxes. The TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it will be uncapped.
+    **SALT:** Filers can take an itemized deduction for (a) property taxes and (b) _either_ state and local income or sales taxes. The TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it will be uncapped.
 
-    **AMT:** Filers must calculate their tax liability under the regular tax code and the AMT and pay the higher amount. The AMT disallows certain deductions, including the SALT deduction. The TCJA has (1) expanded the exemption amount that applies to AMT-specific income and (2) increased the threshold at which this exemption phases out at a rate of 25%.
+    **AMT:** Filers must calculate their tax liability under the regular tax code as well as the alternative minimum tax and pay the higher amount. The AMT disallows certain preference items, including but not limited to the SALT deduction, the miscellaneous deductions, and the personal exemptions. The TCJA has (1) expanded the exemption amount that applies to AMT-specific income and (2) increased the threshold at which this exemption phases out at a rate of 25%.
     
     ## What We'll Demonstrate
 
-    In this analysis, we'll show how the interaction between the SALT deduction and AMT creates an **effective SALT cap**. We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much property tax certain households can deduct, creating a de facto cap that's different from the current explicit \$10,000 cap.
+    In this analysis, we'll show how the interaction between the SALT deduction and AMT creates an **effective SALT cap**. We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much state and local as well as property tax certain households can deduct, creating a de facto cap that's different from the current explicit \$10,000 cap.
     
     We'll examine this through:
     1. Detailed case studies of multiple households at different income levels
@@ -39,9 +39,8 @@ def display_introduction():
     )
     st.markdown(
         """
+        
     **Please select a state and income level to see how SALT and AMT affect a sample household.**
-
-    *We can calculate the effective SALT cap for any household in the personal calculator below.*
     """
     )
 
@@ -68,6 +67,8 @@ def display_introduction():
     * \$10,000 in charitable cash donations 
 
     
+     *We can calculate the effective SALT cap for any household in the personal calculator below.*
+    
     ### SALT Deduction
     """
     )
@@ -90,7 +91,7 @@ def display_introduction():
         f"""
     {state_tax_description}
     
-    Under current law (2026), the entire amount of property taxes plus state and local taxes is deductible. Under current policy (2025), this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction amount.
+    Under current law, the entire amount of property taxes plus state and local taxes is deductible. Under current policy, this amount is subject to the SALT deduction cap of \$10,000, limiting the total deduction amount.
     """
     )
 
@@ -108,11 +109,11 @@ def display_introduction():
 
     st.markdown(
         """
-    ### Alternative Minimum Tax (AMT)
+    ### Alternative Minimum Tax
 
-    The alternative minimum tax (AMT) computation begins with the regular taxable income which is increased to compute the AMT income. Firstly, the personal exemption amount, which was reduced to $0 under the TCJA, is added back to the taxable income. For non-itemizers the standard deduction amount is also added back to the taxable income. However, for filers who itemize, the SALT deduction and other preference items that are excluded from regular taxable income are added back. 
+    The alternative minimum tax computation begins with the regular taxable income which is increased to compute the alternative minimum taxable income (AMTI). Firstly, the personal exemption amount, which was reduced to $0 under the TCJA, is added back to the taxable income. For non-itemizers the standard deduction amount is also added back. For filers who itemize, the SALT deduction and other preference items, which are excluded from regular taxable income, are included in the AMTI calculation.
     
-    This AMT income is then reduced by an exemption amount, which phases out for higher levels of AMT income, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.)
+    The AMTI is then reduced by an exemption amount, which phases out for higher income levels, before a tax rate of either 26% or 28% is applied to determine the **tentative minimum tax**. (Additional rules may apply for households with capital gains and dividend income.)
     
     The table below shows the tentative minimum tax for each scenario:
     """
@@ -184,7 +185,7 @@ def display_introduction():
     st.markdown(f"{subsidy_finding}")
     
     # Display the heading separately
-    st.markdown("### Now let's examine the same household with \$10k and \$15k in property taxes.")
+    st.markdown("### Now let's examine the same household with \$10k and \$15k in property taxes")
 
     # Get the higher property tax comparison table
     df_comparison = get_higher_property_tax_comparison(state_code, income_value)
@@ -272,7 +273,7 @@ def display_introduction():
         """
     ### Visualizing These Effects Across Different Property Tax Amounts
     
-    The charts below show how tax liabilities and subsidy rates change as property taxes increase from \$0 to \$50k, helping us understand the broader implications of these policies.
+    The charts below show how tax liabilities and subsidy rates change as property taxes increase from \$0 to \$50k.
     """
     )
     # Read the CSV files
