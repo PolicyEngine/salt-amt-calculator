@@ -39,12 +39,12 @@ def create_personal_inputs():
             "How much do you pay in property taxes?",
             min_value=0,
             max_value=1_000_000,
-            value=10_000,
+            value=0,
             step=500,
             help="Property taxes are deductible through your SALT deduction.",
         )
-        exepense_col1, exepense_col2 = st.columns(2)
-        with exepense_col1:
+        expense_col1, expense_col2 = st.columns(2)
+        with expense_col1:
             mortgage_interest = st.number_input(
                 "How much do you pay in mortgage interest?",
                 min_value=0,
@@ -52,7 +52,7 @@ def create_personal_inputs():
                 value=0,
                 step=500,
             )
-        with exepense_col2:
+        with expense_col2:
             charitable_cash_donations = st.number_input(
                 "How much do you donate to charity?",
                 min_value=0,

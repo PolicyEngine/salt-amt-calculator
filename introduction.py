@@ -140,7 +140,7 @@ def display_introduction():
 
     One way to assess the impact of these tax policies is by examining how much of a household's property taxes is offset by reductions in income tax liability. The **property tax subsidy rate** measures what percentage of each additional dollar in property taxes is effectively subsidized through tax savings.
     
-    For example, if a household pays an additional $5,000 in property taxes and their federal tax bill decreases by $1,250, their property tax subsidy rate is 25% ($1,250 ÷ $5,000). This means 25% of each additional property tax dollar is effectively subsidized through federal tax savings.
+    For example, if a household pays an additional \$5,000 in property taxes and their federal tax bill decreases by \$1,250, their property tax subsidy rate is 25% (\$1,250 ÷ \$5,000). This means 25% of each additional property tax dollar is effectively subsidized through federal tax savings.
     
     When a household is subject to the AMT or hits the SALT deduction cap, their property tax subsidy rate can drop significantly or even reach zero, meaning they receive no federal tax benefit from additional property tax payments.
     
@@ -159,30 +159,35 @@ def display_introduction():
         tax_calcs = TAX_CALCULATIONS[state_code][income_value]
     else:
         # If the specific combination doesn't exist, show an error or use a fallback
-        st.error(f"Tax calculation data not available for {selected_state} at {selected_income} income level.")
+        st.error(
+            f"Tax calculation data not available for {selected_state} at {selected_income} income level."
+        )
         # Use NY at 250k as absolute fallback only if needed
         tax_calcs = TAX_CALCULATIONS["NY"][250000]
-    
+
     # Extract values directly from tax_calcs dictionary
     current_law_5k_amt = tax_calcs["current_law"]["5k_property_taxes"]["amt"]
-    current_law_5k_regular = tax_calcs["current_law"]["5k_property_taxes"]["regular_tax"]
+    current_law_5k_regular = tax_calcs["current_law"]["5k_property_taxes"][
+        "regular_tax"
+    ]
     current_policy_5k_amt = tax_calcs["current_policy"]["5k_property_taxes"]["amt"]
-    current_policy_5k_regular = tax_calcs["current_policy"]["5k_property_taxes"]["regular_tax"]
+    current_policy_5k_regular = tax_calcs["current_policy"]["5k_property_taxes"][
+        "regular_tax"
+    ]
 
     # Check if AMT applies (when AMT >= Regular Tax)
     amt_applies_current_law = current_law_5k_amt >= current_law_5k_regular
     amt_applies_current_policy = current_policy_5k_amt >= current_policy_5k_regular
 
-    
     # Add information about current law
     if amt_applies_current_law:
         subsidy_finding = "Under current law, the AMT applies for this household. Even though the explicit SALT cap is removed, additional property taxes are not fully subsidized because the AMT disallows the SALT deduction."
     else:
         subsidy_finding = "Under current law, the regular tax applies for this household. Property taxes are subsidized through the SALT deduction with no explicit cap."
-    
+
     # Add another line break before current policy information
     subsidy_finding += "\n\n"
-    
+
     # Add information about current policy
     if amt_applies_current_policy:
         subsidy_finding += "Under current policy, the AMT applies for this household. Property taxes are not fully subsidized due to both the explicit $10,000 SALT cap and the AMT disallowing the SALT deduction."
@@ -191,16 +196,18 @@ def display_introduction():
 
     # Display the subsidy finding without the heading
     st.markdown(f"{subsidy_finding}")
-    
+
     # Display the heading separately
-    st.markdown("""
+    st.markdown(
+        """
     ### Now let's examine the same household with higher property taxes
     
     By comparing tax calculations at \$5k, \$10k, and \$15k property tax levels, we can determine:
     1. How the property tax subsidy rate changes as property taxes increase
     2. Whether the AMT begins to apply at higher property tax levels
     3. The point at which additional property taxes no longer provide tax benefits (the effective SALT cap)
-    """)
+    """
+    )
 
     # Get the higher property tax comparison table
     df_comparison = get_higher_property_tax_comparison(state_code, income_value)
@@ -213,39 +220,53 @@ def display_introduction():
         tax_calcs = TAX_CALCULATIONS[state_code][income_value]
     else:
         # If the specific combination doesn't exist, show an error or use a fallback
-        st.error(f"Tax calculation data not available for {selected_state} at {selected_income} income level.")
+        st.error(
+            f"Tax calculation data not available for {selected_state} at {selected_income} income level."
+        )
         # Use NY at 250k as absolute fallback only if needed
         tax_calcs = TAX_CALCULATIONS["NY"][250000]
-    
+
     # Check if AMT applies at 10k property tax level
     current_law_10k_amt = tax_calcs["current_law"]["10k_property_taxes"]["amt"]
-    current_law_10k_regular = tax_calcs["current_law"]["10k_property_taxes"]["regular_tax"]
+    current_law_10k_regular = tax_calcs["current_law"]["10k_property_taxes"][
+        "regular_tax"
+    ]
     current_policy_10k_amt = tax_calcs["current_policy"]["10k_property_taxes"]["amt"]
-    current_policy_10k_regular = tax_calcs["current_policy"]["10k_property_taxes"]["regular_tax"]
-    
+    current_policy_10k_regular = tax_calcs["current_policy"]["10k_property_taxes"][
+        "regular_tax"
+    ]
+
     amt_applies_current_law_10k = current_law_10k_amt >= current_law_10k_regular
-    amt_applies_current_policy_10k = current_policy_10k_amt >= current_policy_10k_regular
-    
+    amt_applies_current_policy_10k = (
+        current_policy_10k_amt >= current_policy_10k_regular
+    )
+
     # Check if AMT applies at 15k property tax level
     current_law_15k_amt = tax_calcs["current_law"]["15k_property_taxes"]["amt"]
-    current_law_15k_regular = tax_calcs["current_law"]["15k_property_taxes"]["regular_tax"]
+    current_law_15k_regular = tax_calcs["current_law"]["15k_property_taxes"][
+        "regular_tax"
+    ]
     current_policy_15k_amt = tax_calcs["current_policy"]["15k_property_taxes"]["amt"]
-    current_policy_15k_regular = tax_calcs["current_policy"]["15k_property_taxes"]["regular_tax"]
-    
+    current_policy_15k_regular = tax_calcs["current_policy"]["15k_property_taxes"][
+        "regular_tax"
+    ]
+
     amt_applies_current_law_15k = current_law_15k_amt >= current_law_15k_regular
-    amt_applies_current_policy_15k = current_policy_15k_amt >= current_policy_15k_regular
-    
+    amt_applies_current_policy_15k = (
+        current_policy_15k_amt >= current_policy_15k_regular
+    )
+
     # Create dynamic finding for the higher property tax comparison
     if amt_applies_current_law_10k and amt_applies_current_law_15k:
         higher_property_tax_finding = "The AMT applies under current law at both \$10k and $15k property tax levels. Even though the explicit SALT cap is removed, the AMT effectively limits the benefit of additional property tax deductions."
     elif amt_applies_current_law_15k and not amt_applies_current_law_10k:
         higher_property_tax_finding = "As property taxes increase to $15k under current law, the household becomes subject to the AMT, which limits the benefit of additional property tax deductions despite the removal of the explicit SALT cap."
     elif not amt_applies_current_law_10k and not amt_applies_current_law_15k:
-        higher_property_tax_finding = "Under current law, the household remains on the regular tax system even at higher property tax levels, allowing them to fully benefit from the removal of the SALT cap."
-    
+        higher_property_tax_finding = "Under current law, the household remains on the regular tax system even at higher property tax levels, allowing them to more fully benefit from the removal of the SALT cap."
+
     # Add a line break before current policy information
     higher_property_tax_finding += "\n\n"
-    
+
     # Add information about current policy
     if amt_applies_current_policy_10k and amt_applies_current_policy_15k:
         higher_property_tax_finding += " Under current policy, the AMT applies at both property tax levels, further limiting deductions beyond the explicit $10,000 SALT cap."

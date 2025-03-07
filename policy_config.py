@@ -33,9 +33,9 @@ def display_policy_config():
         )
 
         salt_phaseout = st.selectbox(
-            "SALT phase-out",
+            "SALT deduction phase-out",
             ["None", "10% for income over 200k (400k joint)"],
-            help="Reduce the SALT cap linearly by 10 cents for each dollar of additional income over \$200k (or $400k for joint filers)",
+            help="Reduce the SALT deduction linearly by 10 cents for each dollar of additional income over \$200k (or $400k for joint filers)",
             disabled=salt_repealed or salt_cap == "Uncapped",
         )
 
