@@ -22,7 +22,7 @@ def display_policy_config():
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
     with col1:
-        st.markdown("**State and local tax deduction**")
+        st.markdown("**State and local tax deduction** [📄](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview \"Learn more about how we model SALT\")")
         # Make labels more concise
         salt_repealed = st.checkbox(
             "Repeal SALT",
@@ -52,7 +52,7 @@ def display_policy_config():
         )
 
     with col2:
-        st.markdown("**Alternative minimum tax**")
+        st.markdown("**Alternative minimum tax** [📄](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview \"Learn more about how we model AMT\")")
 
         amt_repealed = st.checkbox(
             "Repeal AMT",

@@ -393,5 +393,9 @@ with st.expander("Notes"):
       - States with AMT parameters tied to federal AMT (e.g., California)
       - States with deductions for federal tax liability (e.g., Oregon)
       - Behavioral responses
+    
+    **Documentation:**
+    - [How we model SALT](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview)
+    - [How we model AMT](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview)
     """
     )

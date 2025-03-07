@@ -21,9 +21,9 @@ def display_introduction():
         """
     ## SALT and AMT Basics
 
-    **SALT:** Filers can take an itemized deduction for (a) property taxes and (b) _either_ state and local income or sales taxes. The TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it is scheduled to be uncapped.
+    **SALT:** Filers can take an itemized deduction for (a) property taxes and (b) _either_ state and local income or sales taxes. The TCJA capped the SALT deduction at \$10,000 from 2018 to 2025; beginning next year, it is scheduled to be uncapped. [Learn more about how we model SALT](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview).
 
-    **AMT:** Filers must calculate their tax liability under the regular tax code as well as the alternative minimum tax and pay the higher amount. The AMT disallows certain preference items, including but not limited to the SALT deduction, the miscellaneous deductions, and the personal exemptions. The TCJA has (1) expanded the exemption amount that applies to AMT-specific income and (2) increased the threshold at which this exemption phases out at a rate of 25%.
+    **AMT:** Filers must calculate their tax liability under the regular tax code as well as the alternative minimum tax and pay the higher amount. The AMT disallows certain preference items, including but not limited to the SALT deduction, the miscellaneous deductions, and the personal exemptions. The TCJA has (1) expanded the exemption amount that applies to AMT-specific income and (2) increased the threshold at which this exemption phases out at a rate of 25%. [Learn more about how we model AMT](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview).
     
     ## What We'll Demonstrate
 
