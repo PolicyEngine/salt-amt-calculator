@@ -344,8 +344,8 @@ with calculator_tab:
         if np.isinf(caps["baseline_salt_cap"]) and np.isinf(caps["reform_salt_cap"]):
             st.markdown(
                 """
-                <div style="text-align: center; color: #777777; margin: 25px 0;">
-                    <h3>Your household faces no effective SALT cap under either scenario</h3>
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces no effective SALT cap under either scenario</h3>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -353,8 +353,8 @@ with calculator_tab:
         elif np.isinf(caps["baseline_salt_cap"]):
             st.markdown(
                 f"""
-                <div style="text-align: center; color: #777777; margin: 25px 0;">
-                    <h3>Your household faces no effective SALT cap under {baseline_scenario} but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces no effective SALT cap under {baseline_scenario} but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -362,8 +362,8 @@ with calculator_tab:
         elif np.isinf(caps["reform_salt_cap"]):
             st.markdown(
                 f"""
-                <div style="text-align: center; color: #777777; margin: 25px 0;">
-                    <h3>Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} but faces no effective SALT cap under your policy</h3>
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} but faces no effective SALT cap under your policy</h3>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -371,8 +371,8 @@ with calculator_tab:
         else:
             st.markdown(
                 f"""
-                <div style="text-align: center; color: #777777; margin: 25px 0;">
-                    <h3>Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
                 </div>
                 """,
                 unsafe_allow_html=True,
