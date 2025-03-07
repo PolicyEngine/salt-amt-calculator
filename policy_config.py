@@ -17,7 +17,7 @@ def display_policy_config():
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
-    
+
     # Create two columns for SALT and AMT with more width for the first column
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 

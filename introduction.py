@@ -85,8 +85,10 @@ def display_introduction():
     Table 1 shows how much of the property taxes plus state and local taxes can be deducted under each scenario.
     """
     )
-    
-    st.markdown(f"**Table 1: SALT Deduction Comparison for a Household in {selected_state} with {selected_income} in Earnings**")
+
+    st.markdown(
+        f"**Table 1: SALT Deduction Comparison for a Household in {selected_state} with {selected_income} in Earnings**"
+    )
     st.table(df_comparison.set_index("Scenario"))
 
     # Get state tax description
@@ -109,8 +111,10 @@ def display_introduction():
 
     # Get the tax liability comparison table
     df_comparison = get_tax_liability_table(state_code, income_value)
-    
-    st.markdown(f"**Table 2: Regular Tax Liability Comparison for a Household in {selected_state} with {selected_income} in Earnings**")
+
+    st.markdown(
+        f"**Table 2: Regular Tax Liability Comparison for a Household in {selected_state} with {selected_income} in Earnings**"
+    )
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
@@ -125,8 +129,10 @@ def display_introduction():
 
     # Get the AMT comparison table
     df_comparison = get_amt_table(state_code, income_value)
-    
-    st.markdown(f"**Table 3: AMT Comparison for a Household in {selected_state} with {selected_income} in Earnings**")
+
+    st.markdown(
+        f"**Table 3: AMT Comparison for a Household in {selected_state} with {selected_income} in Earnings**"
+    )
     st.table(df_comparison.set_index("Scenario"))
 
     st.markdown(
@@ -149,8 +155,10 @@ def display_introduction():
 
     # Get the comprehensive tax table with subsidy rates
     df_comparison = get_comprehensive_tax_table(state_code, income_value)
-    
-    st.markdown(f"**Table 4: Tax Calculations and Property Tax Subsidy Rates for a Household in {selected_state} with {selected_income} in Earnings**")
+
+    st.markdown(
+        f"**Table 4: Tax Calculations and Property Tax Subsidy Rates for a Household in {selected_state} with {selected_income} in Earnings**"
+    )
     st.table(df_comparison.set_index(["Scenario", "Quantity"]))
 
     # Extract only the AMT and regular tax values needed for determining if AMT applies
@@ -211,8 +219,10 @@ def display_introduction():
 
     # Get the higher property tax comparison table
     df_comparison = get_higher_property_tax_comparison(state_code, income_value)
-    
-    st.markdown(f"**Table 5: Tax Liability Comparison at Different Property Tax Levels for a Household in {selected_state} with {selected_income} in Earnings**")
+
+    st.markdown(
+        f"**Table 5: Tax Liability Comparison at Different Property Tax Levels for a Household in {selected_state} with {selected_income} in Earnings**"
+    )
     st.table(df_comparison.set_index("Scenario"))
 
     # Extract AMT and regular tax values for 10k and 15k property taxes
@@ -300,16 +310,18 @@ def display_introduction():
     {higher_property_tax_finding}
     """
     )
-    
+
     # Format the SALT cap text with no effective SALT cap handling
-    if effective_caps["current_law"] == float("inf") and effective_caps["current_policy"] == float("inf"):
+    if effective_caps["current_law"] == float("inf") and effective_caps[
+        "current_policy"
+    ] == float("inf"):
         st.markdown(
             """
             <div style="text-align: center; color: #777777; margin: 25px 0;">
                 <h3>This household faces no effective SALT cap under either current law or current policy</h3>
             </div>
-            """, 
-            unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
     elif effective_caps["current_law"] == float("inf"):
         st.markdown(
@@ -317,8 +329,8 @@ def display_introduction():
             <div style="text-align: center; color: #777777; margin: 25px 0;">
                 <h3>This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
             </div>
-            """, 
-            unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
     elif effective_caps["current_policy"] == float("inf"):
         st.markdown(
@@ -326,8 +338,8 @@ def display_introduction():
             <div style="text-align: center; color: #777777; margin: 25px 0;">
                 <h3>This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law but faces no effective SALT cap under current policy</h3>
             </div>
-            """, 
-            unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
     else:
         st.markdown(
@@ -335,8 +347,8 @@ def display_introduction():
             <div style="text-align: center; color: #777777; margin: 25px 0;">
                 <h3>This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
             </div>
-            """, 
-            unsafe_allow_html=True
+            """,
+            unsafe_allow_html=True,
         )
 
     st.markdown(

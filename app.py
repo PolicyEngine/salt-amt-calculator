@@ -32,7 +32,9 @@ import os
 
 def load_custom_css():
     """Load custom CSS to apply styling to inputs"""
-    css_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".streamlit", "custom.css")
+    css_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".streamlit", "custom.css"
+    )
     with open(css_file, "r") as f:
         css = f.read()
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
@@ -128,21 +130,21 @@ with nationwide_tab:
         if total_revenue_impact == 0:
             st.markdown("### Revise your policy to see an impact")
         else:
-            impact_word = 'reduce' if total_revenue_impact > 0 else 'increase'
-            impact_amount = abs(total_revenue_impact)/1e12
-            
+            impact_word = "reduce" if total_revenue_impact > 0 else "increase"
+            impact_amount = abs(total_revenue_impact) / 1e12
+
             st.markdown(
                 f"""
                 <div style="text-align: center; color: #777777; margin: 25px 0;">
                     <h3>Your policy would {impact_word} the deficit by <span style="color: {TEAL_ACCENT}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
                 st.markdown("**Figure 3: Budgetary Impact Over the 10-Year Window**")
-                
+
                 # Show the 10-year impact graph without the title
                 fig = px.line(
                     budget_window_impacts_df,
@@ -199,14 +201,18 @@ with nationwide_tab:
                         )
                     )
                     if dist_data is not None:
-                        with st.expander("Show Average Household Net Income Change Chart"):
-                            st.markdown("**Figure 4: Average Household Net Income Change by Income Decile**")
-                            
+                        with st.expander(
+                            "Show Average Household Net Income Change Chart"
+                        ):
+                            st.markdown(
+                                "**Figure 4: Average Household Net Income Change by Income Decile**"
+                            )
+
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
                             fig = format_fig(fig)
                             # Add margin to ensure logo is visible
                             fig.update_layout(
-                                margin=dict(l=20, r=60, t=20, b=80), 
+                                margin=dict(l=20, r=60, t=20, b=80),
                             )
                             st.plotly_chart(fig, use_container_width=False)
                 else:
@@ -335,32 +341,32 @@ with calculator_tab:
         )
 
         # Format the effective SALT cap text with a cleaner, centered design
-        if np.isinf(caps['baseline_salt_cap']) and np.isinf(caps['reform_salt_cap']):
+        if np.isinf(caps["baseline_salt_cap"]) and np.isinf(caps["reform_salt_cap"]):
             st.markdown(
                 """
                 <div style="text-align: center; color: #777777; margin: 25px 0;">
                     <h3>Your household faces no effective SALT cap under either scenario</h3>
                 </div>
-                """, 
-                unsafe_allow_html=True
+                """,
+                unsafe_allow_html=True,
             )
-        elif np.isinf(caps['baseline_salt_cap']):
+        elif np.isinf(caps["baseline_salt_cap"]):
             st.markdown(
                 f"""
                 <div style="text-align: center; color: #777777; margin: 25px 0;">
                     <h3>Your household faces no effective SALT cap under {baseline_scenario} but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
                 </div>
-                """, 
-                unsafe_allow_html=True
+                """,
+                unsafe_allow_html=True,
             )
-        elif np.isinf(caps['reform_salt_cap']):
+        elif np.isinf(caps["reform_salt_cap"]):
             st.markdown(
                 f"""
                 <div style="text-align: center; color: #777777; margin: 25px 0;">
                     <h3>Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} but faces no effective SALT cap under your policy</h3>
                 </div>
-                """, 
-                unsafe_allow_html=True
+                """,
+                unsafe_allow_html=True,
             )
         else:
             st.markdown(
@@ -368,8 +374,8 @@ with calculator_tab:
                 <div style="text-align: center; color: #777777; margin: 25px 0;">
                     <h3>Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
                 </div>
-                """, 
-                unsafe_allow_html=True
+                """,
+                unsafe_allow_html=True,
             )
 
         # Clear status message when complete

@@ -4,7 +4,7 @@ from constants import STATE_CODES
 
 def create_personal_inputs():
     """Create inputs for personal information"""
-    
+
     # Apply custom styling for form inputs
     custom_css = """
     <style>
