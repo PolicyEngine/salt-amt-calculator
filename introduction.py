@@ -304,13 +304,46 @@ def display_introduction():
         f"""
     
     {higher_property_tax_finding}
-        
-    ### <span style='color: #39C6C0;'>The Effective SALT Cap for This Household Is:</span>
-    * {current_law_cap_str} under Current Law 
-    * {current_policy_cap_str} under Current Policy 
-    
     """
-    , unsafe_allow_html=True)
+    )
+    
+    # Format the SALT cap text with no effective SALT cap handling
+    if effective_caps["current_law"] == float("inf") and effective_caps["current_policy"] == float("inf"):
+        st.markdown(
+            """
+            <div style="text-align: center; color: #777777; margin: 25px 0;">
+                <h3>This household faces no effective SALT cap under either current law or current policy</h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+    elif effective_caps["current_law"] == float("inf"):
+        st.markdown(
+            f"""
+            <div style="text-align: center; color: #777777; margin: 25px 0;">
+                <h3>This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: #39C6C0; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+    elif effective_caps["current_policy"] == float("inf"):
+        st.markdown(
+            f"""
+            <div style="text-align: center; color: #777777; margin: 25px 0;">
+                <h3>This household faces an effective SALT cap of <span style="color: #39C6C0; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law but faces no effective SALT cap under current policy</h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            f"""
+            <div style="text-align: center; color: #777777; margin: 25px 0;">
+                <h3>This household faces an effective SALT cap of <span style="color: #39C6C0; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law and <span style="color: #39C6C0; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
     st.markdown(
         """

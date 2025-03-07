@@ -120,7 +120,11 @@ with nationwide_tab:
             impact_amount = abs(total_revenue_impact)/1e12
             
             st.markdown(
-                f"### Your policy would {impact_word} the deficit by <span style='color: {TEAL_ACCENT}; font-weight: bold;'>${impact_amount:.2f} trillion</span> over the 10-Year Budget window.",
+                f"""
+                <div style="text-align: center; color: #777777; margin: 25px 0;">
+                    <h3>Your policy would {impact_word} the deficit by <span style="color: {TEAL_ACCENT}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
+                </div>
+                """,
                 unsafe_allow_html=True
             )
             # Create an expander for the 10-year impact graph
@@ -318,27 +322,43 @@ with calculator_tab:
             situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
         )
 
-        # Format the SALT cap values with teal color and bold
-        baseline_salt_cap_str = (
-            "no effective SALT cap applies" 
-            if np.isinf(caps['baseline_salt_cap']) 
-            else f"your effective SALT cap is <span style='color: {TEAL_ACCENT}; font-weight: bold;'>${caps['baseline_salt_cap']:,.0f}</span>"
-        )
-        
-        reform_salt_cap_str = (
-            "no effective SALT cap applies" 
-            if np.isinf(caps['reform_salt_cap']) 
-            else f"your effective SALT cap is <span style='color: {TEAL_ACCENT}; font-weight: bold;'>${caps['reform_salt_cap']:,.0f}</span>"
-        )
-        
-        st.markdown(
-            f"""
-            ### <span style='color: {TEAL_ACCENT};'>Effective SALT Caps</span>
-            - Under {baseline_scenario}, {baseline_salt_cap_str}
-            - Under your policy configuration, {reform_salt_cap_str}
-            """,
-            unsafe_allow_html=True
-        )
+        # Format the effective SALT cap text with a cleaner, centered design
+        if np.isinf(caps['baseline_salt_cap']) and np.isinf(caps['reform_salt_cap']):
+            st.markdown(
+                """
+                <div style="text-align: center; color: #777777; margin: 25px 0;">
+                    <h3>Your household faces no effective SALT cap under either scenario</h3>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+        elif np.isinf(caps['baseline_salt_cap']):
+            st.markdown(
+                f"""
+                <div style="text-align: center; color: #777777; margin: 25px 0;">
+                    <h3>Your household faces no effective SALT cap under {baseline_scenario} but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+        elif np.isinf(caps['reform_salt_cap']):
+            st.markdown(
+                f"""
+                <div style="text-align: center; color: #777777; margin: 25px 0;">
+                    <h3>Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} but faces no effective SALT cap under your policy</h3>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"""
+                <div style="text-align: center; color: #777777; margin: 25px 0;">
+                    <h3>Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
 
         # Clear status message when complete
         status_placeholder.empty()
