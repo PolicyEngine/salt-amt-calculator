@@ -135,8 +135,8 @@ with nationwide_tab:
 
             st.markdown(
                 f"""
-                <div style="text-align: center; color: #777777; margin: 25px 0;">
-                    <h3>Your policy would {impact_word} the deficit by <span style="color: {TEAL_ACCENT}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your policy would {impact_word} the deficit by <span style="color: {TEAL_ACCENT}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
                 </div>
                 """,
                 unsafe_allow_html=True,

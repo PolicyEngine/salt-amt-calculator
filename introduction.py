@@ -317,8 +317,8 @@ def display_introduction():
     ] == float("inf"):
         st.markdown(
             """
-            <div style="text-align: center; color: #777777; margin: 25px 0;">
-                <h3>This household faces no effective SALT cap under either current law or current policy</h3>
+            <div style="text-align: center; margin: 25px 0;">
+                <h3 style="color: #777777;">This household faces no effective SALT cap under either current law or current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -326,8 +326,8 @@ def display_introduction():
     elif effective_caps["current_law"] == float("inf"):
         st.markdown(
             f"""
-            <div style="text-align: center; color: #777777; margin: 25px 0;">
-                <h3>This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
+            <div style="text-align: center; margin: 25px 0;">
+                <h3 style="color: #777777;">This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -335,8 +335,8 @@ def display_introduction():
     elif effective_caps["current_policy"] == float("inf"):
         st.markdown(
             f"""
-            <div style="text-align: center; color: #777777; margin: 25px 0;">
-                <h3>This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law but faces no effective SALT cap under current policy</h3>
+            <div style="text-align: center; margin: 25px 0;">
+                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law but faces no effective SALT cap under current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -344,8 +344,8 @@ def display_introduction():
     else:
         st.markdown(
             f"""
-            <div style="text-align: center; color: #777777; margin: 25px 0;">
-                <h3>This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
+            <div style="text-align: center; margin: 25px 0;">
+                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,

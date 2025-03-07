@@ -4,7 +4,7 @@ import streamlit as st
 def display_policy_config():
     """Display and collect policy configuration options"""
 
-    st.markdown("## Configure your policy")
+    st.markdown("## Configure Your Policy")
 
     # Apply custom styling for form inputs
     custom_css = """
