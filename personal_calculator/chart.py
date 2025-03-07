@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import DARK_GRAY, LIGHT_GRAY, BLUE
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE, TEAL_ACCENT, TEAL_LIGHT, TEAL_PRESSED
 
 
 def create_reform_comparison_graph(summary_results, baseline_scenario):
@@ -55,12 +55,15 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
                 text=text_inside,
                 textposition="inside",
                 insidetextanchor="middle",
-                textfont=dict(size=18, color="white", weight="bold"),
+                textfont=dict(size=18, color="white", family="Arial, sans-serif"),
             )
         )
 
         # Add difference annotation for reform
         if reform != baseline_scenario:
+            # Calculate percentage change
+            pct_change = (diff / baseline_value) * 100
+            # Format dollar amount annotation
             fig.add_annotation(
                 y=reform,
                 x=value,
@@ -72,9 +75,31 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
                 font=dict(size=16, color=color),
             )
 
+            # Add a separate annotation for the percentage in teal
+            # Calculate an appropriate x-shift based on the dollar amount length
+            dollar_text_length = len(text_outside)
+            x_shift = 10 + (dollar_text_length * 8)  # Estimate 8px per character
+
+            fig.add_annotation(
+                y=reform,
+                x=value,
+                text=f"({abs(pct_change):.1f}%)",
+                showarrow=False,
+                xanchor="left",
+                yanchor="middle",
+                xshift=x_shift,  # Dynamic position based on dollar amount length
+                font=dict(
+                    size=16,
+                    color=TEAL_ACCENT,
+                    family="Arial, sans-serif",
+                    weight="bold",
+                ),
+            )
+
     fig.update_layout(
         title=dict(
-            text=f"Household Net Income vs {baseline_scenario}", font=dict(size=24)
+            text=f"Figure 5: Household Net Income vs {baseline_scenario}",
+            font=dict(size=24),
         ),
     )
 

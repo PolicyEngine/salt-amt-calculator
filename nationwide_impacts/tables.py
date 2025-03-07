@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-
+from constants import TEAL_ACCENT
 
 def display_summary_metrics(impact_data, baseline):
     """
@@ -31,9 +31,14 @@ def display_summary_metrics(impact_data, baseline):
     percent_better = impact_data["percent_better_off"].iloc[0]
     percent_worse = impact_data["percent_worse_off"].iloc[0]
 
-    st.write(
-        f"### This policy would increase the net income for {percent_better:.1f}% of the "
-        f"population and decrease it for {percent_worse:.1f}% in 2026."
+    st.markdown(
+        f"""
+        <div style="text-align: center; margin: 25px 0;">
+            <h3 style="color: #777777;">This policy would increase the net income for <span style="color: {TEAL_ACCENT}; font-weight: bold;">{percent_better:.1f}%</span> of the 
+            population and decrease it for <span style="color: {TEAL_ACCENT}; font-weight: bold;">{percent_worse:.1f}%</span> in 2026.</h3>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     return impact_data

@@ -1,0 +1,108 @@
+/* Custom styling for all form inputs with !important to override Streamlit defaults */
+div[data-testid="stTextInput"] input,
+div[data-testid="stNumberInput"] input,
+div[data-testid="stSelectbox"] > div > div[role="button"],
+div[data-testid="stMultiselect"] > div > div[role="button"],
+div[data-baseweb="select"] > div {
+    background-color: #F7FDFC !important;
+    border-color: #CCCCCC !important;
+}
+
+/* Styling for select boxes dropdown button */
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:first-child {
+    background-color: #F7FDFC !important;
+}
+
+/* Styling for number inputs wrapper */
+div[data-testid="stNumberInput"] > div > div > div {
+    background-color: #F7FDFC !important;
+}
+
+/* Ensure the number input itself has the background color */
+div[data-testid="stNumberInput"] > div > div > div > input {
+    background-color: #F7FDFC !important;
+}
+
+/* Checkbox background */
+.stCheckbox label {
+    background-color: transparent !important;
+}
+
+/* Radio button background */
+.stRadio label {
+    background-color: transparent !important;
+}
+
+/* Styling for sliders */
+.stSlider > div {
+    background-color: transparent !important;
+}
+
+/* Dropdown options */
+div[role="listbox"] {
+    background-color: #FFFFFF !important;
+}
+
+/* Input focus states */
+.stTextInput input:focus, .stNumberInput input:focus {
+    border-color: #39C6C0 !important;
+    box-shadow: 0 0 0 1px #39C6C0 !important;
+}
+
+/* Radio button active color */
+div[data-testid="stRadio"] label:has(input:checked) {
+    color: #39C6C0 !important;
+}
+
+div[data-testid="stRadio"] label:has(input:checked)::before {
+    background-color: #39C6C0 !important;
+    border-color: #39C6C0 !important;
+}
+
+/* Target all radio buttons to ensure there's no red - more specific selectors from GiveCalc */
+div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div {
+    border-color: #39C6C0 !important;
+}
+
+div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div div {
+    background-color: #39C6C0 !important;
+}
+
+/* Radio button dot and border */
+.st-emotion-cache-1h5t4nn .st-emotion-cache-1wmy9hl, 
+.st-emotion-cache-1xseyk6 .st-emotion-cache-1taf2pk {
+    color: #39C6C0 !important;
+    background-color: #39C6C0 !important;
+}
+
+/* More specific selector for radio buttons */
+label[data-baseweb="radio"] div[data-testid="stRadio"] div {
+    background-color: #39C6C0 !important;
+}
+
+/* Ensure button primary color is teal */
+button[kind="primary"], button[data-baseweb="button"] {
+    background-color: #39C6C0 !important;
+    border-color: #39C6C0 !important;
+}
+
+/* Target the form button with more specific selectors */
+button.st-emotion-cache-ws946t, button.st-emotion-cache-13izhka {
+    background-color: #39C6C0 !important;
+    border-color: #39C6C0 !important;
+}
+
+/* Tab styling */
+button[data-baseweb="tab"] {
+    color: #616161;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #39C6C0 !important;
+    border-bottom-color: #39C6C0 !important;
+}
+
+/* This ensures the indicator line is teal */
+div[data-testid="stHorizontalBlock"] div[role="tablist"] div[data-testid="stHorizontalBlock"] {
+    background-color: #39C6C0 !important;
+}

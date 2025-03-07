@@ -21,23 +21,66 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from personal_calculator.reforms import get_reform_params_from_config
 from nationwide_impacts.charts import ImpactCharts
-from constants import CURRENT_POLICY_PARAMS
+from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT, TEAL_LIGHT
 from introduction import display_introduction
 import plotly.express as px
 from policyengine_core.charts import format_fig
 from personal_calculator.salt_cap_calculator import find_effective_salt_cap
 from personal_calculator.salt_cap_calculator import create_situation_with_axes
+import os
+
+
+def load_custom_css():
+    """Load custom CSS to apply styling to inputs"""
+    css_file = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), ".streamlit", "custom.css"
+    )
+    with open(css_file, "r") as f:
+        css = f.read()
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
+# Load custom CSS for form styling
+load_custom_css()
+
+# Inject additional CSS directly to handle radio buttons and primary buttons
+st.markdown(
+    """
+<style>
+    /* Override radio button colors */
+    div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div {
+        border-color: #39C6C0 !important;
+    }
+    
+    div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div div {
+        background-color: #39C6C0 !important;
+    }
+    
+    /* Override primary button color */
+    button[kind="primary"] {
+        background-color: #39C6C0 !important;
+        border-color: #39C6C0 !important;
+    }
+    
+    /* Target buttons by Streamlit's generated classes */
+    button.stButton button {
+        background-color: #39C6C0 !important;
+        border-color: #39C6C0 !important;
+    }
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
 # Title
 st.title("What's the SALTernative?")
 st.markdown(
     """
-    _The state and local tax (SALT) deduction and alternative minimum tax (AMT) will change next year. We'll walk you through these policies and model your custom reform._\n
-    This tool starts by describing SALT and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act in 2026) and under current policy (if the TCJA were extended). Then we'll explain these policies in the context of a sample filer. Finally, we'll put you in the driver's seat--you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
+    _The state and local tax (SALT) deduction and alternative minimum tax (AMT) are scheduled to change next year. We'll walk you through these policies and allow you to model your custom reform._\n
+    This tool starts by describing the SALT deduction and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026) and under _current policy_ (if the TCJA was extended beyond 2025). Then we'll explain these policies in the context of sample households. Finally, we'll put you in the driver's seat - you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
     """
 )
 
@@ -116,11 +159,21 @@ with nationwide_tab:
         if total_revenue_impact == 0:
             st.markdown("### Revise your policy to see an impact")
         else:
+            impact_word = "reduce" if total_revenue_impact > 0 else "increase"
+            impact_amount = abs(total_revenue_impact) / 1e12
+
             st.markdown(
-                f"### Your policy would {'reduce' if total_revenue_impact > 0 else 'increase'} the deficit by ${abs(total_revenue_impact)/1e12:.2f} trillion over the 10-Year Budget window."
+                f"""
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your policy would {impact_word} the deficit by <span style="color: {TEAL_ACCENT}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
+                st.markdown("**Figure 2: Budgetary Impact Over the 10-Year Window**")
+
                 # Show the 10-year impact graph without the title
                 fig = px.line(
                     budget_window_impacts_df,
@@ -132,6 +185,10 @@ with nationwide_tab:
                     },
                 )
                 fig = format_fig(fig)
+                # Add margin to ensure logo is visible
+                fig.update_layout(
+                    margin=dict(l=20, r=60, t=20, b=80),  # Increase bottom margin
+                )
                 st.plotly_chart(fig, use_container_width=False)
     else:
         st.warning("No budget window impacts found for the selected reform.")
@@ -173,9 +230,20 @@ with nationwide_tab:
                         )
                     )
                     if dist_data is not None:
-                        with st.expander("Show Distributional Analysis"):
+                        with st.expander(
+                            "Show Average Household Net Income Change Chart"
+                        ):
+                            st.markdown(
+                                "**Figure 3: Average Household Net Income Change by Income Decile**"
+                            )
+
                             fig = ImpactCharts.plot_distributional_analysis(dist_data)
-                            st.plotly_chart(format_fig(fig), use_container_width=False)
+                            fig = format_fig(fig)
+                            # Add margin to ensure logo is visible
+                            fig.update_layout(
+                                margin=dict(l=20, r=60, t=20, b=80),
+                            )
+                            st.plotly_chart(fig, use_container_width=False)
                 else:
                     st.error(
                         "No single-year impact data available for this combination."
@@ -205,7 +273,7 @@ with calculator_tab:
     # Create columns for calculate button alignment
     calc_col1, calc_col2 = st.columns([1, 6])
     with calc_col1:
-        calculate_clicked = st.button("Calculate Impacts")
+        calculate_clicked = st.button("Calculate Impacts", type="primary")
 
     if calculate_clicked:
         # Reset results to start fresh
@@ -301,19 +369,43 @@ with calculator_tab:
             situation_with_axes, {"selected_reform": reform_params}, baseline_scenario
         )
 
-        st.markdown(
-            f"""
-            ### Effective SALT Caps
-            - Under {baseline_scenario}, {
-                "no effective SALT cap applies" if np.isinf(caps['baseline_salt_cap']) 
-                else f"your effective SALT cap is ${caps['baseline_salt_cap']:,.0f}"
-            }
-            - Under your policy configuration, {
-                "no effective SALT cap applies" if np.isinf(caps['reform_salt_cap']) 
-                else f"your effective SALT cap is ${caps['reform_salt_cap']:,.0f}"
-            }
-            """
-        )
+        # Format the effective SALT cap text with a cleaner, centered design
+        if np.isinf(caps["baseline_salt_cap"]) and np.isinf(caps["reform_salt_cap"]):
+            st.markdown(
+                """
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces no effective SALT cap under either scenario</h3>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        elif np.isinf(caps["baseline_salt_cap"]):
+            st.markdown(
+                f"""
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces no effective SALT cap under {baseline_scenario} but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        elif np.isinf(caps["reform_salt_cap"]):
+            st.markdown(
+                f"""
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} but faces no effective SALT cap under your policy</h3>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f"""
+                <div style="text-align: center; margin: 25px 0;">
+                    <h3 style="color: #777777;">Your household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['baseline_salt_cap']:,.0f}</span> under {baseline_scenario} and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${caps['reform_salt_cap']:,.0f}</span> under your policy</h3>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
         # Clear status message when complete
         status_placeholder.empty()
@@ -325,11 +417,14 @@ with st.expander("Notes"):
     st.markdown(
         """
     - The calculator uses tax year 2026 for all calculations excluding budget window estimates
-    - Baseline deficit values are based on the Congressional Budget Office's 10-Year Budget Projections
     - The marginal subsidy rate is computed in $500 increments of property taxes
     - We limit the computation to the federal budgetary impact due to:
       - States with AMT parameters tied to federal AMT (e.g., California)
       - States with deductions for federal tax liability (e.g., Oregon)
       - Behavioral responses
+    
+    **Documentation:**
+    - [How we model SALT](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview)
+    - [How we model AMT](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview)
     """
     )

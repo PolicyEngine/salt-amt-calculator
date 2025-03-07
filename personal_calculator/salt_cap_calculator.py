@@ -118,7 +118,6 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             "baseline_amt": baseline_amt,
         }
     )
-
     # Add single reform net income
     for reform_key, reform_params in reform_params_dict.items():
         try:
@@ -142,6 +141,7 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
             results_df["reform_amt"] = None
             results_df["reform_state_local_tax"] = None
             results_df["reform_total_salt"] = None
+        #     Print full DataFrame without truncation
 
     baseline_crossover_mask = (
         results_df["baseline_amt"] > results_df["baseline_regular_tax"]

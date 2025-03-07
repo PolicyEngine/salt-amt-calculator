@@ -4,13 +4,25 @@ import streamlit as st
 def display_policy_config():
     """Display and collect policy configuration options"""
 
-    st.markdown("## Configure your policy")
+    st.markdown("## Configure Your Policy")
+
+    # Apply custom styling for form inputs
+    custom_css = """
+    <style>
+    div[data-testid="stSelectbox"] > div:first-child,
+    div[data-testid="stNumberInput"] input,
+    div[data-testid="stTextInput"] input {
+        background-color: #F7FDFC;
+    }
+    </style>
+    """
+    st.markdown(custom_css, unsafe_allow_html=True)
 
     # Create two columns for SALT and AMT with more width for the first column
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
     with col1:
-        st.markdown("**State and local tax deduction**")
+        st.markdown("**State and local tax deduction** [📄](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview \"Learn more about how we model SALT\")")
         # Make labels more concise
         salt_repealed = st.checkbox(
             "Repeal SALT",
@@ -33,14 +45,14 @@ def display_policy_config():
         )
 
         salt_phaseout = st.selectbox(
-            "SALT phase-out",
+            "SALT deduction phase-out",
             ["None", "10% for income over 200k (400k joint)"],
-            help="Reduce the SALT cap linearly by 10 cents for each dollar of additional income over \$200k (or $400k for joint filers)",
+            help="Reduce the SALT deduction linearly by 10 cents for each dollar of additional income over \$200k (or $400k for joint filers)",
             disabled=salt_repealed or salt_cap == "Uncapped",
         )
 
     with col2:
-        st.markdown("**Alternative minimum tax**")
+        st.markdown("**Alternative minimum tax** [📄](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview \"Learn more about how we model AMT\")")
 
         amt_repealed = st.checkbox(
             "Repeal AMT",

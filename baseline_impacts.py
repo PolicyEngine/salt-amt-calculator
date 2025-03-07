@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 from policyengine_core.charts import format_fig
-from constants import DARK_GRAY, LIGHT_GRAY, BLUE
+from constants import DARK_GRAY, LIGHT_GRAY, BLUE, TEAL_ACCENT, TEAL_LIGHT, TEAL_PRESSED
 
 
 class BaselineImpacts:
@@ -63,7 +63,7 @@ class BaselineImpacts:
         y_axis_title = title
 
         fig.update_layout(
-            title=f"{title} Over Time",
+            title=f"Figure 5: {title} Over Time",
             xaxis_title="Year",
             yaxis_title=y_axis_title,
             hovermode="x unified",
@@ -98,9 +98,9 @@ def display_baseline_impacts():
 
     **Current Law** deficit projections are sourced directly from the Congressional Budget Office (CBO), which provides detailed forecasts of the federal budget and economic outlook.
 
-    You can view the full report [here](https://www.cbo.gov/publication/60870#:~:text=The%20Budget%20Outlook,-Deficits&text=In%20CBO's%20projections%2C%20the%20federal%20budget%20deficit%20in%20fiscal%20year,to%20%242.7%20trillion%20by%202035).
+    You can view the full report by the CBO [here](https://www.cbo.gov/publication/60870#:~:text=The%20Budget%20Outlook,-Deficits&text=In%20CBO's%20projections%2C%20the%20federal%20budget%20deficit%20in%20fiscal%20year,to%20%242.7%20trillion%20by%202035).
 
-    **Current Policy** projections are computed using the budgetary impact from the PolicyEngine microsimulation, which models the effects of extending the Tax Cuts and Jobs Act (TCJA) provisions beyond 2025.
+    **Current Policy** projections are computed using the budgetary impact from the PolicyEngine microsimulation model, estimating the effects of extending the Tax Cuts and Jobs Act provisions beyond 2025.
     """
     )
 

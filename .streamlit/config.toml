@@ -1,0 +1,48 @@
+[theme]
+# Use light as base since we're customizing most colors
+base = "light"
+
+# Primary accent color - using our teal for interactive elements
+primaryColor = "#39C6C0"  # TEAL_ACCENT
+
+# Main background color - clean white
+backgroundColor = "#FFFFFF"
+
+# Secondary background (sidebar and widgets)
+secondaryBackgroundColor = "#F7FDFC"  # TEAL_LIGHT
+
+# Main text color - using a dark gray for better readability
+textColor = "#616161"
+
+# Set font family
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
+
+[browser]
+gatherUsageStats = true
+
+[theme.button]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT
+
+[theme.primaryButton]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT
+borderColor = "#39C6C0"  # TEAL_ACCENT
+
+[theme.radio]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT 
+checkColor = "#39C6C0"  # TEAL_ACCENT
+
+[theme.input]
+backgroundColor = "#F7FDFC"  # TEAL_LIGHT
+
+[theme.textInput]
+backgroundColor = "#F7FDFC"  # TEAL_LIGHT
+
+[theme.numberInput]
+backgroundColor = "#F7FDFC"  # TEAL_LIGHT
+
+[theme.checkbox]
+backgroundColor = "#39C6C0"  # TEAL_ACCENT
