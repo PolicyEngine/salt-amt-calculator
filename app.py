@@ -334,7 +334,6 @@ with st.expander("Notes"):
     st.markdown(
         """
     - The calculator uses tax year 2026 for all calculations excluding budget window estimates
-    - Baseline deficit values are based on the Congressional Budget Office's 10-Year Budget Projections
     - The marginal subsidy rate is computed in $500 increments of property taxes
     - We limit the computation to the federal budgetary impact due to:
       - States with AMT parameters tied to federal AMT (e.g., California)

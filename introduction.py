@@ -341,7 +341,7 @@ def display_introduction():
         st.markdown(
             """
         #### Tax Liability Chart
-        This chart shows how regular tax and AMT change as property taxes increase. Where the dashed line (AMT) is above the solid line (regular tax), the household pays the AMT amount, limiting the benefit of SALT deductions.
+        This chart shows how regular tax and AMT change as property taxes increase. Where the dashed line (AMT) is above the solid line (regular tax), the household pays the AMT amount, potentially limiting the benefit of the SALT deduction.
         """
         )
 
