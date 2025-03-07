@@ -386,7 +386,7 @@ def display_introduction():
                 y=df["current_law_regular_tax"],
                 mode="lines",
                 name="Current Law Regular Tax",
-                line=dict(color=TEAL_ACCENT, dash="solid"),
+                line=dict(color=BLUE, dash="solid"),
             )
         )
         fig2.add_trace(
@@ -395,7 +395,7 @@ def display_introduction():
                 y=df["current_law_amt"],
                 mode="lines",
                 name="Current Law Tentative AMT",
-                line=dict(color=TEAL_ACCENT, dash="dash"),
+                line=dict(color=BLUE, dash="dash"),
             )
         )
         fig2.update_layout(
@@ -450,7 +450,7 @@ def display_introduction():
                 y=df_2026["Subsidy Rate (%)"],
                 mode="lines",
                 name="Current Law",
-                line=dict(color=TEAL_ACCENT),
+                line=dict(color=BLUE),
             )
         )
         fig3.update_layout(

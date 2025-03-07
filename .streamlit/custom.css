@@ -48,3 +48,39 @@ div[role="listbox"] {
     border-color: #39C6C0 !important;
     box-shadow: 0 0 0 1px #39C6C0 !important;
 }
+
+/* Radio button active color */
+div[data-testid="stRadio"] label:has(input:checked) {
+    color: #39C6C0 !important;
+}
+
+div[data-testid="stRadio"] label:has(input:checked)::before {
+    background-color: #39C6C0 !important;
+    border-color: #39C6C0 !important;
+}
+
+/* Target all radio buttons to ensure there's no red */
+div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div::before {
+    background-color: #39C6C0 !important;
+    border-color: #39C6C0 !important;
+}
+
+/* Inside dot for radio buttons */
+div[role="radiogroup"] label[data-baseweb="radio"] input:checked + div::after {
+    background-color: #39C6C0 !important;
+}
+
+/* Tab styling */
+button[data-baseweb="tab"] {
+    color: #616161;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #39C6C0 !important;
+    border-bottom-color: #39C6C0 !important;
+}
+
+/* This ensures the indicator line is teal */
+div[data-testid="stHorizontalBlock"] div[role="tablist"] div[data-testid="stHorizontalBlock"] {
+    background-color: #39C6C0 !important;
+}

@@ -48,7 +48,7 @@ class ImpactCharts:
                 name="Average Impact",
                 text=[f"${x:,.0f}" for x in impact_data.values],
                 textposition="auto",
-                marker_color=TEAL_ACCENT,
+                marker_color=BLUE,
             )
         )
 
@@ -107,8 +107,8 @@ class ImpactCharts:
                 x=impact_data["year"],
                 y=y_values,
                 mode="lines+markers",
-                line=dict(color=TEAL_ACCENT),
-                marker=dict(color=TEAL_ACCENT),
+                line=dict(color=BLUE),
+                marker=dict(color=BLUE),
             )
         )
 

@@ -44,7 +44,7 @@ class BaselineImpacts:
         for data, name, color in zip(
             [current_law_data, current_policy_data],
             ["Current Law", "Current Policy"],
-            [TEAL_ACCENT, DARK_GRAY],
+            [BLUE, DARK_GRAY],
         ):
             fig.add_trace(
                 go.Scatter(

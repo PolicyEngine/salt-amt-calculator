@@ -3,7 +3,7 @@
 base = "light"
 
 # Primary accent color - using our teal for interactive elements
-primaryColor = "#39C6C0"
+primaryColor = "#39C6C0"  # TEAL_ACCENT
 
 # Main background color - clean white
 backgroundColor = "#FFFFFF"
