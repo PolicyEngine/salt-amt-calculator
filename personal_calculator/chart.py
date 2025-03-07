@@ -55,7 +55,7 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
                 text=text_inside,
                 textposition="inside",
                 insidetextanchor="middle",
-                textfont=dict(size=18, color="white", weight="bold"),
+                textfont=dict(size=18, color="white", family="Arial, sans-serif"),
             )
         )
 
