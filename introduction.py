@@ -29,10 +29,14 @@ def display_introduction():
 
     In this analysis, we'll show how the interaction between the SALT deduction and AMT creates an **effective SALT cap**. We'll demonstrate that while the SALT cap is officially removed in 2026, the AMT effectively limits how much state and local as well as property tax certain households can deduct, creating a de facto cap that's different from the current explicit \$10,000 cap.
     
-    We'll examine this through:
+    Along the way, we'll introduce two key concepts:
+    - **"Property tax subsidy rate"** - a new metric that measures what percentage of each additional dollar in property taxes is effectively subsidized through federal tax savings
+    - **"Effective SALT cap"** - the maximum SALT deduction a household can benefit from, even when no explicit cap exists
+    
+    We'll examine these through:
     1. Detailed case studies of multiple households at different income levels
-    2. Analysis of property tax subsidy rates (how much tax relief households get per dollar of property tax)
-    3. Visualization of these effects across different property tax amounts
+    2. Comparison of tax calculations at \$5K, \$10K, and \$15K property tax levels to reveal how the benefit of additional property taxes changes
+    3. Visualization of these effects across a wider range of property tax amounts
     
     ## How SALT and AMT Affect Sample Households
     """
@@ -136,6 +140,10 @@ def display_introduction():
 
     One way to assess the impact of these tax policies is by examining how much of a household's property taxes is offset by reductions in income tax liability. The **property tax subsidy rate** measures what percentage of each additional dollar in property taxes is effectively subsidized through tax savings.
     
+    For example, if a household pays an additional $5,000 in property taxes and their federal tax bill decreases by $1,250, their property tax subsidy rate is 25% ($1,250 ÷ $5,000). This means 25% of each additional property tax dollar is effectively subsidized through federal tax savings.
+    
+    When a household is subject to the AMT or hits the SALT deduction cap, their property tax subsidy rate can drop significantly or even reach zero, meaning they receive no federal tax benefit from additional property tax payments.
+    
     The table below summarizes the key tax calculations and shows the resulting property tax subsidy rates:
     """
     )
@@ -185,7 +193,14 @@ def display_introduction():
     st.markdown(f"{subsidy_finding}")
     
     # Display the heading separately
-    st.markdown("### Now let's examine the same household with \$10k and \$15k in property taxes")
+    st.markdown("""
+    ### Now let's examine the same household with higher property taxes
+    
+    By comparing tax calculations at \$5k, \$10k, and \$15k property tax levels, we can determine:
+    1. How the property tax subsidy rate changes as property taxes increase
+    2. Whether the AMT begins to apply at higher property tax levels
+    3. The point at which additional property taxes no longer provide tax benefits (the effective SALT cap)
+    """)
 
     # Get the higher property tax comparison table
     df_comparison = get_higher_property_tax_comparison(state_code, income_value)
@@ -395,8 +410,14 @@ def display_introduction():
         st.markdown(
             """
         #### Subsidy Rate Chart
-        This chart shows the percentage of each additional dollar of property tax that is effectively subsidized through tax savings.
-        Some of the marginal subsidy rates reflect state level property tax related deductions and credits.
+        This chart shows the property tax subsidy rate - the percentage of each additional dollar of property tax that is effectively subsidized through tax savings. 
+        
+        Several key patterns to observe:
+        - Flat lines indicate no additional tax benefit from property tax increases (0% subsidy rate)
+        - Downward slopes indicate diminishing benefits as property taxes increase
+        - Step changes often indicate when a household transitions from regular tax to AMT or hits deduction limits
+        
+        Some of the marginal subsidy rates also reflect state-level property tax related deductions and credits.
         """
         )
 
