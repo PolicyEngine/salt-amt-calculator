@@ -105,7 +105,7 @@ TAX_CALCULATIONS = {
                 },
             },
             "effective_salt_cap": {
-                "current_law": float("inf"),
+                "current_law": 96276,
                 "current_policy": 10000,
             },
         },
@@ -238,7 +238,7 @@ TAX_CALCULATIONS = {
                 },
             },
             "effective_salt_cap": {
-                "current_law": float("inf"),
+                "current_law": 116516,
                 "current_policy": 10000,
             },
         },
@@ -286,7 +286,7 @@ TAX_CALCULATIONS = {
                 },
             },
             "effective_salt_cap": {
-                "current_law": float("inf"),
+                "current_law": 96335,
                 "current_policy": 10000,
             },
         },
@@ -463,7 +463,7 @@ TAX_CALCULATIONS = {
                 },
             },
             "effective_salt_cap": {
-                "current_law": float("inf"),
+                "current_law": 96197,
                 "current_policy": 10000,
             },
         },
@@ -595,7 +595,7 @@ TAX_CALCULATIONS = {
                 },
             },
             "effective_salt_cap": {
-                "current_law": float("inf"),
+                "current_law": 115486,
                 "current_policy": 10000,
             },
         },
@@ -643,7 +643,7 @@ TAX_CALCULATIONS = {
                 },
             },
             "effective_salt_cap": {
-                "current_law": float("inf"),
+                "current_law": 96219,
                 "current_policy": 10000,
             },
         },
