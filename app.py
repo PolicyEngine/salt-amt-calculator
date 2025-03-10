@@ -51,7 +51,6 @@ st.markdown("## Effective SALT Caps by State and Income Level")
 st.markdown("""
 This table shows the effective SALT cap for married households across different states and income levels under current law (2026). 
 Each household has \$15,000 in mortgage interest and $10,000 in charitable donations.
-The "∞" symbol indicates no effective SALT cap exists for that combination - these households can deduct all their state and local taxes.
 """)
 
 st.markdown(
