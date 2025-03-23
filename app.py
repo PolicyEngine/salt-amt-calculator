@@ -35,13 +35,23 @@ from household_examples import TAX_CALCULATIONS, STATE_CODES, INCOME_LEVELS
 st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
 
 
+# Initialize navigation in session state if not already present
+if 'nav_page' not in st.session_state:
+    st.session_state.nav_page = "Introduction"
+
 # Set up sidebar for navigation
 with st.sidebar:
     st.title("Navigation")
     page = st.radio(
         "Go to",
-        ["Introduction", "Case Studies", "Policy Configuration", "Personalized Calculator"]
+        ["Introduction", "Case Studies", "Policy Configuration", "Personalized Calculator"],
+        key="sidebar_nav",
+        index=["Introduction", "Case Studies", "Policy Configuration", "Personalized Calculator"].index(st.session_state.nav_page)
     )
+    
+    # Update nav_page when sidebar selection changes
+    if page != st.session_state.nav_page:
+        st.session_state.nav_page = page
     
     st.markdown("---")
     st.markdown("""
@@ -90,6 +100,13 @@ if page == "Introduction":
     3. Visualization of these effects across a wider range of property tax amounts
     """
     )
+    
+    # Add a button to go to the next section
+    st.markdown("---")
+    if st.button("Go to Case Studies →", type="primary"):
+        # Set the page in session state and rerun to navigate
+        st.session_state.nav_page = "Case Studies"
+        st.rerun()
 
 elif page == "Case Studies":
     # Only show the case studies part
@@ -603,6 +620,13 @@ elif page == "Case Studies":
 
     # Display the table
     st.table(effective_salt_caps)
+    
+    # Add a button to go to the next section
+    st.markdown("---")
+    if st.button("Go to Policy Configuration →", type="primary"):
+        # Set the page in session state and rerun to navigate
+        st.session_state.nav_page = "Policy Configuration"
+        st.rerun()
 
 elif page == "Policy Configuration":
     # Display baseline impacts section first
@@ -611,6 +635,13 @@ elif page == "Policy Configuration":
     # Display policy configuration section
     st.markdown("## Configure Your Policy")
     policy_config = display_policy_config()
+    
+    # Add a button to go to the next section
+    st.markdown("---")
+    if st.button("Go to Personalized Calculator →", type="primary"):
+        # Set the page in session state and rerun to navigate
+        st.session_state.nav_page = "Personalized Calculator"
+        st.rerun()
 
 elif page == "Personalized Calculator":
     # Create the Personalized Calculator section
@@ -942,3 +973,11 @@ if page in ["Case Studies", "Policy Configuration", "Personalized Calculator"]:
         - [How we model AMT](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview)
         """
         )
+        
+# Add a button to restart the navigation cycle for the Personalized Calculator section
+if page == "Personalized Calculator":
+    st.markdown("---")
+    if st.button("Back to Introduction →", type="primary"):
+        # Set the page in session state and rerun to navigate
+        st.session_state.nav_page = "Introduction"
+        st.rerun()
