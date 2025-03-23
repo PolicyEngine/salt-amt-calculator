@@ -20,7 +20,7 @@ def display_policy_config():
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
     # Initialize policy config in session state if it doesn't exist
-    if 'policy_config' not in st.session_state:
+    if "policy_config" not in st.session_state:
         # Default values
         st.session_state.policy_config = {
             "salt_cap": "Current Law (Uncapped)",
@@ -36,7 +36,9 @@ def display_policy_config():
         }
 
     with col1:
-        st.markdown("**State and local tax deduction** [📄](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview \"Learn more about how we model SALT\")")
+        st.markdown(
+            '**State and local tax deduction** [📄](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview "Learn more about how we model SALT")'
+        )
         # Make labels more concise
         salt_repealed = st.checkbox(
             "Repeal SALT",
@@ -46,9 +48,15 @@ def display_policy_config():
 
         # Determine the initial index based on stored value
         salt_cap_options = ["Current Policy ($10k)", "$15k", "Current Law (Uncapped)"]
-        salt_cap_default = st.session_state.policy_config.get("salt_cap", "Current Law (Uncapped)")
+        salt_cap_default = st.session_state.policy_config.get(
+            "salt_cap", "Current Law (Uncapped)"
+        )
         # Only set an index if the value is in our options list
-        salt_cap_index = salt_cap_options.index(salt_cap_default) if salt_cap_default in salt_cap_options else 2
+        salt_cap_index = (
+            salt_cap_options.index(salt_cap_default)
+            if salt_cap_default in salt_cap_options
+            else 2
+        )
 
         salt_cap = st.selectbox(
             "Cap amount",  # Shortened label
@@ -70,8 +78,14 @@ def display_policy_config():
         )
 
         salt_phaseout_options = ["None", "10% for income over 200k (400k joint)"]
-        salt_phaseout_default = st.session_state.policy_config.get("salt_phaseout", "None")
-        salt_phaseout_index = salt_phaseout_options.index(salt_phaseout_default) if salt_phaseout_default in salt_phaseout_options else 0
+        salt_phaseout_default = st.session_state.policy_config.get(
+            "salt_phaseout", "None"
+        )
+        salt_phaseout_index = (
+            salt_phaseout_options.index(salt_phaseout_default)
+            if salt_phaseout_default in salt_phaseout_options
+            else 0
+        )
 
         salt_phaseout = st.selectbox(
             "SALT deduction phase-out",
@@ -83,7 +97,9 @@ def display_policy_config():
         )
 
     with col2:
-        st.markdown("**Alternative minimum tax** [📄](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview \"Learn more about how we model AMT\")")
+        st.markdown(
+            '**Alternative minimum tax** [📄](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview "Learn more about how we model AMT")'
+        )
 
         amt_repealed = st.checkbox(
             "Repeal AMT",
@@ -96,9 +112,14 @@ def display_policy_config():
             "Current Law ($70,500 Single, $109,500 Joint)",
             "Current Policy ($89,925 Single, $139,850 Joint)",
         ]
-        amt_exemption_default = st.session_state.policy_config.get("amt_exemption", 
-                                "Current Law ($70,500 Single, $109,500 Joint)")
-        amt_exemption_index = amt_exemption_options.index(amt_exemption_default) if amt_exemption_default in amt_exemption_options else 0
+        amt_exemption_default = st.session_state.policy_config.get(
+            "amt_exemption", "Current Law ($70,500 Single, $109,500 Joint)"
+        )
+        amt_exemption_index = (
+            amt_exemption_options.index(amt_exemption_default)
+            if amt_exemption_default in amt_exemption_options
+            else 0
+        )
 
         # AMT options are disabled if AMT is repealed
         amt_exemption = st.selectbox(
@@ -114,9 +135,14 @@ def display_policy_config():
             "Current Law ($156,700 Single, $209,000 Joint)",
             "Current Policy ($639,300 Single, $1,278,575 Joint)",
         ]
-        amt_phaseout_default = st.session_state.policy_config.get("amt_phaseout",
-                               "Current Law ($156,700 Single, $209,000 Joint)")
-        amt_phaseout_index = amt_phaseout_options.index(amt_phaseout_default) if amt_phaseout_default in amt_phaseout_options else 0
+        amt_phaseout_default = st.session_state.policy_config.get(
+            "amt_phaseout", "Current Law ($156,700 Single, $209,000 Joint)"
+        )
+        amt_phaseout_index = (
+            amt_phaseout_options.index(amt_phaseout_default)
+            if amt_phaseout_default in amt_phaseout_options
+            else 0
+        )
 
         amt_phaseout = st.selectbox(
             "AMT phase-out threshold",
@@ -129,7 +155,9 @@ def display_policy_config():
         # New option: allow eliminating the marriage penalty if using Current Law
         amt_eliminate_marriage_penalty = st.checkbox(
             "Double the exemption amounts and phase-out thresholds for Joint filers",
-            value=st.session_state.policy_config.get("amt_eliminate_marriage_penalty", False),
+            value=st.session_state.policy_config.get(
+                "amt_eliminate_marriage_penalty", False
+            ),
             disabled=amt_repealed
             or (amt_exemption != "Current Law ($70,500 Single, $109,500 Joint)")
             or (amt_phaseout != "Current Law ($156,700 Single, $209,000 Joint)"),
@@ -148,9 +176,15 @@ def display_policy_config():
     st.markdown("**General**")
     # Add other TCJA provisions selector
     other_tcja_provisions_options = ["Current Law", "Current Policy"]
-    other_tcja_provisions_default = st.session_state.policy_config.get("other_tcja_provisions_extended", "Current Law")
-    other_tcja_provisions_index = other_tcja_provisions_options.index(other_tcja_provisions_default) if other_tcja_provisions_default in other_tcja_provisions_options else 0
-    
+    other_tcja_provisions_default = st.session_state.policy_config.get(
+        "other_tcja_provisions_extended", "Current Law"
+    )
+    other_tcja_provisions_index = (
+        other_tcja_provisions_options.index(other_tcja_provisions_default)
+        if other_tcja_provisions_default in other_tcja_provisions_options
+        else 0
+    )
+
     other_tcja_provisions_extended = st.radio(
         "Other TCJA Provisions",
         other_tcja_provisions_options,
