@@ -15,8 +15,8 @@ from household_examples import (
     get_comprehensive_tax_table,
 )
 
-
-def display_introduction():
+def display_salt_basics():
+    """Display the basic description of SALT and AMT"""
     st.markdown(
         """
     ## SALT and AMT Basics
@@ -37,18 +37,11 @@ def display_introduction():
     1. Detailed case studies of multiple households at different income levels
     2. Comparison of tax calculations at \$5K, \$10K, and \$15K property tax levels to reveal how the benefit of additional property taxes changes
     3. Visualization of these effects across a wider range of property tax amounts
-    
-    ## How SALT and AMT Affect Sample Households
-    """
-    )
-    st.markdown(
-        """
-        
-    **Please select a state and income level to see how SALT and AMT affect a sample household.**
     """
     )
 
-    # Add state and income selectors
+def create_state_income_selectors():
+    """Create state and income level selectors"""
     col1, col2 = st.columns(2)
     with col1:
         selected_state = st.selectbox("Select State", list(STATE_CODES.keys()), index=0)
@@ -60,18 +53,21 @@ def display_introduction():
     # Get the state code and income value
     state_code = STATE_CODES[selected_state]
     income_value = INCOME_LEVELS[selected_income]
+    
+    return selected_state, selected_income, state_code, income_value
 
+def display_salt_deduction_section(selected_state, selected_income, state_code, income_value):
+    """Display the SALT deduction comparison section"""
     st.markdown(
         f"""
     
-
     Let's consider a married filer in {selected_state} with:
     * {selected_income} in wages and salaries 
     * \$15,000 in deductible mortgage interest 
     * \$10,000 in charitable cash donations 
 
     
-     *We can calculate the effective SALT cap for any household in the personal calculator below.*
+    *We can calculate the effective SALT cap for any household in the personal calculator below.*
     
     ### SALT Deduction
     """
@@ -102,6 +98,8 @@ def display_introduction():
     """
     )
 
+def display_tax_liability_section(selected_state, selected_income, state_code, income_value):
+    """Display the tax liability comparison section"""
     st.markdown(
         """
     ### Regular Tax Liability
@@ -117,6 +115,8 @@ def display_introduction():
     )
     st.table(df_comparison.set_index("Scenario"))
 
+def display_amt_section(selected_state, selected_income, state_code, income_value):
+    """Display the AMT comparison section"""
     st.markdown(
         """
     ### Alternative Minimum Tax
@@ -141,6 +141,8 @@ def display_introduction():
     """
     )
 
+def display_subsidy_rates_section(selected_state, selected_income, state_code, income_value):
+    """Display the property tax subsidy rates section"""
     st.markdown(
         """
     ### Property Tax Subsidy Rates
@@ -204,8 +206,11 @@ def display_introduction():
 
     # Display the subsidy finding without the heading
     st.markdown(f"{subsidy_finding}")
+    
+    return tax_calcs
 
-    # Display the heading separately
+def display_higher_property_tax_section(selected_state, selected_income, state_code, income_value, tax_calcs):
+    """Display the higher property tax comparison section"""
     st.markdown(
         """
     ### Now let's examine the same household with higher property taxes
@@ -224,18 +229,6 @@ def display_introduction():
         f"**Table 5: Tax Liability Comparison at Different Property Tax Levels for a Household in {selected_state} with {selected_income} in Earnings**"
     )
     st.table(df_comparison.set_index("Scenario"))
-
-    # Extract AMT and regular tax values for 10k and 15k property taxes
-    # Make sure we're using the correct state and income level data
-    if state_code in TAX_CALCULATIONS and income_value in TAX_CALCULATIONS[state_code]:
-        tax_calcs = TAX_CALCULATIONS[state_code][income_value]
-    else:
-        # If the specific combination doesn't exist, show an error or use a fallback
-        st.error(
-            f"Tax calculation data not available for {selected_state} at {selected_income} income level."
-        )
-        # Use NY at 250k as absolute fallback only if needed
-        tax_calcs = TAX_CALCULATIONS["NY"][250000]
 
     # Check if AMT applies at 10k property tax level
     current_law_10k_amt = tax_calcs["current_law"]["10k_property_taxes"]["amt"]
@@ -286,35 +279,31 @@ def display_introduction():
     elif not amt_applies_current_policy_10k and not amt_applies_current_policy_15k:
         higher_property_tax_finding += " Under current policy, the household remains on the regular tax system due to the explicit $10,000 SALT cap."
 
-    # Get effective SALT caps directly from TAX_CALCULATIONS
-    effective_caps = {
-        "current_law": tax_calcs["effective_salt_cap"]["current_law"],
-        "current_policy": tax_calcs["effective_salt_cap"]["current_policy"],
-    }
-
-    # Create formatted strings for the effective SALT caps
-    current_law_cap_str = (
-        "No effective SALT cap"
-        if effective_caps["current_law"] == float("inf")
-        else f"<span style='color: {TEAL_ACCENT}; font-weight: bold;'>${effective_caps['current_law']:,}</span>"
-    )
-    current_policy_cap_str = (
-        "No effective SALT cap"
-        if effective_caps["current_policy"] == float("inf")
-        else f"<span style='color: {TEAL_ACCENT}; font-weight: bold;'>${effective_caps['current_policy']:,}</span>"
-    )
-
     st.markdown(
         f"""
     
     {higher_property_tax_finding}
     """
     )
+    
+    return tax_calcs["effective_salt_cap"]
 
-    # Format the SALT cap text with no effective SALT cap handling
-    if effective_caps["current_law"] == float("inf") and effective_caps[
-        "current_policy"
-    ] == float("inf"):
+def display_effective_salt_cap(effective_caps):
+    """Display the effective SALT cap information"""
+    # Function to format the cap value (round to nearest 100)
+    def format_cap(cap_value):
+        if cap_value == float("inf"):
+            return None
+        else:
+            # Round to nearest 100
+            rounded_cap = round(cap_value / 100) * 100
+            return f"${rounded_cap:,.0f}"
+    
+    # Get formatted values for display
+    current_law_display = format_cap(effective_caps["current_law"])
+    current_policy_display = format_cap(effective_caps["current_policy"])
+    
+    if effective_caps["current_law"] == float("inf") and effective_caps["current_policy"] == float("inf"):
         st.markdown(
             """
             <div style="text-align: center; margin: 25px 0;">
@@ -327,7 +316,7 @@ def display_introduction():
         st.markdown(
             f"""
             <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
+                <h3 style="color: #777777;">This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">{current_policy_display}</span> under current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -336,7 +325,7 @@ def display_introduction():
         st.markdown(
             f"""
             <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law but faces no effective SALT cap under current policy</h3>
+                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">{current_law_display}</span> under current law but faces no effective SALT cap under current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -345,12 +334,14 @@ def display_introduction():
         st.markdown(
             f"""
             <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_law']:,}</span> under current law and <span style="color: {TEAL_ACCENT}; font-weight: bold;">${effective_caps['current_policy']:,}</span> under current policy</h3>
+                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {TEAL_ACCENT}; font-weight: bold;">{current_law_display}</span> under current law and <span style="color: {TEAL_ACCENT}; font-weight: bold;">{current_policy_display}</span> under current policy</h3>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
+def display_tax_visualization(selected_state, selected_income, state_code, income_value):
+    """Display tax visualizations with charts"""
     st.markdown(
         """
     ### Visualizing These Effects Across Different Property Tax Amounts
@@ -358,6 +349,7 @@ def display_introduction():
     The charts below show how tax liabilities and subsidy rates change as property taxes increase from \$0 to \$50k.
     """
     )
+    
     # Read the CSV files
     with st.expander("See detailed tax calculations and charts"):
         # Load the data for all states and income levels
@@ -489,3 +481,108 @@ def display_introduction():
         )
 
         st.plotly_chart(format_fig(fig3))
+
+def display_effective_salt_caps_table():
+    """Display the table of effective SALT caps for all states and income levels"""
+    st.markdown("## Effective SALT Caps by State and Income Level")
+    st.markdown(
+        """
+    This table shows the effective SALT cap for married households across different states and income levels under current law (2026). 
+    Each household has \$15,000 in mortgage interest and $10,000 in charitable donations.
+    """
+    )
+
+    st.markdown(f"**Table 6: Effective SALT Caps by State and Income Level**")
+
+    # Create a DataFrame to hold the effective SALT caps
+    import pandas as pd
+    import numpy as np
+
+    # Get state codes and income levels
+    states = list(STATE_CODES.values())
+    incomes = list(INCOME_LEVELS.values())
+    income_labels = list(INCOME_LEVELS.keys())
+
+    # Create empty DataFrame with states as rows and income levels as columns
+    effective_salt_caps = pd.DataFrame(index=states, columns=income_labels)
+
+    # Fill the DataFrame with effective SALT cap values
+    for state in states:
+        for i, income in enumerate(incomes):
+            if state in TAX_CALCULATIONS and income in TAX_CALCULATIONS[state]:
+                cap = TAX_CALCULATIONS[state][income]["effective_salt_cap"][
+                    "current_law"
+                ]
+                # Format the cap value and round to nearest 100
+                if cap == float("inf"):
+                    effective_salt_caps.loc[state, income_labels[i]] = "∞"
+                else:
+                    # Round to nearest 100
+                    rounded_cap = round(cap / 100) * 100
+                    effective_salt_caps.loc[state, income_labels[i]] = f"${rounded_cap:,.0f}"
+            else:
+                effective_salt_caps.loc[state, income_labels[i]] = "N/A"
+
+    # Create a mapping of state codes to state names for better readability
+    state_names = {v: k for k, v in STATE_CODES.items()}
+    effective_salt_caps.index = [
+        state_names.get(state, state) for state in effective_salt_caps.index
+    ]
+
+    # Display the table
+    st.table(effective_salt_caps)
+
+def display_notes():
+    """Display notes section at the bottom of the app"""
+    st.markdown("---")  # Add a horizontal line for visual separation
+
+    with st.expander("Notes"):
+        st.markdown(
+            """
+        - The calculator uses tax year 2026 for all calculations excluding budget window estimates
+        - The marginal subsidy rate is computed in $500 increments of property taxes
+        - We limit the computation to the federal budgetary impact due to:
+          - States with AMT parameters tied to federal AMT (e.g., California)
+          - States with deductions for federal tax liability (e.g., Oregon)
+          - Behavioral responses
+        
+        **Documentation:**
+        - [How we model SALT](https://docs.google.com/document/d/1ATmkzrq8e5TS-p4JrIgyXovqFdHEHvnPtqpUC0z8GW0/preview)
+        - [How we model AMT](https://docs.google.com/document/d/1uAwllrnbS7Labq7LvxSEjUdZESv0H5roDhmknldqIDA/preview)
+        """
+        )
+
+def display_introduction():
+    # Display SALT and AMT basics
+    display_salt_basics()
+    
+    # Section header for case studies
+    st.markdown(
+        """
+    ## How SALT and AMT Affect Sample Households
+    """
+    )
+    
+    # Create state and income selectors
+    selected_state, selected_income, state_code, income_value = create_state_income_selectors()
+    
+    # Display SALT deduction section
+    display_salt_deduction_section(selected_state, selected_income, state_code, income_value)
+    
+    # Display tax liability section
+    display_tax_liability_section(selected_state, selected_income, state_code, income_value)
+    
+    # Display AMT section
+    display_amt_section(selected_state, selected_income, state_code, income_value)
+    
+    # Display subsidy rates section and get tax calculations
+    tax_calcs = display_subsidy_rates_section(selected_state, selected_income, state_code, income_value)
+    
+    # Display higher property tax section and get effective caps
+    effective_caps = display_higher_property_tax_section(selected_state, selected_income, state_code, income_value, tax_calcs)
+    
+    # Display effective SALT cap
+    display_effective_salt_cap(effective_caps)
+    
+    # Display tax visualization
+    display_tax_visualization(selected_state, selected_income, state_code, income_value)

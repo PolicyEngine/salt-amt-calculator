@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from constants import TEAL_ACCENT
 
+
 def display_summary_metrics(impact_data, baseline):
     """
     Display summary metrics for the selected reform and baseline scenario.

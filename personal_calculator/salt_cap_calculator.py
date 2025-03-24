@@ -61,7 +61,14 @@ def create_situation_with_axes(
                 }
             },
             "axes": [
-                [{"name": "real_estate_taxes", "count": 10_001, "min": 0, "max": 1_000_000}]
+                [
+                    {
+                        "name": "real_estate_taxes",
+                        "count": 10_001,
+                        "min": 0,
+                        "max": 1_000_000,
+                    }
+                ]
             ],
         }
     )

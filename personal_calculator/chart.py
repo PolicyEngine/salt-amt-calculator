@@ -90,17 +90,17 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
                 xshift=x_shift,  # Dynamic position based on dollar amount length
                 font=dict(
                     size=16,
-                    color=TEAL_ACCENT,
-                    family="Arial, sans-serif",
+                    color=BLUE,
                     weight="bold",
                 ),
             )
 
     fig.update_layout(
         title=dict(
-            text=f"Figure 5: Household Net Income vs {baseline_scenario}",
+            text=f"Figure 6: Household Net Income vs {baseline_scenario}",
             font=dict(size=24),
         ),
+        showlegend=False,
     )
 
     return format_fig(fig)
