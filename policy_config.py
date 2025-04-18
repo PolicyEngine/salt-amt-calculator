@@ -47,7 +47,12 @@ def display_policy_config():
         )
 
         # Determine the initial index based on stored value
-        salt_cap_options = ["Current Policy ($10k)", "$15k", "Current Law (Uncapped)"]
+        salt_cap_options = [
+            "Current Policy ($10k)",
+            "$15k",
+            "$100k",
+            "Current Law (Uncapped)",
+        ]
         salt_cap_default = st.session_state.policy_config.get(
             "salt_cap", "Current Law (Uncapped)"
         )
