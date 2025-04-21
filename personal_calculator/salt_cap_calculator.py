@@ -195,6 +195,14 @@ def find_effective_salt_cap(situation_with_axes, reform_params_dict, baseline_sc
                 )
                 else 15_000
             )
+        elif salt_cap_setting == "$100k":
+            reform_salt_cap = (
+                200_000
+                if (
+                    is_married and st.session_state.policy_config["salt_marriage_bonus"]
+                )
+                else 100_000
+            )
         # "Current Law (Uncapped)" will use the default float('inf')
 
         # Apply repeal if selected

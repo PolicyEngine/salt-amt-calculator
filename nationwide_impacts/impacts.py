@@ -101,6 +101,12 @@ class NationwideImpacts:
                 # Extract SALT cap type
                 if "15_30" in reform:
                     filter_options["salt_cap"].add("15_30_k")
+                elif "100_200k" in reform:
+                    filter_options["salt_cap"].add("100_200k")
+                elif "15_k" in reform:
+                    filter_options["salt_cap"].add("15_k")
+                elif "100k" in reform:
+                    filter_options["salt_cap"].add("100k")
                 elif "0_cap" in reform:
                     filter_options["salt_cap"].add("0_cap")
                 elif "tcja" in reform:
@@ -168,6 +174,12 @@ class NationwideImpacts:
         if salt_cap is not None:
             if salt_cap == "15_30":
                 mask &= df["reform"].str.contains("salt_15_30_k")
+            elif salt_cap == "15_k":
+                 mask &= df["reform"].str.contains("salt_15_k")
+            elif salt_cap == "100_200k":
+                mask &= df["reform"].str.contains("salt_100_200k")
+            elif salt_cap == "100k":
+                mask &= df["reform"].str.contains("salt_100k")
             elif salt_cap == "0_cap":
                 mask &= df["reform"].str.contains("salt_0_cap")
             else:
@@ -292,6 +304,19 @@ def get_reform_name(policy_config, baseline, year=None):
                 salt_full += "_without_phaseout"
         else:
             salt_full = "salt_15_k"
+            if policy_config.get("salt_phaseout") != "None":
+                salt_full += "_with_phaseout"
+            else:
+                salt_full += "_without_phaseout"
+    elif policy_config["salt_cap"] == "$100k":
+        if policy_config.get("salt_marriage_bonus"):
+            salt_full = "salt_100_200k"
+            if policy_config.get("salt_phaseout") != "None":
+                salt_full += "_with_phaseout"
+            else:
+                salt_full += "_without_phaseout"
+        else:
+            salt_full = "salt_100k"
             if policy_config.get("salt_phaseout") != "None":
                 salt_full += "_with_phaseout"
             else:

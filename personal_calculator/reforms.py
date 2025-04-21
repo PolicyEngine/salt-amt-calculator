@@ -292,6 +292,25 @@ def get_reform_params_from_config(policy_config):
             reform_params["salt_phase_out_rate"] = 0.1
             reform_params["salt_phase_out_threshold_joint"] = 400_000
             reform_params["salt_phase_out_threshold_other"] = 200_000
+    elif policy_config["salt_cap"] == "$100k":
+        reform_params["salt_caps"] = {
+            "JOINT": 100_000,
+            "SEPARATE": 50_000,
+            "SINGLE": 100_000,
+            "HEAD_OF_HOUSEHOLD": 100_000,
+            "SURVIVING_SPOUSE": 100_000,
+        }
+        # Add marriage bonus if selected
+        if policy_config.get("salt_marriage_bonus"):
+            reform_params["salt_caps"]["JOINT"] = 200_000
+        if (
+            policy_config.get("salt_phaseout")
+            == "10% for income over 200k (400k joint)"
+        ):
+            reform_params["salt_phase_out_enabled"] = True
+            reform_params["salt_phase_out_rate"] = 0.1
+            reform_params["salt_phase_out_threshold_joint"] = 400_000
+            reform_params["salt_phase_out_threshold_other"] = 200_000
     elif policy_config["salt_cap"] == "$0 Cap":
         reform_params["salt_caps"] = {
             "JOINT": 0,
