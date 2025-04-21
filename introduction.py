@@ -487,49 +487,12 @@ def display_effective_salt_caps_table():
     st.markdown("## Effective SALT Caps by State and Income Level")
     st.markdown(
         """
-    The graphs below show the effective SALT cap for married households across different states and income levels under current law (2026). 
+    The graphs below show the effective SALT cap for married households across different states and income levels under current law in 2026. 
     """
     )
 
     st.image("salt-cap-graphs.png", caption="Effective SALT Caps Visualization")
 
-    # Create a DataFrame to hold the effective SALT caps
-    import pandas as pd
-    import numpy as np
-
-    # Get state codes and income levels
-    states = list(STATE_CODES.values())
-    incomes = list(INCOME_LEVELS.values())
-    income_labels = list(INCOME_LEVELS.keys())
-
-    # Create empty DataFrame with states as rows and income levels as columns
-    effective_salt_caps = pd.DataFrame(index=states, columns=income_labels)
-
-    # Fill the DataFrame with effective SALT cap values
-    for state in states:
-        for i, income in enumerate(incomes):
-            if state in TAX_CALCULATIONS and income in TAX_CALCULATIONS[state]:
-                cap = TAX_CALCULATIONS[state][income]["effective_salt_cap"][
-                    "current_law"
-                ]
-                # Format the cap value and round to nearest 100
-                if cap == float("inf"):
-                    effective_salt_caps.loc[state, income_labels[i]] = "∞"
-                else:
-                    # Round to nearest 100
-                    rounded_cap = round(cap / 100) * 100
-                    effective_salt_caps.loc[state, income_labels[i]] = f"${rounded_cap:,.0f}"
-            else:
-                effective_salt_caps.loc[state, income_labels[i]] = "N/A"
-
-    # Create a mapping of state codes to state names for better readability
-    state_names = {v: k for k, v in STATE_CODES.items()}
-    effective_salt_caps.index = [
-        state_names.get(state, state) for state in effective_salt_caps.index
-    ]
-
-    # Display the table
-    st.table(effective_salt_caps)
 
 def display_notes():
     """Display notes section at the bottom of the app"""
