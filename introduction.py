@@ -487,7 +487,7 @@ def display_effective_salt_caps_table():
     st.markdown("## Effective SALT Caps by State and Income Level")
     st.markdown(
         """
-    The graphs below show the effective SALT cap for married households across different states and income levels under current law in 2026. 
+    The graphs below show the effective SALT cap for married couples across different income levels under current law in 2026. 
     """
     )
 
