@@ -316,7 +316,7 @@ def display_effective_salt_cap(effective_caps):
         st.markdown(
             f"""
             <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_policy_display}</span> under current policy</h3>
+                <h3 style="color: #777777;">This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_policy_display}</span> under your policy configuration</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -325,7 +325,7 @@ def display_effective_salt_cap(effective_caps):
         st.markdown(
             f"""
             <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_law_display}</span> under current law but faces no effective SALT cap under current policy</h3>
+                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_law_display}</span> under current law but faces no effective SALT cap under your policy configuration</h3>
             </div>
             """,
             unsafe_allow_html=True,
@@ -334,7 +334,7 @@ def display_effective_salt_cap(effective_caps):
         st.markdown(
             f"""
             <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_law_display}</span> under current law and <span style="color: {BLUE}; font-weight: bold;">{current_policy_display}</span> under current policy</h3>
+                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_law_display}</span> under current law and <span style="color: {BLUE}; font-weight: bold;">{current_policy_display}</span> under your policy configuration</h3>
             </div>
             """,
             unsafe_allow_html=True,
