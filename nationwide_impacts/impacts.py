@@ -102,9 +102,11 @@ class NationwideImpacts:
                 if "15_30" in reform:
                     filter_options["salt_cap"].add("15_30_k")
                 elif "100_200k" in reform:
-                    filter_options["salt_cap"].add("15_k")
-                elif "15_k" in reform:
                     filter_options["salt_cap"].add("100_200k")
+                elif "15_k" in reform:
+                    filter_options["salt_cap"].add("15_k")
+                elif "100k" in reform:
+                    filter_options["salt_cap"].add("100k")
                 elif "0_cap" in reform:
                     filter_options["salt_cap"].add("0_cap")
                 elif "tcja" in reform:

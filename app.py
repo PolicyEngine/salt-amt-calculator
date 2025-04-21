@@ -28,7 +28,7 @@ from nationwide_impacts.charts import ImpactCharts
 
 from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
-from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT, TEAL_LIGHT
+from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT, TEAL_LIGHT, BLUE
 
 from introduction import (
     display_salt_basics,
@@ -44,21 +44,165 @@ from introduction import (
     display_notes,
 )
 
-from household_examples import (
-    TAX_CALCULATIONS,
-    STATE_CODES,
-    INCOME_LEVELS,
-    get_salt_deduction_table,
-    get_tax_liability_table,
-    get_amt_table,
-    get_state_tax_description,
-    get_higher_property_tax_comparison,
-    get_comprehensive_tax_table,
-)
-
 # Set up the Streamlit page
-st.set_page_config(page_title="SALT and AMT Policy Calculator", layout="wide")
+st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
+# Inject custom CSS with Roboto font and styling
+st.markdown(
+    f"""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+        
+        /* Apply Roboto font to all elements */
+        html, body, [class*="css"], .stMarkdown, .stButton, .stHeader, 
+        div, p, h1, h2, h3, h4, h5, h6, span,
+        .stRadio > label, .stCheckbox > label, .stExpander > label {{
+            font-family: 'Roboto', sans-serif !important;
+        }}
+        
+        /* Style improvements */
+        .main .block-container {{
+            padding-top: 2rem;
+        }}
+        
+        /* Hide Streamlit branding */
+        div[data-testid="stToolbar"] {{
+            visibility: hidden;
+        }}
+        
+        footer {{
+            visibility: hidden;
+        }}
+        
+        /* Ensure the styling applies to all text */
+        .stMarkdown p, .stMarkdown span, .stMarkdown div {{
+            font-family: 'Roboto', sans-serif !important;
+        }}
+        
+        /* Style all buttons with teal accent - no hover effect */
+        .stButton > button {{
+            background-color: {BLUE} !important;
+            color: white !important;
+            border: none !important;
+            transition: none !important;
+        }}
+        
+        /* Disable hover effects */
+        .stButton > button:hover {{
+            background-color: {BLUE} !important;
+            color: white !important;
+            border: none !important;
+        }}
+        
+        /* Active state for buttons */
+        .stButton > button:active {{
+            background-color: {BLUE} !important;
+            color: white !important;
+        }}
+        
+        /* Default styling for form elements - no outline */
+        .stSelectbox > div > div,
+        .stNumberInput > div > div > div,
+        .stTextInput > div > div > input {{
+            border-color: #cccccc !important;
+            transition: border-color 0.2s;
+        }}
+        
+        /* Radio and checkbox default styling */
+        .stRadio > div[role="radiogroup"] > label > div:first-child,
+        .stCheckbox > div > label > div:first-child {{
+            color: #cccccc !important;
+            background-color: #f0f0f0 !important;
+            border-color: #cccccc !important;
+            transition: all 0.2s;
+        }}
+        
+        /* Hover states for all form elements - show teal outline */
+        .stSelectbox > div > div:hover,
+        .stNumberInput > div > div > div:hover,
+        .stTextInput > div > div > input:hover {{
+            border-color: {BLUE} !important;
+        }}
+        
+        /* Radio and checkbox hover styling */
+        .stRadio > div[role="radiogroup"] > label:hover > div:first-child,
+        .stCheckbox > div > label:hover > div:first-child {{
+            border-color: {BLUE} !important;
+        }}
+        
+        /* Focus states - also show teal outline and shadow */
+        .stSelectbox > div > div:focus-within,
+        .stNumberInput > div > div > div:focus-within,
+        .stTextInput > div > div > input:focus {{
+            border-color: {BLUE} !important;
+            box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
+        }}
+        
+        /* Radio and checkbox focus styling */
+        .stRadio > div[role="radiogroup"] > label > div:first-child:focus,
+        .stRadio > div[role="radiogroup"] > label > div:first-child:focus-within,
+        .stCheckbox > div > label > div:first-child:focus,
+        .stCheckbox > div > label > div:first-child:focus-within {{
+            border-color: {BLUE} !important;
+            box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
+        }}
+        
+        /* Selected states for radio and checkbox - always teal */
+        .stRadio > div[role="radiogroup"] > label > div:first-child > div,
+        .stCheckbox > div > label > div:first-child > div {{
+            background-color: {BLUE} !important;
+            border-color: {BLUE} !important;
+        }}
+        
+        /* Keep text color black in selectbox and radio buttons */
+        .stSelectbox, .stMultiSelect, .stRadio {{
+            color: black !important;
+        }}
+        
+        /* Ensure text in dropdowns remains black */
+        .stSelectbox > div > div > div > div {{
+            color: black !important;
+        }}
+        
+        /* Selectbox arrow color only */
+        .stSelectbox > div > div > div:last-child {{
+            color: {BLUE} !important;
+        }}
+        
+        /* Slider handle and progress color */
+        .stSlider > div > div > div > div {{
+            background-color: {BLUE} !important;
+        }}
+        
+        /* Tab styling */
+        .stTabs [data-baseweb="tab-list"] {{
+            gap: 10px;
+        }}
+        
+        .stTabs [data-baseweb="tab"] {{
+            height: 50px;
+            white-space: pre-wrap;
+            border-radius: 4px 4px 0 0;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            color: black;
+            background-color: white;
+        }}
+        
+        .stTabs [aria-selected="true"] {{
+            background-color: white !important;
+            color: {BLUE} !important;
+        }}
+
+        .stTabs [data-baseweb="tab-highlight"] {{
+            background-color: {BLUE} !important;
+            height: 3px !important; /* You can adjust thickness if needed */
+        }}
+                
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Initialize navigation in session state if not already present
 if "nav_page" not in st.session_state:
@@ -95,9 +239,16 @@ with st.sidebar:
     """
     )
 
+# Custom styled title with teal accents
+st.markdown(
+    f"""
+    <h1 style="font-family: Roboto;">
+        <span style="color:; font-weight: bold;">What's the SALT</span><span style="color: ; font-weight: normal;">ernative?</span>
+    </h1>
+    """,
+    unsafe_allow_html=True,
+)
 
-# Main content
-st.title("What's the SALTernative?")
 st.markdown(
     """
     _The state and local tax (SALT) deduction and alternative minimum tax (AMT) are scheduled to change next year. We'll walk you through these policies and allow you to model your custom reform._\n
@@ -127,11 +278,12 @@ if page == "Introduction":
 elif page == "Case Studies":
     # Only show the case studies part
     st.markdown(
-        """
-    ## How SALT and AMT Affect Sample Households
+        f"""
+    <h2 style="font-family: Roboto; color:;">How SALT and AMT Affect Sample Households</h2>
         
     **Please select a state and income level to see how SALT and AMT affect a sample household.**
-    """
+    """,
+    unsafe_allow_html=True,
     )
 
     # Add state and income selectors
@@ -173,7 +325,12 @@ elif page == "Policy Configuration":
     display_baseline_impacts()
 
     # Display policy configuration section
-    st.markdown("## Configure Your Policy")
+    st.markdown(
+        f"""
+    <h2 style="font-family: Roboto;">Configure Your Policy</h2>
+    """,
+    unsafe_allow_html=True,
+    )
     policy_config = display_policy_config()
 
     # Add a button to go to the next section
@@ -185,7 +342,12 @@ elif page == "Policy Configuration":
 
 elif page == "Personalized Calculator":
     # Create the Personalized Calculator section
-    st.markdown("## Personalized Calculator")
+    st.markdown(
+        f"""
+    <h2 style="font-family: Roboto;">Personalized Calculator</h2>
+    """,
+    unsafe_allow_html=True,
+    )
 
     # First ensure policy config exists
     if "policy_config" not in st.session_state:
@@ -254,7 +416,7 @@ elif page == "Personalized Calculator":
                 st.markdown(
                     f"""
                     <div style="text-align: center; margin: 25px 0;">
-                        <h3 style="color: #777777;">Your policy would {impact_word} the deficit by <span style="color: {TEAL_ACCENT}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
+                        <h3 style="color: #777777; font-family: Roboto;">Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -387,7 +549,12 @@ elif page == "Personalized Calculator":
             )
 
             # Display results in a nice format
-            st.markdown("### Results")
+            st.markdown(
+                f"""
+            <h3 style="font-family: Roboto; color: {BLUE};">Results</h3>
+            """,
+            unsafe_allow_html=True,
+            )
 
             # Create placeholder for chart and status message
             chart_placeholder = st.empty()
