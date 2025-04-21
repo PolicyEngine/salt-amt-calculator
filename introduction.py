@@ -487,12 +487,11 @@ def display_effective_salt_caps_table():
     st.markdown("## Effective SALT Caps by State and Income Level")
     st.markdown(
         """
-    This table shows the effective SALT cap for married households across different states and income levels under current law (2026). 
-    Each household has \$15,000 in mortgage interest and $10,000 in charitable donations.
+    The graphs below show the effective SALT cap for married households across different states and income levels under current law (2026). 
     """
     )
 
-    st.markdown(f"**Table 6: Effective SALT Caps by State and Income Level**")
+    st.image("salt-cap-graphs.png", caption="Effective SALT Caps Visualization")
 
     # Create a DataFrame to hold the effective SALT caps
     import pandas as pd
