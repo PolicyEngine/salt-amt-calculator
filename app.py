@@ -47,6 +47,7 @@ from introduction import (
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
+
 # Inject custom CSS with Roboto font and styling
 st.markdown(
     f"""
@@ -251,23 +252,6 @@ with st.sidebar:
     """
     )
 
-# Custom styled title with teal accents
-st.markdown(
-    f"""
-    <h1 style="font-family: Roboto;">
-        <span style="color:; font-weight: bold;">What's the SALT</span><span style="color: ; font-weight: normal;">ernative?</span>
-    </h1>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-    _The state and local tax (SALT) deduction and alternative minimum tax (AMT) are scheduled to change next year. We'll walk you through these policies and allow you to model your custom reform._\n
-    This tool starts by describing the SALT deduction and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026) and under _current policy_ (if the TCJA was extended beyond 2025). Then we'll explain these policies in the context of sample households. Finally, we'll put you in the driver's seat - you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
-    """
-)
-
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:
     try:
@@ -278,6 +262,27 @@ if "nationwide_impacts" not in st.session_state:
 # Display selected section based on sidebar navigation
 if page == "Introduction":
     # Show the introduction and basics, without the case studies
+    # Custom styled title with teal accents
+    st.markdown(
+        f"""
+        <h1 style="font-family: Roboto;">
+            <span style="color:; font-weight: bold;">What's the SALT</span><span style="color: ; font-weight: normal;">ernative?</span>
+        </h1>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    st.image("cover.png")
+
+    st.markdown(
+        """
+        _The state and local tax (SALT) deduction and alternative minimum tax (AMT) are scheduled to change next year. We'll walk you through these policies and allow you to model your custom reform._\n
+        This tool starts by describing the SALT deduction and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026) and under _current policy_ (if the TCJA was extended beyond 2025). Then we'll explain these policies in the context of sample households. Finally, we'll put you in the driver's seat - you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
+        """
+    )
+
+    
+
     display_salt_basics()
 
     # Add a button to go to the next section

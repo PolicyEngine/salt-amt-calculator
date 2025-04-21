@@ -491,7 +491,7 @@ def display_effective_salt_caps_table():
     """
     )
 
-    st.image("salt-cap-graphs.png", caption="Effective SALT Caps Visualization")
+    st.image("salt-cap-graphs.png")
 
 
 def display_notes():
