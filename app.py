@@ -198,6 +198,18 @@ st.markdown(
             background-color: {BLUE} !important;
             height: 3px !important; /* You can adjust thickness if needed */
         }}
+        /* Expander styling */
+        .streamlit-expanderHeader:hover, 
+        [data-testid="stExpander"] > div:first-child:hover {{
+            color: {BLUE} !important;
+        }}
+
+        /* Style for expander icon on hover */
+        .streamlit-expanderHeader:hover svg, 
+        [data-testid="stExpander"] > div:first-child:hover svg {{
+            fill: {BLUE} !important;
+        }}
+        
                 
     </style>
     """,

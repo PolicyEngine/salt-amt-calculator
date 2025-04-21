@@ -4,18 +4,6 @@ import streamlit as st
 def display_policy_config():
     """Display and collect policy configuration options"""
 
-    # Apply custom styling for form inputs
-    custom_css = """
-    <style>
-    div[data-testid="stSelectbox"] > div:first-child,
-    div[data-testid="stNumberInput"] input,
-    div[data-testid="stTextInput"] input {
-        background-color: #F7FDFC;
-    }
-    </style>
-    """
-    st.markdown(custom_css, unsafe_allow_html=True)
-
     # Create two columns for SALT and AMT with more width for the first column
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
