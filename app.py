@@ -229,14 +229,14 @@ with st.sidebar:
             "Introduction",
             "Case Studies",
             "Policy Configuration",
-            "Personalized Calculator",
+            "Calculator",
         ],
         key="sidebar_nav",
         index=[
             "Introduction",
             "Case Studies",
             "Policy Configuration",
-            "Personalized Calculator",
+            "Calculator",
         ].index(st.session_state.nav_page),
     )
 
@@ -347,16 +347,16 @@ elif page == "Policy Configuration":
 
     # Add a button to go to the next section
     st.markdown("---")
-    if st.button("Go to Personalized Calculator →", type="primary"):
+    if st.button("Go to Calculator →", type="primary"):
         # Set the page in session state and rerun to navigate
-        st.session_state.nav_page = "Personalized Calculator"
+        st.session_state.nav_page = "Calculator"
         st.rerun()
 
-elif page == "Personalized Calculator":
-    # Create the Personalized Calculator section
+elif page == "Calculator":
+    # Create the Calculator section
     st.markdown(
         f"""
-    <h2 style="font-family: Roboto;">Personalized Calculator</h2>
+    <h2 style="font-family: Roboto;">Calculator</h2>
     """,
     unsafe_allow_html=True,
     )
@@ -659,11 +659,11 @@ elif page == "Personalized Calculator":
             status_placeholder.empty()
 
 # Add Notes section at the app level after any sections are displayed
-if page in ["Case Studies", "Policy Configuration", "Personalized Calculator"]:
+if page in ["Case Studies", "Policy Configuration", "Calculator"]:
     display_notes()
 
-# Add a button to restart the navigation cycle for the Personalized Calculator section
-if page == "Personalized Calculator":
+# Add a button to restart the navigation cycle for the Calculator section
+if page == "Calculator":
     st.markdown("---")
     if st.button("Back to Introduction →", type="primary"):
         # Set the page in session state and rerun to navigate
