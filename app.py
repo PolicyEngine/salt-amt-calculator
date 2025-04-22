@@ -224,6 +224,35 @@ if "nav_page" not in st.session_state:
 # Set up sidebar for navigation
 with st.sidebar:
     st.title("Navigation")
+    section = st.radio("Select Input Section", ["Personal Inputs", "Policy Inputs"])
+    if section == "Personal Inputs":
+        personal_inputs = create_personal_inputs()
+        # Add calculate button in the sidebar
+        calculate_clicked = st.button("Calculate Impacts", type="primary")
+        if calculate_clicked:
+            reset_results()
+            # Create situation based on inputs
+            situation = create_situation(
+                state_code=personal_inputs["state_code"],
+                employment_income=personal_inputs["employment_income"],
+                is_married=personal_inputs["is_married"],
+                num_children=personal_inputs["num_children"],
+                child_ages=personal_inputs["child_ages"],
+                qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+                long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+                short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+                real_estate_taxes=personal_inputs["real_estate_taxes"],
+                deductible_mortgage_interest=personal_inputs[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=personal_inputs["charitable_cash_donations"],
+            )
+            
+            # Store calculation results in session state for display in the main area
+            st.session_state.calculation_performed = True
+    elif section == "Policy Inputs":
+        display_policy_config()
+
     page = st.radio(
         "Go to",
         [
@@ -340,15 +369,6 @@ elif page == "Case Studies":
 elif page == "Policy Configuration":
     # Display baseline impacts section first
     display_baseline_impacts()
-
-    # Display policy configuration section
-    st.markdown(
-        f"""
-    <h2 style="font-family: Roboto;">Configure Your Policy</h2>
-    """,
-    unsafe_allow_html=True,
-    )
-    policy_config = display_policy_config()
 
     # Add a button to go to the next section
     st.markdown("---")
@@ -532,7 +552,6 @@ elif page == "Calculator":
         )
 
         # Remove the outer columns and let create_personal_inputs handle its own columns
-        personal_inputs = create_personal_inputs()
 
         # Initialize results tracking in session state if not exists
         if "results_df" not in st.session_state:
@@ -542,9 +561,6 @@ elif page == "Calculator":
 
         # Create columns for calculate button alignment
         calc_col1, calc_col2 = st.columns([1, 6])
-        with calc_col1:
-            calculate_clicked = st.button("Calculate Impacts", type="primary")
-
         if calculate_clicked:
             # Reset results to start fresh
             reset_results()
