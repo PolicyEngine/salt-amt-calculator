@@ -27,18 +27,11 @@ from policy_config import display_policy_config
 from constants import BLUE
 
 from introduction import (
-    display_salt_basics,
-    create_state_income_selectors,
-    display_salt_deduction_section,
-    display_tax_liability_section,
-    display_amt_section,
-    display_subsidy_rates_section,
-    display_higher_property_tax_section,
-    display_effective_salt_cap,
-    display_tax_visualization,
-    display_effective_salt_caps_table,
+    display_salt_cap_comparison_chart,
     display_notes,
     display_effective_salt_cap_graph,
+    display_effective_salt_cap
+    
 )
 
 # Set up the Streamlit page
@@ -232,7 +225,7 @@ with st.sidebar:
                 ],
                 charitable_cash_donations=personal_inputs["charitable_cash_donations"],
             )
-            
+
             # Store calculation results in session state for display in the main area
             st.session_state.calculation_performed = True
     elif section == "Policy Inputs":
@@ -295,7 +288,6 @@ if page == "Introduction":
         """
     )
 
-    display_salt_basics()
 
     # Add a button to go to the next section
     st.markdown("---")
@@ -314,41 +306,20 @@ elif page == "Case Studies":
     """,
         unsafe_allow_html=True,
     )
-
-    # Add state and income selectors
-    selected_state, selected_income, state_code, income_value = (
-        create_state_income_selectors()
+    if calculate_clicked:
+        display_salt_cap_comparison_chart(
+        state_code=personal_inputs["state_code"],
+        is_married=personal_inputs["is_married"],
+        num_children=personal_inputs["num_children"],
+        child_ages=personal_inputs["child_ages"],
+        qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+        long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+        short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+        deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
+        charitable_cash_donations=personal_inputs["charitable_cash_donations"]
     )
-
-    # Display SALT deduction section
-    display_salt_deduction_section(
-        selected_state, selected_income, state_code, income_value
-    )
-
-    # Display tax liability section
-    display_tax_liability_section(
-        selected_state, selected_income, state_code, income_value
-    )
-
-    # Display AMT section
-    display_amt_section(selected_state, selected_income, state_code, income_value)
-
-    # Display subsidy rates section and get tax calculations
-    tax_calcs = display_subsidy_rates_section(
-        selected_state, selected_income, state_code, income_value
-    )
-
-    # Display higher property tax section and get effective caps
-    effective_caps = display_higher_property_tax_section(
-        selected_state, selected_income, state_code, income_value, tax_calcs
-    )
-
-    # Display tax visualization
-    display_tax_visualization(selected_state, selected_income, state_code, income_value)
-
-    # Create a table showing effective SALT caps for each state and income level
-    display_effective_salt_caps_table()
-
+    else:
+        st.markdown("---")
     # Add a button to go to the next section
     st.markdown("---")
     if st.button("Go to Policy Configuration →", type="primary"):
