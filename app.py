@@ -2,8 +2,6 @@ import streamlit as st
 from personal_calculator.situation import create_situation
 from personal_calculator.calculator import calculate_impacts
 from personal_calculator.inputs import create_personal_inputs
-from personal_calculator.salt_cap_calculator import find_effective_salt_cap
-from personal_calculator.salt_cap_calculator import create_situation_with_axes
 from personal_calculator.reforms import get_reform_params_from_config
 from personal_calculator.chart import (
     create_reform_comparison_graph,
@@ -13,8 +11,6 @@ from personal_calculator.chart import (
 )
 
 import pandas as pd
-import numpy as np
-import os
 import plotly.express as px
 from policyengine_core.charts import format_fig
 
@@ -28,7 +24,7 @@ from nationwide_impacts.charts import ImpactCharts
 
 from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
-from constants import CURRENT_POLICY_PARAMS, TEAL_ACCENT, TEAL_LIGHT, BLUE
+from constants import BLUE
 
 from introduction import (
     display_salt_basics,
@@ -42,6 +38,7 @@ from introduction import (
     display_tax_visualization,
     display_effective_salt_caps_table,
     display_notes,
+    display_effective_salt_cap_graph,
 )
 
 # Set up the Streamlit page
@@ -54,13 +51,16 @@ st.markdown(
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
         
+        /* ===== FONT STYLING ===== */
         /* Apply Roboto font to all elements */
         html, body, [class*="css"], .stMarkdown, .stButton, .stHeader, 
         div, p, h1, h2, h3, h4, h5, h6, span,
-        .stRadio > label, .stCheckbox > label, .stExpander > label {{
+        .stRadio > label, .stCheckbox > label, .stExpander > label,
+        .stMarkdown p, .stMarkdown span, .stMarkdown div {{
             font-family: 'Roboto', sans-serif !important;
         }}
         
+        /* ===== LAYOUT STYLING ===== */
         /* Style improvements */
         .main .block-container {{
             padding-top: 2rem;
@@ -75,11 +75,7 @@ st.markdown(
             visibility: hidden;
         }}
         
-        /* Ensure the styling applies to all text */
-        .stMarkdown p, .stMarkdown span, .stMarkdown div {{
-            font-family: 'Roboto', sans-serif !important;
-        }}
-        
+        /* ===== BUTTON STYLING ===== */
         /* Style all buttons with teal accent - no hover effect */
         .stButton > button {{
             background-color: {BLUE} !important;
@@ -101,6 +97,7 @@ st.markdown(
             color: white !important;
         }}
         
+        /* ===== FORM ELEMENTS STYLING ===== */
         /* Default styling for form elements - no outline */
         .stSelectbox > div > div,
         .stNumberInput > div > div > div,
@@ -121,11 +118,7 @@ st.markdown(
         /* Hover states for all form elements - show teal outline */
         .stSelectbox > div > div:hover,
         .stNumberInput > div > div > div:hover,
-        .stTextInput > div > div > input:hover {{
-            border-color: {BLUE} !important;
-        }}
-        
-        /* Radio and checkbox hover styling */
+        .stTextInput > div > div > input:hover,
         .stRadio > div[role="radiogroup"] > label:hover > div:first-child,
         .stCheckbox > div > label:hover > div:first-child {{
             border-color: {BLUE} !important;
@@ -134,12 +127,7 @@ st.markdown(
         /* Focus states - also show teal outline and shadow */
         .stSelectbox > div > div:focus-within,
         .stNumberInput > div > div > div:focus-within,
-        .stTextInput > div > div > input:focus {{
-            border-color: {BLUE} !important;
-            box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
-        }}
-        
-        /* Radio and checkbox focus styling */
+        .stTextInput > div > div > input:focus,
         .stRadio > div[role="radiogroup"] > label > div:first-child:focus,
         .stRadio > div[role="radiogroup"] > label > div:first-child:focus-within,
         .stCheckbox > div > label > div:first-child:focus,
@@ -148,34 +136,31 @@ st.markdown(
             box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
         }}
         
-        /* Selected states for radio and checkbox - always teal */
+        /* Adjusts the color of the radio button */
         .stRadio > div[role="radiogroup"] > label > div:first-child > div,
         .stCheckbox > div > label > div:first-child > div {{
             background-color: {BLUE} !important;
-            border-color: {BLUE} !important;
+        }}
+        
+        /* Style the outside border of selected radio buttons */
+        .stRadio > div[role="radiogroup"] > label > div:second-child {{
+            border-color: black !important;
         }}
         
         /* Keep text color black in selectbox and radio buttons */
         .stSelectbox, .stMultiSelect, .stRadio {{
-            color: black !important;
+            color: white !important;
         }}
         
-        /* Ensure text in dropdowns remains black */
-        .stSelectbox > div > div > div > div {{
-            color: black !important;
-        }}
         
         /* Selectbox arrow color only */
         .stSelectbox > div > div > div:last-child {{
             color: {BLUE} !important;
         }}
+
         
-        /* Slider handle and progress color */
-        .stSlider > div > div > div > div {{
-            background-color: {BLUE} !important;
-        }}
         
-        /* Tab styling */
+        /* ===== TAB STYLING ===== */
         .stTabs [data-baseweb="tab-list"] {{
             gap: 10px;
         }}
@@ -199,6 +184,8 @@ st.markdown(
             background-color: {BLUE} !important;
             height: 3px !important; /* You can adjust thickness if needed */
         }}
+        
+        /* ===== EXPANDER STYLING ===== */
         /* Expander styling */
         .streamlit-expanderHeader:hover, 
         [data-testid="stExpander"] > div:first-child:hover {{
@@ -210,8 +197,6 @@ st.markdown(
         [data-testid="stExpander"] > div:first-child:hover svg {{
             fill: {BLUE} !important;
         }}
-        
-                
     </style>
     """,
     unsafe_allow_html=True,
@@ -300,8 +285,8 @@ if page == "Introduction":
         """,
         unsafe_allow_html=True,
     )
-    
-    st.image("cover.png")
+
+    st.image("images/cover.png")
 
     st.markdown(
         """
@@ -309,8 +294,6 @@ if page == "Introduction":
         This tool starts by describing the SALT deduction and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026) and under _current policy_ (if the TCJA was extended beyond 2025). Then we'll explain these policies in the context of sample households. Finally, we'll put you in the driver's seat - you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
         """
     )
-
-    
 
     display_salt_basics()
 
@@ -329,30 +312,37 @@ elif page == "Case Studies":
         
     **Please select a state and income level to see how SALT and AMT affect a sample household.**
     """,
-    unsafe_allow_html=True,
+        unsafe_allow_html=True,
     )
 
     # Add state and income selectors
-    selected_state, selected_income, state_code, income_value = create_state_income_selectors()
-    
+    selected_state, selected_income, state_code, income_value = (
+        create_state_income_selectors()
+    )
+
     # Display SALT deduction section
-    display_salt_deduction_section(selected_state, selected_income, state_code, income_value)
-    
+    display_salt_deduction_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display tax liability section
-    display_tax_liability_section(selected_state, selected_income, state_code, income_value)
-    
+    display_tax_liability_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display AMT section
     display_amt_section(selected_state, selected_income, state_code, income_value)
-    
+
     # Display subsidy rates section and get tax calculations
-    tax_calcs = display_subsidy_rates_section(selected_state, selected_income, state_code, income_value)
-    
+    tax_calcs = display_subsidy_rates_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display higher property tax section and get effective caps
-    effective_caps = display_higher_property_tax_section(selected_state, selected_income, state_code, income_value, tax_calcs)
-    
-    # Display effective SALT cap
-    display_effective_salt_cap(effective_caps)
-    
+    effective_caps = display_higher_property_tax_section(
+        selected_state, selected_income, state_code, income_value, tax_calcs
+    )
+
     # Display tax visualization
     display_tax_visualization(selected_state, selected_income, state_code, income_value)
 
@@ -383,7 +373,7 @@ elif page == "Calculator":
         f"""
     <h2 style="font-family: Roboto;">Calculator</h2>
     """,
-    unsafe_allow_html=True,
+        unsafe_allow_html=True,
     )
 
     # First ensure policy config exists
@@ -587,7 +577,7 @@ elif page == "Calculator":
                 f"""
             <h3 style="font-family: Roboto; color: {BLUE};">Results</h3>
             """,
-            unsafe_allow_html=True,
+                unsafe_allow_html=True,
             )
 
             # Create placeholder for chart and status message
@@ -645,10 +635,9 @@ elif page == "Calculator":
             # Calculate and display effective SALT caps
             status_placeholder.info("Calculating your effective SALT cap...")
 
-            # Create situation with axes using the same inputs
-            situation_with_axes = create_situation_with_axes(
+            # Calculate effective SALT cap for current law/baseline
+            baseline_cap = display_effective_salt_cap(
                 state_code=personal_inputs["state_code"],
-                employment_income=personal_inputs["employment_income"],
                 is_married=personal_inputs["is_married"],
                 num_children=personal_inputs["num_children"],
                 child_ages=personal_inputs["child_ages"],
@@ -659,22 +648,51 @@ elif page == "Calculator":
                     "deductible_mortgage_interest"
                 ],
                 charitable_cash_donations=personal_inputs["charitable_cash_donations"],
+                employment_income=personal_inputs["employment_income"],
+                policy=baseline_scenario,
+                reform_params=reform_params,
+                threshold=0.1,
             )
 
-            # Calculate caps using the imported function
-            caps = find_effective_salt_cap(
-                situation_with_axes,
-                {"selected_reform": reform_params},
-                baseline_scenario,
+            # Calculate effective SALT cap for reform/current policy
+            reform_cap = display_effective_salt_cap(
+                state_code=personal_inputs["state_code"],
+                is_married=personal_inputs["is_married"],
+                num_children=personal_inputs["num_children"],
+                child_ages=personal_inputs["child_ages"],
+                qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+                long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+                short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+                deductible_mortgage_interest=personal_inputs[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=personal_inputs["charitable_cash_donations"],
+                employment_income=personal_inputs["employment_income"],
+                policy="Reform",  # Or use the appropriate policy name for your reform
+                reform_params=reform_params,  # Pass the reform parameters
+                threshold=0.1,
             )
 
-            # Display the effective SALT cap information
-            display_effective_salt_cap(
-                {
-                    "current_law": caps["baseline_salt_cap"],
-                    "current_policy": caps["reform_salt_cap"]
-                }
+            # Display effective SALT cap graph for reform scenario
+            display_effective_salt_cap_graph(
+                state_code=personal_inputs["state_code"],
+                is_married=personal_inputs["is_married"],
+                num_children=personal_inputs["num_children"],
+                child_ages=personal_inputs["child_ages"],
+                qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+                long_term_capital_gains=personal_inputs["long_term_capital_gains"],
+                short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+                deductible_mortgage_interest=personal_inputs[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=personal_inputs["charitable_cash_donations"],
+                policy="Reform",
+                reform_params=reform_params,
+                threshold=0.1,
             )
+
+            # You can still display a combined message if needed
+            caps = {"current_law": baseline_cap, "current_policy": reform_cap}
 
             # Clear status message when complete
             status_placeholder.empty()

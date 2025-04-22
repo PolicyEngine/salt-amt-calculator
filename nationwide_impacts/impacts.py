@@ -175,7 +175,7 @@ class NationwideImpacts:
             if salt_cap == "15_30":
                 mask &= df["reform"].str.contains("salt_15_30_k")
             elif salt_cap == "15_k":
-                 mask &= df["reform"].str.contains("salt_15_k")
+                mask &= df["reform"].str.contains("salt_15_k")
             elif salt_cap == "100_200k":
                 mask &= df["reform"].str.contains("salt_100_200k")
             elif salt_cap == "100k":
