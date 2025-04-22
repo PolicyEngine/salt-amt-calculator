@@ -5,7 +5,6 @@ from constants import STATE_CODES
 def create_personal_inputs():
     """Create inputs for personal information"""
 
-
     # Create two main columns for Personal and Income Information
     personal_col, income_col = st.columns(2)
 

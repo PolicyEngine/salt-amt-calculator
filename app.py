@@ -256,7 +256,7 @@ if page == "Introduction":
         """,
         unsafe_allow_html=True,
     )
-    
+
     st.image("images/cover.png")
 
     st.markdown(
@@ -265,8 +265,6 @@ if page == "Introduction":
         This tool starts by describing the SALT deduction and AMT, both under _current law_ (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026) and under _current policy_ (if the TCJA was extended beyond 2025). Then we'll explain these policies in the context of sample households. Finally, we'll put you in the driver's seat - you can design and simulate a range of SALT and AMT reforms, and we'll calculate how it affects the US and your household. Let's dive in!
         """
     )
-
-    
 
     display_salt_basics()
 
@@ -285,28 +283,37 @@ elif page == "Case Studies":
         
     **Please select a state and income level to see how SALT and AMT affect a sample household.**
     """,
-    unsafe_allow_html=True,
+        unsafe_allow_html=True,
     )
 
     # Add state and income selectors
-    selected_state, selected_income, state_code, income_value = create_state_income_selectors()
-    
+    selected_state, selected_income, state_code, income_value = (
+        create_state_income_selectors()
+    )
+
     # Display SALT deduction section
-    display_salt_deduction_section(selected_state, selected_income, state_code, income_value)
-    
+    display_salt_deduction_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display tax liability section
-    display_tax_liability_section(selected_state, selected_income, state_code, income_value)
-    
+    display_tax_liability_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display AMT section
     display_amt_section(selected_state, selected_income, state_code, income_value)
-    
+
     # Display subsidy rates section and get tax calculations
-    tax_calcs = display_subsidy_rates_section(selected_state, selected_income, state_code, income_value)
-    
+    tax_calcs = display_subsidy_rates_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display higher property tax section and get effective caps
-    effective_caps = display_higher_property_tax_section(selected_state, selected_income, state_code, income_value, tax_calcs)
-    
-    
+    effective_caps = display_higher_property_tax_section(
+        selected_state, selected_income, state_code, income_value, tax_calcs
+    )
+
     # Display tax visualization
     display_tax_visualization(selected_state, selected_income, state_code, income_value)
 
@@ -329,7 +336,7 @@ elif page == "Policy Configuration":
         f"""
     <h2 style="font-family: Roboto;">Configure Your Policy</h2>
     """,
-    unsafe_allow_html=True,
+        unsafe_allow_html=True,
     )
     policy_config = display_policy_config()
 
@@ -346,7 +353,7 @@ elif page == "Calculator":
         f"""
     <h2 style="font-family: Roboto;">Calculator</h2>
     """,
-    unsafe_allow_html=True,
+        unsafe_allow_html=True,
     )
 
     # First ensure policy config exists
@@ -554,7 +561,7 @@ elif page == "Calculator":
                 f"""
             <h3 style="font-family: Roboto; color: {BLUE};">Results</h3>
             """,
-            unsafe_allow_html=True,
+                unsafe_allow_html=True,
             )
 
             # Create placeholder for chart and status message
@@ -621,12 +628,14 @@ elif page == "Calculator":
                 qualified_dividend_income=personal_inputs["qualified_dividend_income"],
                 long_term_capital_gains=personal_inputs["long_term_capital_gains"],
                 short_term_capital_gains=personal_inputs["short_term_capital_gains"],
-                deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
+                deductible_mortgage_interest=personal_inputs[
+                    "deductible_mortgage_interest"
+                ],
                 charitable_cash_donations=personal_inputs["charitable_cash_donations"],
                 employment_income=personal_inputs["employment_income"],
                 policy=baseline_scenario,
                 reform_params=reform_params,
-                threshold=0.1
+                threshold=0.1,
             )
 
             # Calculate effective SALT cap for reform/current policy
@@ -638,12 +647,14 @@ elif page == "Calculator":
                 qualified_dividend_income=personal_inputs["qualified_dividend_income"],
                 long_term_capital_gains=personal_inputs["long_term_capital_gains"],
                 short_term_capital_gains=personal_inputs["short_term_capital_gains"],
-                deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
+                deductible_mortgage_interest=personal_inputs[
+                    "deductible_mortgage_interest"
+                ],
                 charitable_cash_donations=personal_inputs["charitable_cash_donations"],
                 employment_income=personal_inputs["employment_income"],
                 policy="Reform",  # Or use the appropriate policy name for your reform
                 reform_params=reform_params,  # Pass the reform parameters
-                threshold=0.1
+                threshold=0.1,
             )
 
             # Display effective SALT cap graph for reform scenario
@@ -655,18 +666,17 @@ elif page == "Calculator":
                 qualified_dividend_income=personal_inputs["qualified_dividend_income"],
                 long_term_capital_gains=personal_inputs["long_term_capital_gains"],
                 short_term_capital_gains=personal_inputs["short_term_capital_gains"],
-                deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
+                deductible_mortgage_interest=personal_inputs[
+                    "deductible_mortgage_interest"
+                ],
                 charitable_cash_donations=personal_inputs["charitable_cash_donations"],
                 policy="Reform",
                 reform_params=reform_params,
-                threshold=0.1
+                threshold=0.1,
             )
 
             # You can still display a combined message if needed
-            caps = {
-                "current_law": baseline_cap,
-                "current_policy": reform_cap
-            }
+            caps = {"current_law": baseline_cap, "current_policy": reform_cap}
 
             # Clear status message when complete
             status_placeholder.empty()

@@ -18,8 +18,9 @@ from personal_calculator.salt_cap_calculator import (
     calculate_single_axis_effective_salt_cap,
     process_effective_cap_data,
     calculate_effective_salt_cap_over_earnings,
-    create_max_salt_line_graph
+    create_max_salt_line_graph,
 )
+
 
 def display_salt_basics():
     """Display the basic description of SALT and AMT"""
@@ -46,6 +47,7 @@ def display_salt_basics():
     """
     )
 
+
 def create_state_income_selectors():
     """Create state and income level selectors"""
     col1, col2 = st.columns(2)
@@ -59,10 +61,13 @@ def create_state_income_selectors():
     # Get the state code and income value
     state_code = STATE_CODES[selected_state]
     income_value = INCOME_LEVELS[selected_income]
-    
+
     return selected_state, selected_income, state_code, income_value
 
-def display_salt_deduction_section(selected_state, selected_income, state_code, income_value):
+
+def display_salt_deduction_section(
+    selected_state, selected_income, state_code, income_value
+):
     """Display the SALT deduction comparison section"""
     st.markdown(
         f"""
@@ -104,7 +109,10 @@ def display_salt_deduction_section(selected_state, selected_income, state_code, 
     """
     )
 
-def display_tax_liability_section(selected_state, selected_income, state_code, income_value):
+
+def display_tax_liability_section(
+    selected_state, selected_income, state_code, income_value
+):
     """Display the tax liability comparison section"""
     st.markdown(
         """
@@ -120,6 +128,7 @@ def display_tax_liability_section(selected_state, selected_income, state_code, i
         f"**Table 2: Regular Tax Liability Comparison for a Household in {selected_state} with {selected_income} in Earnings**"
     )
     st.table(df_comparison.set_index("Scenario"))
+
 
 def display_amt_section(selected_state, selected_income, state_code, income_value):
     """Display the AMT comparison section"""
@@ -147,7 +156,10 @@ def display_amt_section(selected_state, selected_income, state_code, income_valu
     """
     )
 
-def display_subsidy_rates_section(selected_state, selected_income, state_code, income_value):
+
+def display_subsidy_rates_section(
+    selected_state, selected_income, state_code, income_value
+):
     """Display the property tax subsidy rates section"""
     st.markdown(
         """
@@ -212,10 +224,13 @@ def display_subsidy_rates_section(selected_state, selected_income, state_code, i
 
     # Display the subsidy finding without the heading
     st.markdown(f"{subsidy_finding}")
-    
+
     return tax_calcs
 
-def display_higher_property_tax_section(selected_state, selected_income, state_code, income_value, tax_calcs):
+
+def display_higher_property_tax_section(
+    selected_state, selected_income, state_code, income_value, tax_calcs
+):
     """Display the higher property tax comparison section"""
     st.markdown(
         """
@@ -291,8 +306,9 @@ def display_higher_property_tax_section(selected_state, selected_income, state_c
     {higher_property_tax_finding}
     """
     )
-    
+
     return tax_calcs["effective_salt_cap"]
+
 
 def display_effective_salt_cap(
     state_code,
@@ -307,38 +323,38 @@ def display_effective_salt_cap(
     employment_income,
     policy=None,
     reform_params=None,
-    threshold=0.1
+    threshold=0.1,
 ):
-    
+
     # Calculate for single axis (fixed employment income)
     result_df = calculate_single_axis_effective_salt_cap(
-        state_code, 
-        is_married, 
-        num_children, 
+        state_code,
+        is_married,
+        num_children,
         child_ages,
-        qualified_dividend_income, 
-        long_term_capital_gains, 
+        qualified_dividend_income,
+        long_term_capital_gains,
         short_term_capital_gains,
-        deductible_mortgage_interest, 
-        charitable_cash_donations, 
+        deductible_mortgage_interest,
+        charitable_cash_donations,
         employment_income,
         baseline_scenario=policy,
-        reform_params=reform_params
+        reform_params=reform_params,
     )
-    
+
     # Process the data to calculate marginal rates
     processed_df = process_effective_cap_data(result_df)
-    
+
     # Find the effective cap (maximum SALT where marginal rate > threshold)
-    filtered_df = processed_df[processed_df['marginal_property_tax_rate'] > threshold]
-    
+    filtered_df = processed_df[processed_df["marginal_property_tax_rate"] > threshold]
+
     if not filtered_df.empty:
-        effective_cap = filtered_df['salt_and_property_tax'].max()
+        effective_cap = filtered_df["salt_and_property_tax"].max()
         has_cap = True
     else:
-        effective_cap = float('inf')
+        effective_cap = float("inf")
         has_cap = False
-    
+
     # Format the cap value (round to nearest 100)
     def format_cap(cap_value):
         if cap_value == float("inf"):
@@ -347,10 +363,10 @@ def display_effective_salt_cap(
             # Round to nearest 100
             rounded_cap = round(cap_value / 100) * 100
             return f"${rounded_cap:,.0f}"
-    
+
     # Get formatted value for display
     cap_display = format_cap(effective_cap)
-    
+
     # Display the effective cap message
     st.markdown(
         f"""
@@ -360,10 +376,13 @@ def display_effective_salt_cap(
         """,
         unsafe_allow_html=True,
     )
-    
+
     return effective_cap
 
-def display_tax_visualization(selected_state, selected_income, state_code, income_value):
+
+def display_tax_visualization(
+    selected_state, selected_income, state_code, income_value
+):
     """Display tax visualizations with charts"""
     st.markdown(
         """
@@ -372,7 +391,7 @@ def display_tax_visualization(selected_state, selected_income, state_code, incom
     The charts below show how tax liabilities and subsidy rates change as property taxes increase from \$0 to \$50k.
     """
     )
-    
+
     # Read the CSV files
     with st.expander("See detailed tax calculations and charts"):
         # Load the data for all states and income levels
@@ -505,6 +524,7 @@ def display_tax_visualization(selected_state, selected_income, state_code, incom
 
         st.plotly_chart(format_fig(fig3))
 
+
 def display_effective_salt_caps_table():
     """Display the table of effective SALT caps for all states and income levels"""
 
@@ -538,40 +558,52 @@ def display_notes():
         """
         )
 
+
 def display_introduction():
     # Display SALT and AMT basics
     display_salt_basics()
-    
+
     # Section header for case studies
     st.markdown(
         """
     ## How SALT and AMT Affect Sample Households
     """
     )
-    
+
     # Create state and income selectors
-    selected_state, selected_income, state_code, income_value = create_state_income_selectors()
-    
+    selected_state, selected_income, state_code, income_value = (
+        create_state_income_selectors()
+    )
+
     # Display SALT deduction section
-    display_salt_deduction_section(selected_state, selected_income, state_code, income_value)
-    
+    display_salt_deduction_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display tax liability section
-    display_tax_liability_section(selected_state, selected_income, state_code, income_value)
-    
+    display_tax_liability_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display AMT section
     display_amt_section(selected_state, selected_income, state_code, income_value)
-    
+
     # Display subsidy rates section and get tax calculations
-    tax_calcs = display_subsidy_rates_section(selected_state, selected_income, state_code, income_value)
-    
+    tax_calcs = display_subsidy_rates_section(
+        selected_state, selected_income, state_code, income_value
+    )
+
     # Display higher property tax section and get effective caps
-    effective_caps = display_higher_property_tax_section(selected_state, selected_income, state_code, income_value, tax_calcs)
-    
+    effective_caps = display_higher_property_tax_section(
+        selected_state, selected_income, state_code, income_value, tax_calcs
+    )
+
     # Display effective SALT cap
     display_effective_salt_cap(effective_caps)
-    
+
     # Display tax visualization
     display_tax_visualization(selected_state, selected_income, state_code, income_value)
+
 
 def display_effective_salt_cap_graph(
     state_code,
@@ -585,32 +617,32 @@ def display_effective_salt_cap_graph(
     charitable_cash_donations,
     policy=None,
     reform_params=None,
-    threshold=0.1
+    threshold=0.1,
 ):
     """Display the effective SALT cap graph using the two axes situation"""
-    
+
     # Calculate for two axes (varying employment income)
     result_df = calculate_effective_salt_cap_over_earnings(
-        state_code, 
-        is_married, 
-        num_children, 
+        state_code,
+        is_married,
+        num_children,
         child_ages,
-        qualified_dividend_income, 
-        long_term_capital_gains, 
+        qualified_dividend_income,
+        long_term_capital_gains,
         short_term_capital_gains,
-        deductible_mortgage_interest, 
-        charitable_cash_donations, 
+        deductible_mortgage_interest,
+        charitable_cash_donations,
         baseline_scenario=policy,
-        reform_params=reform_params
+        reform_params=reform_params,
     )
-    
+
     # Process the data to calculate marginal rates
     processed_df = process_effective_cap_data(result_df)
-    
+
     # Create the graph
     fig = create_max_salt_line_graph(processed_df, policy=policy, threshold=threshold)
-    
+
     # Display the graph
     st.plotly_chart(format_fig(fig), use_container_width=True)
-    
+
     return processed_df
