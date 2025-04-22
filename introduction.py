@@ -14,6 +14,12 @@ from household_examples import (
     get_higher_property_tax_comparison,
     get_comprehensive_tax_table,
 )
+from personal_calculator.salt_cap_calculator import (
+    calculate_single_axis_effective_salt_cap,
+    process_effective_cap_data,
+    calculate_effective_salt_cap_over_earnings,
+    create_max_salt_line_graph
+)
 
 def display_salt_basics():
     """Display the basic description of SALT and AMT"""
@@ -288,9 +294,52 @@ def display_higher_property_tax_section(selected_state, selected_income, state_c
     
     return tax_calcs["effective_salt_cap"]
 
-def display_effective_salt_cap(effective_caps):
-    """Display the effective SALT cap information"""
-    # Function to format the cap value (round to nearest 100)
+def display_effective_salt_cap(
+    state_code,
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    employment_income,
+    policy=None,
+    reform_params=None,
+    threshold=0.1
+):
+    
+    # Calculate for single axis (fixed employment income)
+    result_df = calculate_single_axis_effective_salt_cap(
+        state_code, 
+        is_married, 
+        num_children, 
+        child_ages,
+        qualified_dividend_income, 
+        long_term_capital_gains, 
+        short_term_capital_gains,
+        deductible_mortgage_interest, 
+        charitable_cash_donations, 
+        employment_income,
+        baseline_scenario=policy,
+        reform_params=reform_params
+    )
+    
+    # Process the data to calculate marginal rates
+    processed_df = process_effective_cap_data(result_df)
+    
+    # Find the effective cap (maximum SALT where marginal rate > threshold)
+    filtered_df = processed_df[processed_df['marginal_property_tax_rate'] > threshold]
+    
+    if not filtered_df.empty:
+        effective_cap = filtered_df['salt_and_property_tax'].max()
+        has_cap = True
+    else:
+        effective_cap = float('inf')
+        has_cap = False
+    
+    # Format the cap value (round to nearest 100)
     def format_cap(cap_value):
         if cap_value == float("inf"):
             return None
@@ -299,46 +348,20 @@ def display_effective_salt_cap(effective_caps):
             rounded_cap = round(cap_value / 100) * 100
             return f"${rounded_cap:,.0f}"
     
-    # Get formatted values for display
-    current_law_display = format_cap(effective_caps["current_law"])
-    current_policy_display = format_cap(effective_caps["current_policy"])
+    # Get formatted value for display
+    cap_display = format_cap(effective_cap)
     
-    if effective_caps["current_law"] == float("inf") and effective_caps["current_policy"] == float("inf"):
-        st.markdown(
-            """
-            <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces no effective SALT cap under either current law or current policy</h3>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    elif effective_caps["current_law"] == float("inf"):
-        st.markdown(
-            f"""
-            <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces no effective SALT cap under current law but faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_policy_display}</span> under your policy configuration</h3>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    elif effective_caps["current_policy"] == float("inf"):
-        st.markdown(
-            f"""
-            <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_law_display}</span> under current law but faces no effective SALT cap under your policy configuration</h3>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            f"""
-            <div style="text-align: center; margin: 25px 0;">
-                <h3 style="color: #777777;">This household faces an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{current_law_display}</span> under current law and <span style="color: {BLUE}; font-weight: bold;">{current_policy_display}</span> under your policy configuration</h3>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    # Display the effective cap message
+    st.markdown(
+        f"""
+        <div style="text-align: center; margin: 5px 0;">
+            <h3 style="color: #777777;">Your household faces {f'an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{cap_display}</span>' if has_cap else 'no effective SALT cap'} under {policy}</h3>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    
+    return effective_cap
 
 def display_tax_visualization(selected_state, selected_income, state_code, income_value):
     """Display tax visualizations with charts"""
@@ -484,6 +507,7 @@ def display_tax_visualization(selected_state, selected_income, state_code, incom
 
 def display_effective_salt_caps_table():
     """Display the table of effective SALT caps for all states and income levels"""
+
     st.markdown("## Effective SALT Caps by State and Income Level")
     st.markdown(
         """
@@ -491,7 +515,7 @@ def display_effective_salt_caps_table():
     """
     )
 
-    st.image("single-cap.png")
+    st.image("images/single-cap.png")
 
 
 def display_notes():
@@ -548,3 +572,45 @@ def display_introduction():
     
     # Display tax visualization
     display_tax_visualization(selected_state, selected_income, state_code, income_value)
+
+def display_effective_salt_cap_graph(
+    state_code,
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    policy=None,
+    reform_params=None,
+    threshold=0.1
+):
+    """Display the effective SALT cap graph using the two axes situation"""
+    
+    # Calculate for two axes (varying employment income)
+    result_df = calculate_effective_salt_cap_over_earnings(
+        state_code, 
+        is_married, 
+        num_children, 
+        child_ages,
+        qualified_dividend_income, 
+        long_term_capital_gains, 
+        short_term_capital_gains,
+        deductible_mortgage_interest, 
+        charitable_cash_donations, 
+        baseline_scenario=policy,
+        reform_params=reform_params
+    )
+    
+    # Process the data to calculate marginal rates
+    processed_df = process_effective_cap_data(result_df)
+    
+    # Create the graph
+    fig = create_max_salt_line_graph(processed_df, policy=policy, threshold=threshold)
+    
+    # Display the graph
+    st.plotly_chart(format_fig(fig), use_container_width=True)
+    
+    return processed_df
