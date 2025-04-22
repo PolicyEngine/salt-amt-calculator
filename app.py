@@ -136,43 +136,29 @@ st.markdown(
             box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
         }}
         
-        /* Selected states for radio and checkbox - always teal */
+        /* Adjusts the color of the radio button */
         .stRadio > div[role="radiogroup"] > label > div:first-child > div,
         .stCheckbox > div > label > div:first-child > div {{
             background-color: {BLUE} !important;
-            border-color: {BLUE} !important;
+        }}
+        
+        /* Style the outside border of selected radio buttons */
+        .stRadio > div[role="radiogroup"] > label > div:second-child {{
+            border-color: black !important;
         }}
         
         /* Keep text color black in selectbox and radio buttons */
         .stSelectbox, .stMultiSelect, .stRadio {{
-            color: black !important;
+            color: white !important;
         }}
         
-        /* Ensure text in dropdowns remains black */
-        .stSelectbox > div > div > div > div {{
-            color: black !important;
-        }}
         
         /* Selectbox arrow color only */
         .stSelectbox > div > div > div:last-child {{
             color: {BLUE} !important;
         }}
+
         
-        /* Slider handle and progress color */
-        .stSlider > div > div > div > div {{
-            background-color: {BLUE} !important;
-        }}
-        
-        /* ===== RADIO BUTTON SPECIFIC STYLING ===== */
-        /* Simple styling for radio buttons - just make selected ones blue */
-        .stRadio > div[role="radiogroup"] > label > div[data-baseweb="radio"][aria-checked="true"] > div {{
-            background-color: {BLUE} !important;
-            border-color: {BLUE} !important;
-        }}
-        
-        .stRadio > div[role="radiogroup"] > label > div[data-baseweb="radio"][aria-checked="true"] {{
-            border-color: {BLUE} !important;
-        }}
         
         /* ===== TAB STYLING ===== */
         .stTabs [data-baseweb="tab-list"] {{
