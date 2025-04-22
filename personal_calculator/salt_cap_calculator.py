@@ -129,12 +129,12 @@ def create_situation_with_two_axes(
             },
             # Set up axes for property taxes and employment income
             "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": 0, "max": 140000}],
+                [{"name": "real_estate_taxes", "count": 300, "min": -25000, "max": 140000}],
                 [
                     {
                         "name": "employment_income",
                         "count": 1400,
-                        "min": -25000,
+                        "min": 0,
                         "max": 1000000,
                     }
                 ],
