@@ -6,71 +6,8 @@ from policyengine_core.reforms import Reform
 from constants import CURRENT_POLICY_PARAMS
 from personal_calculator.reforms import PolicyReforms
 from constants import BLUE, DARK_GRAY
+from personal_calculator.dataframes.situations import create_situation_with_one_property_tax_axes, create_situation_with_one_income_axes, create_situation_with_two_axes
 
-
-def create_situation_with_one_property_tax_axes(
-    state_code,
-    is_married,
-    num_children,
-    child_ages,
-    qualified_dividend_income,
-    long_term_capital_gains,
-    short_term_capital_gains,
-    deductible_mortgage_interest,
-    charitable_cash_donations,
-    employment_income,
-):
-    """
-    Create a situation dictionary with one axis (real_estate_taxes),
-    using a fixed employment income value.
-    """
-    situation_with_one_axes = {
-        "people": {
-            "you": {
-                "age": {"2026": 40},
-                "qualified_dividend_income": {"2026": qualified_dividend_income},
-                "long_term_capital_gains": {"2026": long_term_capital_gains},
-                "short_term_capital_gains": {"2026": short_term_capital_gains},
-                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
-                "charitable_cash_donations": {"2026": charitable_cash_donations},
-                "employment_income": {"2026": employment_income},
-            }
-        }
-    }
-    members = ["you"]
-
-    if is_married:
-        situation_with_one_axes["people"]["spouse"] = {
-            "age": {"2026": 40},
-        }
-        members.append("spouse")
-
-    for i in range(num_children):
-        child_id = f"child_{i}"
-        situation_with_one_axes["people"][child_id] = {
-            "age": {"2026": child_ages[i]},
-        }
-        members.append(child_id)
-
-    situation_with_one_axes.update(
-        {
-            "families": {"your family": {"members": members.copy()}},
-            "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
-                }
-            },
-            # Set up axes for property taxes only
-            "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": 0, "max": 140000}],
-            ],
-        }
-    )
-    return situation_with_one_axes
 
 
 def calculate_property_tax_df(
@@ -102,6 +39,8 @@ def calculate_property_tax_df(
         deductible_mortgage_interest,
         charitable_cash_donations,
         employment_income,
+        baseline_scenario,
+        reform_params,
     )
 
     # Create simulation based on baseline scenario
@@ -139,7 +78,7 @@ def calculate_property_tax_df(
     amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
 
     # Create DataFrame with data
-    effective_caps_df = pd.DataFrame(
+    property_tax_df = pd.DataFrame(
         {
             "employment_income": employment_income,
             "property_tax": property_taxes_axis,
@@ -156,79 +95,14 @@ def calculate_property_tax_df(
     )
 
     # Add policy information
-    effective_caps_df["policy"] = (
+    property_tax_df["policy"] = (
         baseline_scenario if reform_params is None else "Reform"
     )
-    effective_caps_df["state"] = state_code
+    property_tax_df["state"] = state_code
 
-    # Calculate marginal rate
-    effective_caps_df = calculate_marginal_rate(effective_caps_df)
 
-    return effective_caps_df
+    return property_tax_df
 
-def create_situation_with_one_income_axes(
-    state_code,
-    is_married,
-    num_children,
-    child_ages,
-    qualified_dividend_income,
-    long_term_capital_gains,
-    short_term_capital_gains,
-    deductible_mortgage_interest,
-    charitable_cash_donations,
-    real_estate_taxes,
-):
-    """
-    Create a situation dictionary with one axis (real_estate_taxes),
-    using a fixed employment income value.
-    """
-    situation_with_one_axes = {
-        "people": {
-            "you": {
-                "age": {"2026": 40},
-                "qualified_dividend_income": {"2026": qualified_dividend_income},
-                "long_term_capital_gains": {"2026": long_term_capital_gains},
-                "short_term_capital_gains": {"2026": short_term_capital_gains},
-                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
-                "charitable_cash_donations": {"2026": charitable_cash_donations},
-                "real_estate_taxes": {"2026": real_estate_taxes},
-            }
-        }
-    }
-    members = ["you"]
-
-    if is_married:
-        situation_with_one_axes["people"]["spouse"] = {
-            "age": {"2026": 40},
-        }
-        members.append("spouse")
-
-    for i in range(num_children):
-        child_id = f"child_{i}"
-        situation_with_one_axes["people"][child_id] = {
-            "age": {"2026": child_ages[i]},
-        }
-        members.append(child_id)
-
-    situation_with_one_axes.update(
-        {
-            "families": {"your family": {"members": members.copy()}},
-            "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
-                }
-            },
-            # Set up axes for property taxes only
-            "axes": [
-                [{"name": "employment_income", "count": 300, "min": 0, "max": 1000000}],
-            ],
-        }
-    )
-    return situation_with_one_axes
 
 
 def calculate_income_df(
@@ -321,78 +195,6 @@ def calculate_income_df(
 
 
     return income_df
-
-def create_situation_with_two_axes(
-    state_code,
-    is_married,
-    num_children,
-    child_ages,
-    qualified_dividend_income,
-    long_term_capital_gains,
-    short_term_capital_gains,
-    deductible_mortgage_interest,
-    charitable_cash_donations,
-):
-    """
-    Create a situation dictionary with two axes (real_estate_taxes and employment_income).
-    """
-    situation_with_two_axes = {
-        "people": {
-            "you": {
-                "age": {"2026": 40},
-                "qualified_dividend_income": {"2026": qualified_dividend_income},
-                "long_term_capital_gains": {"2026": long_term_capital_gains},
-                "short_term_capital_gains": {"2026": short_term_capital_gains},
-                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
-                "charitable_cash_donations": {"2026": charitable_cash_donations},
-            }
-        }
-    }
-    members = ["you"]
-
-    if is_married:
-        situation_with_two_axes["people"]["spouse"] = {
-            "age": {"2026": 40},
-        }
-        members.append("spouse")
-
-    for i in range(num_children):
-        child_id = f"child_{i}"
-        situation_with_two_axes["people"][child_id] = {
-            "age": {"2026": child_ages[i]},
-        }
-        members.append(child_id)
-
-    situation_with_two_axes.update(
-        {
-            "families": {"your family": {"members": members.copy()}},
-            "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
-                }
-            },
-            # Set up axes for property taxes and employment income
-            "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": -50000, "max": 140000}],
-                [
-                    {
-                        "name": "employment_income",
-                        "count": 1400,
-                        "min": 0,
-                        "max": 1000000,
-                    }
-                ],
-            ],
-        }
-    )
-    return situation_with_two_axes
-
-
-
 
 
 def calculate_effective_salt_cap_over_earnings(
@@ -616,3 +418,105 @@ def process_effective_cap_data(effective_cap_df):
     )
 
     return processed_df
+
+def create_max_salt_dataset(df, threshold=0.1):
+    """
+    Create a dataset with values at each income level where
+    the marginal property tax rate exceeds the threshold.
+    
+    Parameters:
+    -----------
+    df : pandas DataFrame
+        Processed dataframe with marginal_property_tax_rate calculated
+    threshold : float
+        Threshold value for marginal_property_tax_rate
+        
+    Returns:
+    --------
+    pandas DataFrame
+        DataFrame with values by income level for various metrics
+    """
+    # Filter to data where marginal rate exceeds threshold
+    filtered_df = df[df["marginal_property_tax_rate"] > threshold]
+    
+    if filtered_df.empty:
+        return pd.DataFrame()
+    
+    # Group by income level
+    grouped = filtered_df.groupby("employment_income")
+    
+    # Get the index of maximum salt_and_property_tax for each income level
+    idx_max = grouped["salt_and_property_tax"].idxmax()
+    
+    # Use these indices to get the corresponding rows
+    # Include all columns needed for all four charts
+    columns_to_keep = [
+        "employment_income", 
+        "salt_deduction", 
+        "salt_and_property_tax", 
+        "regular_tax", 
+        "amt", 
+        "taxable_income",
+        "amt_income",
+        "income_tax"
+    ]
+    
+    # Create DataFrame with only the columns we need
+    max_salt_by_income = filtered_df.loc[idx_max][columns_to_keep]
+    
+    
+    # Sort by income for proper plotting
+    max_salt_by_income = max_salt_by_income.sort_values("employment_income")
+    
+    return max_salt_by_income
+
+
+def create_values_by_income_dataset(df, threshold=0.1):
+    """
+    Create a dataset with values at each income level where
+    the marginal property tax rate exceeds the threshold.
+    
+    Parameters:
+    -----------
+    df : pandas DataFrame
+        Processed dataframe with marginal_property_tax_rate calculated
+    threshold : float
+        Threshold value for marginal_property_tax_rate
+        
+    Returns:
+    --------
+    pandas DataFrame
+        DataFrame with values by income level for various metrics
+    """
+    # Filter to data where marginal rate exceeds threshold
+    filtered_df = df[df["marginal_property_tax_rate"] > threshold]
+    
+    if filtered_df.empty:
+        return pd.DataFrame()
+    
+    # Group by income level
+    grouped = filtered_df.groupby("employment_income")
+    
+    # Get the index of maximum salt_and_property_tax for each income level
+    idx_max = grouped["salt_and_property_tax"].idxmax()
+    
+    # Use these indices to get the corresponding rows
+    # Include all columns needed for all four charts
+    columns_to_keep = [
+        "employment_income", 
+        "salt_deduction", 
+        "salt_and_property_tax", 
+        "regular_tax", 
+        "amt", 
+        "taxable_income",
+        "amt_income",
+        "income_tax"
+    ]
+    
+    # Create DataFrame with only the columns we need
+    max_salt_by_income = filtered_df.loc[idx_max][columns_to_keep]
+    
+    # Sort by income for proper plotting
+    max_salt_by_income = max_salt_by_income.sort_values("employment_income")
+    
+    return max_salt_by_income

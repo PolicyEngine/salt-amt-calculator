@@ -4,15 +4,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 from policyengine_core.charts import format_fig
 from constants import BLUE, DARK_GRAY
-from personal_calculator.salt_cap_calculator import (
-    calculate_effective_salt_cap_over_earnings,
+from personal_calculator.dataframes.dataframes import (
     calculate_property_tax_df,
-    create_situation_with_one_property_tax_axes,
+    calculate_effective_salt_cap_over_earnings,
     process_effective_cap_data,
     create_max_salt_line_graph,
     calculate_income_df,
+    create_max_salt_dataset,
 )
-
+from personal_calculator.dataframes.situations import (
+    create_situation_with_one_property_tax_axes,
+    create_situation_with_one_income_axes,
+    create_situation_with_two_axes,
+)
 
 
 def display_salt_deduction_comparison_chart(
@@ -21,6 +25,7 @@ def display_salt_deduction_comparison_chart(
     num_children=0,
     child_ages=[],
     qualified_dividend_income=0,
+    employment_income=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
@@ -31,16 +36,16 @@ def display_salt_deduction_comparison_chart(
     Create and display a chart showing effective SALT cap by income level,
     comparing current policy vs current law.
     
-    Parameters match those used in calculate_effective_salt_cap_over_earnings.
     
     The graph shows employment income on x-axis and effective SALT cap on y-axis.
     """
     # Calculate data for Current Law
-    current_law_df = calculate_effective_salt_cap_over_earnings(
+    current_law_df = calculate_property_tax_df(
         state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
+        employment_income=employment_income,
         qualified_dividend_income=qualified_dividend_income,
         long_term_capital_gains=long_term_capital_gains,
         short_term_capital_gains=short_term_capital_gains,
@@ -51,11 +56,12 @@ def display_salt_deduction_comparison_chart(
     )
     
     # Calculate data for Current Policy
-    current_policy_df = calculate_effective_salt_cap_over_earnings(
+    current_policy_df = calculate_property_tax_df(
         state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
+        employment_income=employment_income,
         qualified_dividend_income=qualified_dividend_income,
         long_term_capital_gains=long_term_capital_gains,
         short_term_capital_gains=short_term_capital_gains,
@@ -64,21 +70,17 @@ def display_salt_deduction_comparison_chart(
         reform_params=None,
         baseline_scenario="Current Policy",
     )
-    
-    # Process data to calculate marginal rates
-    processed_law_df = process_effective_cap_data(current_law_df)
-    processed_policy_df = process_effective_cap_data(current_policy_df)
+
     
     # Create a combined figure
     fig = go.Figure()
     
     # Add Current Law line
-    law_max_salt = create_max_salt_dataset(processed_law_df, threshold)
-    if not law_max_salt.empty:
+    if not current_law_df.empty:
         fig.add_trace(
             go.Scatter(
-                x=law_max_salt["salt_and_property_tax"],
-                y=law_max_salt["salt_deduction"],
+                x=current_law_df["salt_and_property_tax"],
+                y=current_law_df["salt_deduction"],
                 mode="lines",
                 name="Current Law (2026)",
                 line=dict(color=BLUE, width=2),
@@ -87,12 +89,11 @@ def display_salt_deduction_comparison_chart(
         )
     
     # Add Current Policy line
-    policy_max_salt = create_max_salt_dataset(processed_policy_df, threshold)
-    if not policy_max_salt.empty:
+    if not current_policy_df.empty:
         fig.add_trace(
             go.Scatter(
-                x=policy_max_salt["salt_and_property_tax"],
-                y=policy_max_salt["salt_deduction"],
+                x=current_policy_df["salt_and_property_tax"],
+                y=current_policy_df["salt_deduction"],
                 mode="lines",
                 name="Current Policy (2025)",
                 line=dict(color="#777777", width=2, dash="dash"),
@@ -256,108 +257,6 @@ def display_salt_cap_comparison_chart(
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
-def create_max_salt_dataset(df, threshold=0.1):
-    """
-    Create a dataset with values at each income level where
-    the marginal property tax rate exceeds the threshold.
-    
-    Parameters:
-    -----------
-    df : pandas DataFrame
-        Processed dataframe with marginal_property_tax_rate calculated
-    threshold : float
-        Threshold value for marginal_property_tax_rate
-        
-    Returns:
-    --------
-    pandas DataFrame
-        DataFrame with values by income level for various metrics
-    """
-    # Filter to data where marginal rate exceeds threshold
-    filtered_df = df[df["marginal_property_tax_rate"] > threshold]
-    
-    if filtered_df.empty:
-        return pd.DataFrame()
-    
-    # Group by income level
-    grouped = filtered_df.groupby("employment_income")
-    
-    # Get the index of maximum salt_and_property_tax for each income level
-    idx_max = grouped["salt_and_property_tax"].idxmax()
-    
-    # Use these indices to get the corresponding rows
-    # Include all columns needed for all four charts
-    columns_to_keep = [
-        "employment_income", 
-        "salt_deduction", 
-        "salt_and_property_tax", 
-        "regular_tax", 
-        "amt", 
-        "taxable_income",
-        "amt_income",
-        "income_tax"
-    ]
-    
-    # Create DataFrame with only the columns we need
-    max_salt_by_income = filtered_df.loc[idx_max][columns_to_keep]
-    
-    # Sort by income for proper plotting
-    max_salt_by_income = max_salt_by_income.sort_values("employment_income")
-    
-    return max_salt_by_income
-
-
-def create_values_by_income_dataset(df, threshold=0.1):
-    """
-    Create a dataset with values at each income level where
-    the marginal property tax rate exceeds the threshold.
-    
-    Parameters:
-    -----------
-    df : pandas DataFrame
-        Processed dataframe with marginal_property_tax_rate calculated
-    threshold : float
-        Threshold value for marginal_property_tax_rate
-        
-    Returns:
-    --------
-    pandas DataFrame
-        DataFrame with values by income level for various metrics
-    """
-    # Filter to data where marginal rate exceeds threshold
-    filtered_df = df[df["marginal_property_tax_rate"] > threshold]
-    
-    if filtered_df.empty:
-        return pd.DataFrame()
-    
-    # Group by income level
-    grouped = filtered_df.groupby("employment_income")
-    
-    # Get the index of maximum salt_and_property_tax for each income level
-    idx_max = grouped["salt_and_property_tax"].idxmax()
-    
-    # Use these indices to get the corresponding rows
-    # Include all columns needed for all four charts
-    columns_to_keep = [
-        "employment_income", 
-        "salt_deduction", 
-        "salt_and_property_tax", 
-        "regular_tax", 
-        "amt", 
-        "taxable_income",
-        "amt_income",
-        "income_tax"
-    ]
-    
-    # Create DataFrame with only the columns we need
-    max_salt_by_income = filtered_df.loc[idx_max][columns_to_keep]
-    
-    # Sort by income for proper plotting
-    max_salt_by_income = max_salt_by_income.sort_values("employment_income")
-    
-    return max_salt_by_income
-
-
 def display_notes():
     """Display notes section at the bottom of the app"""
     st.markdown("---")  # Add a horizontal line for visual separation
@@ -450,7 +349,7 @@ def display_effective_salt_cap(
         deductible_mortgage_interest,
         charitable_cash_donations,
         employment_income,
-        baseline_scenario=policy,
+        baseline_scenario="Current Law",
         reform_params=reform_params,
     )
 

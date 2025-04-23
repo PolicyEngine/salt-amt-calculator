@@ -4,7 +4,6 @@ from personal_calculator.inputs import create_personal_inputs
 from personal_calculator.chart import (
     reset_results,
 )
-
 import pandas as pd
 import plotly.express as px
 from policyengine_core.charts import format_fig
@@ -21,12 +20,12 @@ from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config
 from constants import BLUE
 
-from introduction import (
+from personal_calculator.charts.salt_amt_charts import (
+    display_salt_deduction_comparison_chart,
     display_salt_cap_comparison_chart,
     display_notes,
     display_effective_salt_cap,
-    display_salt_deduction_comparison_chart,
-    display_regular_tax_and_amt_chart
+    display_regular_tax_and_amt_chart,
 )
 
 # Set up the Streamlit page
