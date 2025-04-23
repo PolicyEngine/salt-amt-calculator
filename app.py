@@ -26,6 +26,8 @@ from personal_calculator.charts.salt_amt_charts import (
     display_notes,
     display_effective_salt_cap,
     display_regular_tax_and_amt_chart,
+    display_taxable_income_and_amti_chart,
+    display_income_tax_chart,
 )
 
 # Set up the Streamlit page
@@ -194,10 +196,10 @@ st.markdown(
 def print_session_state():
     """Print all session state variables in a formatted way"""
     st.write("### Session State Debug:")
-    
+
     # Create a container for the debug info
     debug_container = st.container()
-    
+
     with debug_container:
         # Create an expander to hide/show the debug info
         with st.expander("Click to view session state variables"):
@@ -212,34 +214,36 @@ def print_session_state():
                         value_display = f"dict with {len(value)} items"
                     elif isinstance(value, list):
                         value_display = f"list with {len(value)} items"
-                    elif hasattr(value, '__dict__'):
+                    elif hasattr(value, "__dict__"):
                         value_display = f"object of type {type(value).__name__}"
                     else:
                         value_display = str(value)
-                    
+
                     items.append({"Key": key, "Value": value_display})
-                
+
                 # Display as a table
                 st.table(items)
+
 
 # Debug function to track a specific action
 def log_action(action_name):
     """Log an action with timestamp"""
     import time
-    
+
     # Initialize action log in session state if it doesn't exist
     if "action_log" not in st.session_state:
         st.session_state.action_log = []
-    
+
     # Add the action with timestamp
-    st.session_state.action_log.append({
-        "time": time.strftime("%H:%M:%S"),
-        "action": action_name
-    })
+    st.session_state.action_log.append(
+        {"time": time.strftime("%H:%M:%S"), "action": action_name}
+    )
+
 
 # Initialize session state tracking
 if "action_log" not in st.session_state:
     st.session_state.action_log = []
+
 
 # Display the action log
 def display_action_log():
@@ -248,10 +252,12 @@ def display_action_log():
         if "action_log" in st.session_state and len(st.session_state.action_log) > 0:
             # Create a DataFrame from the action log
             import pandas as pd
+
             log_df = pd.DataFrame(st.session_state.action_log)
             st.table(log_df)
         else:
             st.write("No actions logged yet")
+
 
 # Call this at the top of your app to see the current state
 print_session_state()
@@ -265,17 +271,21 @@ if "nav_page" not in st.session_state:
 if "chart_index" not in st.session_state:
     st.session_state.chart_index = 0
 
+
 def change_chart_without_rerun(direction):
     """Change the chart index without triggering a page rerun"""
     current_index = st.session_state.chart_index
     num_charts = len(available_charts)
-    
+
     if direction == "next":
         st.session_state.chart_index = (current_index + 1) % num_charts
     elif direction == "prev":
         st.session_state.chart_index = (current_index - 1) % num_charts
-    
-    log_action(f"Changed chart from {current_index} to {st.session_state.chart_index} ({direction})")
+
+    log_action(
+        f"Changed chart from {current_index} to {st.session_state.chart_index} ({direction})"
+    )
+
 
 # Set up sidebar for navigation
 with st.sidebar:
@@ -285,25 +295,29 @@ with st.sidebar:
 
     if section == "Personal Inputs":
         log_action(f"Section selected: {section}")
-        
+
         # Get personal inputs (will use session state if available)
         personal_inputs = create_personal_inputs()
-        
+
         # Store current inputs in session state
-        if "personal_inputs" not in st.session_state or personal_inputs != st.session_state.personal_inputs:
+        if (
+            "personal_inputs" not in st.session_state
+            or personal_inputs != st.session_state.personal_inputs
+        ):
             st.session_state.personal_inputs = personal_inputs
             log_action("Storing new personal inputs in session state")
-        
-        
 
         inputs_changed = (
-            "last_calculated_inputs" in st.session_state and
-            st.session_state.personal_inputs != st.session_state.last_calculated_inputs
+            "last_calculated_inputs" in st.session_state
+            and st.session_state.personal_inputs
+            != st.session_state.last_calculated_inputs
         )
 
         if inputs_changed:
             calculate_button_text = "Recalculate with New Inputs"
-            button_help = "Your inputs have changed. Click to update charts with new values."
+            button_help = (
+                "Your inputs have changed. Click to update charts with new values."
+            )
         else:
             calculate_button_text = "Calculate Impacts"
             button_help = "Calculate tax impacts based on your inputs."
@@ -313,18 +327,21 @@ with st.sidebar:
         if calculate_clicked:
             # Only set flag and recalculate if inputs changed
             inputs_changed = (
-                "last_calculated_inputs" not in st.session_state or 
-                st.session_state.personal_inputs != st.session_state.last_calculated_inputs
+                "last_calculated_inputs" not in st.session_state
+                or st.session_state.personal_inputs
+                != st.session_state.last_calculated_inputs
             )
-            
+
             if inputs_changed:
                 log_action("Calculate button clicked - inputs changed, recalculating")
                 st.session_state.calculate_clicked = True
-                st.session_state.last_calculated_inputs = st.session_state.personal_inputs.copy()
-                
+                st.session_state.last_calculated_inputs = (
+                    st.session_state.personal_inputs.copy()
+                )
+
                 # Reset results and recalculate
                 reset_results()
-                
+
                 # Create situation based on inputs
                 log_action("Creating situation...")
                 situation = create_situation(
@@ -333,19 +350,27 @@ with st.sidebar:
                     is_married=personal_inputs["is_married"],
                     num_children=personal_inputs["num_children"],
                     child_ages=personal_inputs["child_ages"],
-                    qualified_dividend_income=personal_inputs["qualified_dividend_income"],
+                    qualified_dividend_income=personal_inputs[
+                        "qualified_dividend_income"
+                    ],
                     long_term_capital_gains=personal_inputs["long_term_capital_gains"],
-                    short_term_capital_gains=personal_inputs["short_term_capital_gains"],
+                    short_term_capital_gains=personal_inputs[
+                        "short_term_capital_gains"
+                    ],
                     real_estate_taxes=personal_inputs["real_estate_taxes"],
-                    deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
-                    charitable_cash_donations=personal_inputs["charitable_cash_donations"],
+                    deductible_mortgage_interest=personal_inputs[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=personal_inputs[
+                        "charitable_cash_donations"
+                    ],
                 )
                 log_action("Situation created")
-                
+
                 # Store calculation results in session state
                 st.session_state.situation = situation
                 st.session_state.calculation_performed = True
-                
+
                 # Reset chart index when recalculating
                 st.session_state.chart_index = 0
             else:
@@ -415,7 +440,6 @@ if page == "Introduction":
         """
     )
 
-
     # Add a button to go to the next section
     st.markdown("---")
     if st.button("Go to How SALT affects taxes →", type="primary"):
@@ -438,109 +462,178 @@ elif page == "How SALT affects taxes":
     if "chart_index" not in st.session_state:
         st.session_state.chart_index = 0
         log_action("Initialized chart_index to 0")
-    
+
     # Define the list of available charts
     available_charts = [
         "SALT Cap Comparison",
         "SALT Deduction Comparison",
         "Effective SALT Cap Graph",
-        "Effective SALT Cap"
+        "Effective SALT Cap",
     ]
 
     inputs_changed = (
-        "personal_inputs" in st.session_state and
-        "last_calculated_inputs" in st.session_state and
-        st.session_state.personal_inputs != st.session_state.last_calculated_inputs
+        "personal_inputs" in st.session_state
+        and "last_calculated_inputs" in st.session_state
+        and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
     )
 
     calculation_is_valid = (
-        "calculate_clicked" in st.session_state and 
-        st.session_state.calculate_clicked and
-        not inputs_changed
+        "calculate_clicked" in st.session_state
+        and st.session_state.calculate_clicked
+        and not inputs_changed
     )
-    
+
     # Check if the sidebar calculate button was clicked
     if calculation_is_valid:
         log_action("Valid calculation exists, rendering charts")
         if "last_calculated_inputs" in st.session_state:
             log_action("Using last calculated inputs for charts")
             inputs_to_use = st.session_state.last_calculated_inputs
-        
+
             current_chart = available_charts[st.session_state.chart_index]
             log_action(f"Displaying chart: {current_chart}")
-            
+
             # Display the current chart based on the chart_index
             if st.session_state.chart_index == 0:
-                st.markdown("### SALT Cap Comparison")
-                display_salt_cap_comparison_chart(
+                st.markdown("### SALT Deduction Comparison")
+                display_salt_deduction_comparison_chart(
                     state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     child_ages=inputs_to_use["child_ages"],
-                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
                     long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                     short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"]
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
                 )
             elif st.session_state.chart_index == 1:
-                st.markdown("### SALT Deduction Comparison")
-                display_salt_deduction_comparison_chart(
-                    state_code=personal_inputs["state_code"],
-                    is_married=personal_inputs["is_married"],
-                    num_children=personal_inputs["num_children"],
-                    child_ages=personal_inputs["child_ages"],
-                    qualified_dividend_income=personal_inputs["qualified_dividend_income"],
-                    long_term_capital_gains=personal_inputs["long_term_capital_gains"],
-                    short_term_capital_gains=personal_inputs["short_term_capital_gains"],
-                    deductible_mortgage_interest=personal_inputs["deductible_mortgage_interest"],
-                    charitable_cash_donations=personal_inputs["charitable_cash_donations"]
-            )
+                st.markdown("### Taxable Income and AMTI Comparison")
+                display_taxable_income_and_amti_chart(
+                    state_code=inputs_to_use["state_code"],
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                )
+            elif st.session_state.chart_index == 2:
+                st.markdown("### Regular Tax and AMT Comparison")
+                display_regular_tax_and_amt_chart(
+                    state_code=inputs_to_use["state_code"],
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                )
+            elif st.session_state.chart_index == 3:
+                st.markdown("### Income Tax Comparison")
+                display_income_tax_chart(
+                    state_code=inputs_to_use["state_code"],
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                )
 
             st.markdown("---")
             col1, col2, col3 = st.columns([1, 2, 1])
-            
+
             with col1:
-                st.button("← Previous", key="prev_chart", on_click=change_chart_without_rerun, args=("prev",))
-            
+                st.button(
+                    "← Previous",
+                    key="prev_chart",
+                    on_click=change_chart_without_rerun,
+                    args=("prev",),
+                )
+
             with col2:
-                st.markdown(f"**Chart {st.session_state.chart_index + 1} of {len(available_charts)}: {available_charts[st.session_state.chart_index]}**")
-            
+                st.markdown(
+                    f"**Chart {st.session_state.chart_index + 1} of {len(available_charts)}: {available_charts[st.session_state.chart_index]}**"
+                )
+
             with col3:
-                st.button("Next →", key="next_chart", on_click=change_chart_without_rerun, args=("next",))
+                st.button(
+                    "Next →",
+                    key="next_chart",
+                    on_click=change_chart_without_rerun,
+                    args=("next",),
+                )
         else:
             log_action("ERROR: No calculated inputs found in session state")
             st.error("Calculation data is missing. Please recalculate impacts.")
     elif inputs_changed:
         # Show a message that inputs have changed and need recalculation
-        st.info("Your inputs have changed. Click 'Calculate Impacts' in the sidebar to generate new charts.")
-    elif "calculate_clicked" not in st.session_state or not st.session_state.calculate_clicked:
+        st.info(
+            "Your inputs have changed. Click 'Calculate Impacts' in the sidebar to generate new charts."
+        )
+    elif (
+        "calculate_clicked" not in st.session_state
+        or not st.session_state.calculate_clicked
+    ):
         # No calculation has been performed yet
-        st.info("Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts.")
+        st.info(
+            "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts."
+        )
     else:
         # Some other edge case
         log_action("Unknown state in How SALT affects taxes page")
         st.warning("Please try recalculating your impacts from the sidebar.")
-        
+
     # Add a button to go to the next section
     st.markdown("---")
     if st.button("Go to The Effective SALT Cap →", type="primary"):
         # Set the page in session state and rerun to navigate
         st.session_state.nav_page = "The Effective SALT Cap"
         st.rerun()
-        
+
 elif page == "The Effective SALT Cap":
     # Display baseline impacts section first
     inputs_changed = (
-        "personal_inputs" in st.session_state and
-        "last_calculated_inputs" in st.session_state and
-        st.session_state.personal_inputs != st.session_state.last_calculated_inputs
+        "personal_inputs" in st.session_state
+        and "last_calculated_inputs" in st.session_state
+        and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
     )
 
     calculation_is_valid = (
-        "calculate_clicked" in st.session_state and 
-        st.session_state.calculate_clicked and
-        not inputs_changed
+        "calculate_clicked" in st.session_state
+        and st.session_state.calculate_clicked
+        and not inputs_changed
     )
 
     if calculation_is_valid:
@@ -554,32 +647,38 @@ elif page == "The Effective SALT Cap":
             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-            charitable_cash_donations=inputs_to_use["charitable_cash_donations"]
+            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
         )
-        display_effective_salt_cap(state_code=inputs_to_use["state_code"],
-                    employment_income=inputs_to_use["employment_income"],
-                    is_married=inputs_to_use["is_married"],
-                    num_children=inputs_to_use["num_children"],
-                    child_ages=inputs_to_use["child_ages"],
-                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                    policy="Current Law")
-        display_effective_salt_cap(state_code=inputs_to_use["state_code"],
-                    employment_income=inputs_to_use["employment_income"],
-                    is_married=inputs_to_use["is_married"],
-                    num_children=inputs_to_use["num_children"],
-                    child_ages=inputs_to_use["child_ages"],
-                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                    policy="Current Policy")
+        display_effective_salt_cap(
+            state_code=inputs_to_use["state_code"],
+            employment_income=inputs_to_use["employment_income"],
+            is_married=inputs_to_use["is_married"],
+            num_children=inputs_to_use["num_children"],
+            child_ages=inputs_to_use["child_ages"],
+            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+            policy="Current Law",
+        )
+        display_regular_tax_and_amt_chart(
+            state_code=inputs_to_use["state_code"],
+            employment_income=inputs_to_use["employment_income"],
+            is_married=inputs_to_use["is_married"],
+            num_children=inputs_to_use["num_children"],
+            child_ages=inputs_to_use["child_ages"],
+            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+            policy="Current Policy",
+        )
     else:
-        st.info("Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts.")
+        st.info(
+            "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts."
+        )
 
     # Add a button to go to the next section
     st.markdown("---")
@@ -608,7 +707,6 @@ elif page == "Budgetary and distributional impacts":
         horizontal=True,
     )
     st.session_state.baseline = baseline
-
 
     # Behavioral responses checkbox
     behavioral_responses = st.checkbox(
@@ -639,9 +737,7 @@ elif page == "Budgetary and distributional impacts":
             )
 
     if budget_window_impacts:
-        budget_window_impacts_df = pd.concat(
-            budget_window_impacts, ignore_index=True
-        )
+        budget_window_impacts_df = pd.concat(budget_window_impacts, ignore_index=True)
         total_revenue_impact = calculate_total_revenue_impact(
             budget_window_impacts_df,
             st.session_state.policy_config,
@@ -663,9 +759,7 @@ elif page == "Budgetary and distributional impacts":
             )
             # Create an expander for the 10-year impact graph
             with st.expander("Show 10-Year Impact Graph"):
-                st.markdown(
-                    "**Figure 4: Budgetary Impact Over the 10-Year Window**"
-                )
+                st.markdown("**Figure 4: Budgetary Impact Over the 10-Year Window**")
 
                 # Show the 10-year impact graph without the title
                 fig = px.line(
@@ -730,9 +824,7 @@ elif page == "Budgetary and distributional impacts":
                                 "**Figure 5: Average Household Net Income Change by Income Decile**"
                             )
 
-                            fig = ImpactCharts.plot_distributional_analysis(
-                                dist_data
-                            )
+                            fig = ImpactCharts.plot_distributional_analysis(dist_data)
                             fig = format_fig(fig)
                             # Add margin to ensure logo is visible
                             fig.update_layout(
@@ -745,7 +837,11 @@ elif page == "Budgetary and distributional impacts":
                     )
 
 # Add Notes section at the app level after any sections are displayed
-if page in ["How SALT affects taxes", "The Effective SALT Cap", "Budgetary and distributional impacts"]:
+if page in [
+    "How SALT affects taxes",
+    "The Effective SALT Cap",
+    "Budgetary and distributional impacts",
+]:
     display_notes()
 
 # Add a button to restart the navigation cycle for the Budgetary and distributional impacts section

@@ -6,8 +6,11 @@ from policyengine_core.reforms import Reform
 from constants import CURRENT_POLICY_PARAMS
 from personal_calculator.reforms import PolicyReforms
 from constants import BLUE, DARK_GRAY
-from personal_calculator.dataframes.situations import create_situation_with_one_property_tax_axes, create_situation_with_one_income_axes, create_situation_with_two_axes
-
+from personal_calculator.dataframes.situations import (
+    create_situation_with_one_property_tax_axes,
+    create_situation_with_one_income_axes,
+    create_situation_with_two_axes,
+)
 
 
 def calculate_property_tax_df(
@@ -74,7 +77,9 @@ def calculate_property_tax_df(
     )
     salt_and_property_tax = property_taxes_axis + sales_or_income_tax
     income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
-    taxable_income = simulation.calculate("taxable_income", map_to="household", period=2026)
+    taxable_income = simulation.calculate(
+        "taxable_income", map_to="household", period=2026
+    )
     amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
 
     # Create DataFrame with data
@@ -95,14 +100,10 @@ def calculate_property_tax_df(
     )
 
     # Add policy information
-    property_tax_df["policy"] = (
-        baseline_scenario if reform_params is None else "Reform"
-    )
+    property_tax_df["policy"] = baseline_scenario if reform_params is None else "Reform"
     property_tax_df["state"] = state_code
 
-
     return property_tax_df
-
 
 
 def calculate_income_df(
@@ -167,7 +168,9 @@ def calculate_income_df(
     )
     salt_and_property_tax = real_estate_taxes + sales_or_income_tax
     income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
-    taxable_income = simulation.calculate("taxable_income", map_to="household", period=2026)
+    taxable_income = simulation.calculate(
+        "taxable_income", map_to="household", period=2026
+    )
     amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
 
     # Create DataFrame with data
@@ -188,11 +191,8 @@ def calculate_income_df(
     )
 
     # Add policy information
-    income_df["policy"] = (
-        baseline_scenario if reform_params is None else "Reform"
-    )
+    income_df["policy"] = baseline_scenario if reform_params is None else "Reform"
     income_df["state"] = state_code
-
 
     return income_df
 
@@ -260,7 +260,9 @@ def calculate_effective_salt_cap_over_earnings(
     )
     salt_and_property_tax = property_taxes_axis + sales_or_income_tax
     income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
-    taxable_income = simulation.calculate("taxable_income", map_to="household", period=2026)
+    taxable_income = simulation.calculate(
+        "taxable_income", map_to="household", period=2026
+    )
     amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
 
     # Create DataFrame with data
@@ -419,18 +421,36 @@ def process_effective_cap_data(effective_cap_df):
 
     return processed_df
 
+
+def process_effective_cap_over_property_tax_data(effective_cap_df):
+    """
+    Process the effective cap data by calculating marginal rates for each income level
+    """
+    # Sort the dataframe
+    processed_df = effective_cap_df.sort_values(by=["policy", "employment_income"])
+
+    # Calculate the marginal property tax rate for each income level
+    processed_df = (
+        processed_df.groupby(["policy", "employment_income"])
+        .apply(calculate_marginal_rate)
+        .reset_index(drop=True)
+    )
+
+    return processed_df
+
+
 def create_max_salt_dataset(df, threshold=0.1):
     """
     Create a dataset with values at each income level where
     the marginal property tax rate exceeds the threshold.
-    
+
     Parameters:
     -----------
     df : pandas DataFrame
         Processed dataframe with marginal_property_tax_rate calculated
     threshold : float
         Threshold value for marginal_property_tax_rate
-        
+
     Returns:
     --------
     pandas DataFrame
@@ -438,36 +458,35 @@ def create_max_salt_dataset(df, threshold=0.1):
     """
     # Filter to data where marginal rate exceeds threshold
     filtered_df = df[df["marginal_property_tax_rate"] > threshold]
-    
+
     if filtered_df.empty:
         return pd.DataFrame()
-    
+
     # Group by income level
     grouped = filtered_df.groupby("employment_income")
-    
+
     # Get the index of maximum salt_and_property_tax for each income level
     idx_max = grouped["salt_and_property_tax"].idxmax()
-    
+
     # Use these indices to get the corresponding rows
     # Include all columns needed for all four charts
     columns_to_keep = [
-        "employment_income", 
-        "salt_deduction", 
-        "salt_and_property_tax", 
-        "regular_tax", 
-        "amt", 
+        "employment_income",
+        "salt_deduction",
+        "salt_and_property_tax",
+        "regular_tax",
+        "amt",
         "taxable_income",
         "amt_income",
-        "income_tax"
+        "income_tax",
     ]
-    
+
     # Create DataFrame with only the columns we need
     max_salt_by_income = filtered_df.loc[idx_max][columns_to_keep]
-    
-    
+
     # Sort by income for proper plotting
     max_salt_by_income = max_salt_by_income.sort_values("employment_income")
-    
+
     return max_salt_by_income
 
 
@@ -475,14 +494,14 @@ def create_values_by_income_dataset(df, threshold=0.1):
     """
     Create a dataset with values at each income level where
     the marginal property tax rate exceeds the threshold.
-    
+
     Parameters:
     -----------
     df : pandas DataFrame
         Processed dataframe with marginal_property_tax_rate calculated
     threshold : float
         Threshold value for marginal_property_tax_rate
-        
+
     Returns:
     --------
     pandas DataFrame
@@ -490,33 +509,33 @@ def create_values_by_income_dataset(df, threshold=0.1):
     """
     # Filter to data where marginal rate exceeds threshold
     filtered_df = df[df["marginal_property_tax_rate"] > threshold]
-    
+
     if filtered_df.empty:
         return pd.DataFrame()
-    
+
     # Group by income level
     grouped = filtered_df.groupby("employment_income")
-    
+
     # Get the index of maximum salt_and_property_tax for each income level
     idx_max = grouped["salt_and_property_tax"].idxmax()
-    
+
     # Use these indices to get the corresponding rows
     # Include all columns needed for all four charts
     columns_to_keep = [
-        "employment_income", 
-        "salt_deduction", 
-        "salt_and_property_tax", 
-        "regular_tax", 
-        "amt", 
+        "employment_income",
+        "salt_deduction",
+        "salt_and_property_tax",
+        "regular_tax",
+        "amt",
         "taxable_income",
         "amt_income",
-        "income_tax"
+        "income_tax",
     ]
-    
+
     # Create DataFrame with only the columns we need
     max_salt_by_income = filtered_df.loc[idx_max][columns_to_keep]
-    
+
     # Sort by income for proper plotting
     max_salt_by_income = max_salt_by_income.sort_values("employment_income")
-    
+
     return max_salt_by_income

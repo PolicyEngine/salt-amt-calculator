@@ -130,5 +130,5 @@ def create_personal_inputs():
         "deductible_mortgage_interest": mortgage_interest,
         "charitable_cash_donations": charitable_cash_donations,
     }
-    
+
     return inputs

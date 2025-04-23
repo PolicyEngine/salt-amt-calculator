@@ -30,13 +30,13 @@ def display_salt_deduction_comparison_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
-    threshold=0.1
+    threshold=0.1,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
     comparing current policy vs current law.
-    
-    
+
+
     The graph shows employment income on x-axis and effective SALT cap on y-axis.
     """
     # Calculate data for Current Law
@@ -54,7 +54,7 @@ def display_salt_deduction_comparison_chart(
         reform_params=None,
         baseline_scenario="Current Law",
     )
-    
+
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
         state_code=state_code,
@@ -71,10 +71,9 @@ def display_salt_deduction_comparison_chart(
         baseline_scenario="Current Policy",
     )
 
-    
     # Create a combined figure
     fig = go.Figure()
-    
+
     # Add Current Law line
     if not current_law_df.empty:
         fig.add_trace(
@@ -87,7 +86,7 @@ def display_salt_deduction_comparison_chart(
                 hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
             )
         )
-    
+
     # Add Current Policy line
     if not current_policy_df.empty:
         fig.add_trace(
@@ -100,7 +99,7 @@ def display_salt_deduction_comparison_chart(
                 hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
             )
         )
-    
+
     # Update layout
     fig.update_layout(
         title=f"Effective SALT Cap by Income Level ({state_code})",
@@ -111,28 +110,23 @@ def display_salt_deduction_comparison_chart(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 1000000],
+            range=[0, 150000],
         ),
         yaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 200000],  # Adjust as needed to show your data
+            range=[0, 150000],
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",
         plot_bgcolor="white",
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="right",
-            x=0.99
-        )
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
-    
+
     # Format the chart
     fig = format_fig(fig)
-    
+
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
@@ -147,14 +141,14 @@ def display_salt_cap_comparison_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
-    threshold=0.1
+    threshold=0.1,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
     comparing current policy vs current law.
-    
+
     Parameters match those used in calculate_effective_salt_cap_over_earnings.
-    
+
     The graph shows employment income on x-axis and effective SALT cap on y-axis.
     """
     # Calculate data for Current Law
@@ -171,7 +165,7 @@ def display_salt_cap_comparison_chart(
         reform_params=None,
         baseline_scenario="Current Law",
     )
-    
+
     # Calculate data for Current Policy
     current_policy_df = calculate_effective_salt_cap_over_earnings(
         state_code=state_code,
@@ -186,14 +180,14 @@ def display_salt_cap_comparison_chart(
         reform_params=None,
         baseline_scenario="Current Policy",
     )
-    
+
     # Process data to calculate marginal rates
     processed_law_df = process_effective_cap_data(current_law_df)
     processed_policy_df = process_effective_cap_data(current_policy_df)
-    
+
     # Create a combined figure
     fig = go.Figure()
-    
+
     # Add Current Law line
     law_max_salt = create_max_salt_dataset(processed_law_df, threshold)
     if not law_max_salt.empty:
@@ -207,7 +201,7 @@ def display_salt_cap_comparison_chart(
                 hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
             )
         )
-    
+
     # Add Current Policy line
     policy_max_salt = create_max_salt_dataset(processed_policy_df, threshold)
     if not policy_max_salt.empty:
@@ -221,7 +215,7 @@ def display_salt_cap_comparison_chart(
                 hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
             )
         )
-    
+
     # Update layout
     fig.update_layout(
         title=f"Effective SALT Cap by Income Level ({state_code})",
@@ -243,19 +237,15 @@ def display_salt_cap_comparison_chart(
         margin=dict(t=80, b=80),
         hovermode="closest",
         plot_bgcolor="white",
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="right",
-            x=0.99
-        )
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
-    
+
     # Format the chart
     fig = format_fig(fig)
-    
+
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
+
 
 def display_notes():
     """Display notes section at the bottom of the app"""
@@ -390,6 +380,7 @@ def display_effective_salt_cap(
 
     return effective_cap
 
+
 def display_regular_tax_and_amt_chart(
     state_code,
     is_married=False,
@@ -400,14 +391,14 @@ def display_regular_tax_and_amt_chart(
     long_term_capital_gains=0,
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
-    charitable_cash_donations=0
+    charitable_cash_donations=0,
 ):
     """
     Create and display a chart showing regular tax and AMT by income level,
     comparing current policy vs current law.
-    
+
     Parameters match those used in calculate_effective_salt_cap_over_earnings.
-    
+
     The graph shows employment income on x-axis and tax amounts on y-axis.
     """
     # Calculate data for Current Law
@@ -425,7 +416,7 @@ def display_regular_tax_and_amt_chart(
         reform_params=None,
         baseline_scenario="Current Law",
     )
-    
+
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
         state_code=state_code,
@@ -441,10 +432,10 @@ def display_regular_tax_and_amt_chart(
         reform_params=None,
         baseline_scenario="Current Policy",
     )
-    
+
     # Create a combined figure
     fig = go.Figure()
-    
+
     # Add Current Law lines
     if not current_law_df.empty:
         # Regular tax under current law (solid blue)
@@ -469,7 +460,7 @@ def display_regular_tax_and_amt_chart(
                 hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
             )
         )
-    
+
     # Add Current Policy lines
     if not current_policy_df.empty:
         # Regular tax under current policy (solid gray)
@@ -494,7 +485,7 @@ def display_regular_tax_and_amt_chart(
                 hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
             )
         )
-    
+
     # Update layout
     fig.update_layout(
         title=f"Regular Tax and AMT by Income Level ({state_code})",
@@ -505,27 +496,270 @@ def display_regular_tax_and_amt_chart(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 1000000],
+            range=[0, 150000],
         ),
         yaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 500000],  # Adjust as needed to show your data
+            range=[0, 150000],  # Adjust as needed to show your data
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",
         plot_bgcolor="white",
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="right",
-            x=0.99
-        )
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
-    
+
     # Format the chart
     fig = format_fig(fig)
-    
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def display_taxable_income_and_amti_chart(
+    state_code,
+    is_married=False,
+    num_children=0,
+    child_ages=[],
+    employment_income=0,
+    qualified_dividend_income=0,
+    long_term_capital_gains=0,
+    short_term_capital_gains=0,
+    deductible_mortgage_interest=0,
+    charitable_cash_donations=0,
+):
+    """
+    Create and display a chart showing regular tax and AMT by income level,
+    comparing current policy vs current law.
+
+    Parameters match those used in calculate_effective_salt_cap_over_earnings.
+
+    The graph shows employment income on x-axis and tax amounts on y-axis.
+    """
+    # Calculate data for Current Law
+    current_law_df = calculate_property_tax_df(
+        state_code=state_code,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        reform_params=None,
+        baseline_scenario="Current Law",
+    )
+
+    # Calculate data for Current Policy
+    current_policy_df = calculate_property_tax_df(
+        state_code=state_code,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        reform_params=None,
+        baseline_scenario="Current Policy",
+    )
+
+    # Create a combined figure
+    fig = go.Figure()
+
+    # Add Current Law lines
+    if not current_law_df.empty:
+        # Regular tax under current law (solid blue)
+        fig.add_trace(
+            go.Scatter(
+                x=current_law_df["salt_and_property_tax"],
+                y=current_law_df["taxable_income"],
+                mode="lines",
+                name="Regular Tax (Current Law)",
+                line=dict(color=BLUE, width=2),
+                hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+            )
+        )
+        # AMT under current law (dotted blue)
+        fig.add_trace(
+            go.Scatter(
+                x=current_law_df["salt_and_property_tax"],
+                y=current_law_df["amt_income"],
+                mode="lines",
+                name="AMT (Current Law)",
+                line=dict(color=BLUE, width=2, dash="dot"),
+                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+            )
+        )
+
+    # Add Current Policy lines
+    if not current_policy_df.empty:
+        # Regular tax under current policy (solid gray)
+        fig.add_trace(
+            go.Scatter(
+                x=current_policy_df["salt_and_property_tax"],
+                y=current_policy_df["taxable_income"],
+                mode="lines",
+                name="Regular Tax (Current Policy)",
+                line=dict(color=DARK_GRAY, width=2),
+                hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+            )
+        )
+        # AMT under current policy (dotted gray)
+        fig.add_trace(
+            go.Scatter(
+                x=current_policy_df["salt_and_property_tax"],
+                y=current_policy_df["amt_income"],
+                mode="lines",
+                name="AMT (Current Policy)",
+                line=dict(color=DARK_GRAY, width=2, dash="dot"),
+                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+            )
+        )
+
+    # Update layout
+    fig.update_layout(
+        title=f"Taxable Income and AMTI by SALT ({state_code})",
+        title_font_size=16,
+        xaxis_title="SALT ($)",
+        yaxis_title="Taxable Income ($)",
+        xaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 150000],
+        ),
+        yaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 150000],
+        ),
+        margin=dict(t=80, b=80),
+        hovermode="closest",
+        plot_bgcolor="white",
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+    )
+
+    # Format the chart
+    fig = format_fig(fig)
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def display_income_tax_chart(
+    state_code,
+    is_married=False,
+    num_children=0,
+    child_ages=[],
+    qualified_dividend_income=0,
+    employment_income=0,
+    long_term_capital_gains=0,
+    short_term_capital_gains=0,
+    deductible_mortgage_interest=0,
+    charitable_cash_donations=0,
+    threshold=0.1,
+):
+    """
+    Create and display a chart showing effective SALT cap by income level,
+    comparing current policy vs current law.
+
+
+    The graph shows employment income on x-axis and effective SALT cap on y-axis.
+    """
+    # Calculate data for Current Law
+    current_law_df = calculate_property_tax_df(
+        state_code=state_code,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        reform_params=None,
+        baseline_scenario="Current Law",
+    )
+
+    # Calculate data for Current Policy
+    current_policy_df = calculate_property_tax_df(
+        state_code=state_code,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        reform_params=None,
+        baseline_scenario="Current Policy",
+    )
+
+    # Create a combined figure
+    fig = go.Figure()
+
+    # Add Current Law line
+    if not current_law_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=current_law_df["salt_and_property_tax"],
+                y=current_law_df["income_tax"],
+                mode="lines",
+                name="Current Law (2026)",
+                line=dict(color=BLUE, width=2),
+                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
+            )
+        )
+
+    # Add Current Policy line
+    if not current_policy_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=current_policy_df["salt_and_property_tax"],
+                y=current_policy_df["income_tax"],
+                mode="lines",
+                name="Current Policy (2025)",
+                line=dict(color="#777777", width=2, dash="dash"),
+                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
+            )
+        )
+
+    # Update layout
+    fig.update_layout(
+        title=f"Income Tax by SALT ({state_code})",
+        title_font_size=16,
+        xaxis_title="SALT ($)",
+        yaxis_title="Income Tax ($)",
+        xaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 150000],
+        ),
+        yaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 150000],
+        ),
+        margin=dict(t=80, b=80),
+        hovermode="closest",
+        plot_bgcolor="white",
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+    )
+
+    # Format the chart
+    fig = format_fig(fig)
+
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)

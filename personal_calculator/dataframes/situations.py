@@ -74,6 +74,7 @@ def create_situation_with_one_property_tax_axes(
     )
     return situation_with_one_axes
 
+
 def create_situation_with_one_income_axes(
     state_code,
     is_married,
@@ -194,7 +195,14 @@ def create_situation_with_two_axes(
             },
             # Set up axes for property taxes and employment income
             "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": -50000, "max": 140000}],
+                [
+                    {
+                        "name": "real_estate_taxes",
+                        "count": 300,
+                        "min": -50000,
+                        "max": 140000,
+                    }
+                ],
                 [
                     {
                         "name": "employment_income",
