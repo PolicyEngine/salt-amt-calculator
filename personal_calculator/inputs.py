@@ -16,7 +16,6 @@ def create_personal_inputs():
             "qualified_dividend_income": 0,
             "long_term_capital_gains": 0,
             "short_term_capital_gains": 0,
-            "real_estate_taxes": 0,
             "deductible_mortgage_interest": 15_000,
             "charitable_cash_donations": 10_000,
         }
@@ -47,14 +46,6 @@ def create_personal_inputs():
         help="Each child is assumed to be 10 years old. The AMT exemption amount increases with each child.",
     )
 
-    real_estate_taxes = st.number_input(
-        "How much do you pay in property taxes?",
-        min_value=0,
-        max_value=1_000_000,
-        value=0,
-        step=500,
-        help="Property taxes are deductible through your SALT deduction.",
-    )
     expense_col1, expense_col2 = st.columns(2)
     with expense_col1:
         mortgage_interest = st.number_input(
@@ -126,7 +117,6 @@ def create_personal_inputs():
         "qualified_dividend_income": qualified_dividends,
         "long_term_capital_gains": long_term_gains,
         "short_term_capital_gains": short_term_gains,
-        "real_estate_taxes": real_estate_taxes,
         "deductible_mortgage_interest": mortgage_interest,
         "charitable_cash_donations": charitable_cash_donations,
     }

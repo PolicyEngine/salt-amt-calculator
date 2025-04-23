@@ -358,7 +358,6 @@ with st.sidebar:
                     short_term_capital_gains=personal_inputs[
                         "short_term_capital_gains"
                     ],
-                    real_estate_taxes=personal_inputs["real_estate_taxes"],
                     deductible_mortgage_interest=personal_inputs[
                         "deductible_mortgage_interest"
                     ],

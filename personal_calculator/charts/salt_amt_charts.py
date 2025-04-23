@@ -82,7 +82,7 @@ def display_salt_deduction_comparison_chart(
                 mode="lines",
                 name="Current Law (2026)",
                 line=dict(color=BLUE, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>SALT Deduction: $%{y:,.0f}<extra></extra>",
             )
         )
 
@@ -95,7 +95,7 @@ def display_salt_deduction_comparison_chart(
                 mode="lines",
                 name="Current Policy (2025)",
                 line=dict(color="#777777", width=2, dash="dash"),
-                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>SALT Deduction: $%{y:,.0f}<extra></extra>",
             )
         )
 
@@ -456,7 +456,7 @@ def display_regular_tax_and_amt_chart(
                 mode="lines",
                 name="AMT (Current Law)",
                 line=dict(color=BLUE, width=2, dash="dot"),
-                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
             )
         )
 
