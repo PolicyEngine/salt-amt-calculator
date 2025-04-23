@@ -57,15 +57,14 @@ def create_situation_with_one_property_tax_axes(
         {
             "families": {"your family": {"members": members.copy()}},
             "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {
-                "members": members.copy(),
-                "state_and_local_sales_or_income_tax": {"2026": 0}}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy()
+            "tax_units": {
+                "your tax unit": {
+                    "members": members.copy(),
+                    "state_and_local_sales_or_income_tax": {"2026": 0},
                 }
             },
+            "spm_units": {"your household": {"members": members.copy()}},
+            "households": {"your household": {"members": members.copy()}},
             # Set up axes for property taxes only
             "axes": [
                 [{"name": "real_estate_taxes", "count": 300, "min": 0, "max": 140000}],
@@ -122,15 +121,14 @@ def create_situation_with_one_income_axes(
         {
             "families": {"your family": {"members": members.copy()}},
             "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {
-                "members": members.copy(),
-                "state_and_local_sales_or_income_tax": {"2026": 0}}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy()
+            "tax_units": {
+                "your tax unit": {
+                    "members": members.copy(),
+                    "state_and_local_sales_or_income_tax": {"2026": 0},
                 }
             },
+            "spm_units": {"your household": {"members": members.copy()}},
+            "households": {"your household": {"members": members.copy()}},
             # Set up axes for property taxes only
             "axes": [
                 [{"name": "employment_income", "count": 300, "min": 0, "max": 1000000}],
@@ -184,15 +182,14 @@ def create_situation_with_two_axes(
         {
             "families": {"your family": {"members": members.copy()}},
             "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {
-                "members": members.copy(),
-                "state_and_local_sales_or_income_tax": {"2026": 0}}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy()
+            "tax_units": {
+                "your tax unit": {
+                    "members": members.copy(),
+                    "state_and_local_sales_or_income_tax": {"2026": 0},
                 }
             },
+            "spm_units": {"your household": {"members": members.copy()}},
+            "households": {"your household": {"members": members.copy()}},
             # Set up axes for property taxes and employment income
             "axes": [
                 [

@@ -13,6 +13,7 @@ from personal_calculator.dataframes.situations import (
     create_situation_with_two_axes,
 )
 
+
 @st.cache_data
 def calculate_property_tax_df(
     is_married,
@@ -103,6 +104,7 @@ def calculate_property_tax_df(
 
     return property_tax_df
 
+
 @st.cache_data
 def calculate_income_df(
     is_married,
@@ -190,6 +192,7 @@ def calculate_income_df(
     income_df["policy"] = baseline_scenario if reform_params is None else "Reform"
 
     return income_df
+
 
 @st.cache_data
 def calculate_effective_salt_cap_over_earnings(

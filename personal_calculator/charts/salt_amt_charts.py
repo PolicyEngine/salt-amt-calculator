@@ -744,6 +744,7 @@ def display_income_tax_chart(
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
+
 def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=150000):
     """
     Create a line graph showing the maximum SALT values where marginal_property_tax_rate <= threshold
