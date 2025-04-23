@@ -5,11 +5,10 @@ from policyengine_us import Simulation
 from policyengine_core.reforms import Reform
 from constants import CURRENT_POLICY_PARAMS
 from personal_calculator.reforms import PolicyReforms
-from policyengine_core.charts import format_fig
 from constants import BLUE, DARK_GRAY
 
 
-def create_situation_with_one_axes(
+def create_situation_with_one_property_tax_axes(
     state_code,
     is_married,
     num_children,
@@ -74,77 +73,7 @@ def create_situation_with_one_axes(
     return situation_with_one_axes
 
 
-def create_situation_with_two_axes(
-    state_code,
-    is_married,
-    num_children,
-    child_ages,
-    qualified_dividend_income,
-    long_term_capital_gains,
-    short_term_capital_gains,
-    deductible_mortgage_interest,
-    charitable_cash_donations,
-):
-    """
-    Create a situation dictionary with two axes (real_estate_taxes and employment_income).
-    """
-    situation_with_two_axes = {
-        "people": {
-            "you": {
-                "age": {"2026": 40},
-                "qualified_dividend_income": {"2026": qualified_dividend_income},
-                "long_term_capital_gains": {"2026": long_term_capital_gains},
-                "short_term_capital_gains": {"2026": short_term_capital_gains},
-                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
-                "charitable_cash_donations": {"2026": charitable_cash_donations},
-            }
-        }
-    }
-    members = ["you"]
-
-    if is_married:
-        situation_with_two_axes["people"]["spouse"] = {
-            "age": {"2026": 40},
-        }
-        members.append("spouse")
-
-    for i in range(num_children):
-        child_id = f"child_{i}"
-        situation_with_two_axes["people"][child_id] = {
-            "age": {"2026": child_ages[i]},
-        }
-        members.append(child_id)
-
-    situation_with_two_axes.update(
-        {
-            "families": {"your family": {"members": members.copy()}},
-            "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
-            "spm_units": {"your household": {"members": members.copy()}},
-            "households": {
-                "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
-                }
-            },
-            # Set up axes for property taxes and employment income
-            "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": -50000, "max": 140000}],
-                [
-                    {
-                        "name": "employment_income",
-                        "count": 1400,
-                        "min": 0,
-                        "max": 1000000,
-                    }
-                ],
-            ],
-        }
-    )
-    return situation_with_two_axes
-
-
-def calculate_single_axis_effective_salt_cap(
+def calculate_property_tax_df(
     state_code,
     is_married,
     num_children,
@@ -162,7 +91,7 @@ def calculate_single_axis_effective_salt_cap(
     Calculate effective SALT cap for a single axis situation (fixed employment income)
     """
     # Create situation with employment income fixed
-    situation = create_situation_with_one_axes(
+    situation = create_situation_with_one_property_tax_axes(
         state_code,
         is_married,
         num_children,
@@ -236,6 +165,234 @@ def calculate_single_axis_effective_salt_cap(
     effective_caps_df = calculate_marginal_rate(effective_caps_df)
 
     return effective_caps_df
+
+def create_situation_with_one_income_axes(
+    state_code,
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    real_estate_taxes,
+):
+    """
+    Create a situation dictionary with one axis (real_estate_taxes),
+    using a fixed employment income value.
+    """
+    situation_with_one_axes = {
+        "people": {
+            "you": {
+                "age": {"2026": 40},
+                "qualified_dividend_income": {"2026": qualified_dividend_income},
+                "long_term_capital_gains": {"2026": long_term_capital_gains},
+                "short_term_capital_gains": {"2026": short_term_capital_gains},
+                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
+                "charitable_cash_donations": {"2026": charitable_cash_donations},
+                "real_estate_taxes": {"2026": real_estate_taxes},
+            }
+        }
+    }
+    members = ["you"]
+
+    if is_married:
+        situation_with_one_axes["people"]["spouse"] = {
+            "age": {"2026": 40},
+        }
+        members.append("spouse")
+
+    for i in range(num_children):
+        child_id = f"child_{i}"
+        situation_with_one_axes["people"][child_id] = {
+            "age": {"2026": child_ages[i]},
+        }
+        members.append(child_id)
+
+    situation_with_one_axes.update(
+        {
+            "families": {"your family": {"members": members.copy()}},
+            "marital_units": {"your marital unit": {"members": members.copy()}},
+            "tax_units": {"your tax unit": {"members": members.copy()}},
+            "spm_units": {"your household": {"members": members.copy()}},
+            "households": {
+                "your household": {
+                    "members": members.copy(),
+                    "state_name": {"2026": state_code},
+                }
+            },
+            # Set up axes for property taxes only
+            "axes": [
+                [{"name": "employment_income", "count": 300, "min": 0, "max": 1000000}],
+            ],
+        }
+    )
+    return situation_with_one_axes
+
+
+def calculate_income_df(
+    state_code,
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    real_estate_taxes,
+    reform_params,
+    baseline_scenario,
+):
+    """
+    Calculate effective SALT cap for a single axis situation (fixed employment income)
+    """
+    # Create situation with employment income fixed
+    situation = create_situation_with_one_income_axes(
+        state_code,
+        is_married,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        real_estate_taxes,
+    )
+
+    # Create simulation based on baseline scenario
+    if baseline_scenario == "Current Law":
+        simulation = Simulation(situation=situation)
+    elif baseline_scenario == "Current Policy":
+        current_policy_reform = PolicyReforms.policy_reforms(CURRENT_POLICY_PARAMS)
+        reform = Reform.from_dict(current_policy_reform, country_id="us")
+        simulation = Simulation(situation=situation, reform=reform)
+    elif reform_params:
+        reform_dict = PolicyReforms.policy_reforms(reform_params)
+        reform = Reform.from_dict(reform_dict, country_id="us")
+        simulation = Simulation(situation=situation, reform=reform)
+    else:
+        raise ValueError(f"Invalid scenario configuration")
+
+    # Calculate values along the axis
+    employment_income = simulation.calculate(
+        "employment_income", map_to="household", period=2026
+    )
+
+    regular_tax = simulation.calculate(
+        "regular_tax_before_credits", map_to="household", period=2026
+    )
+    amt = simulation.calculate("amt_base_tax", map_to="household", period=2026)
+    salt_deduction = simulation.calculate(
+        "salt_deduction", map_to="household", period=2026
+    )
+    sales_or_income_tax = simulation.calculate(
+        "state_and_local_sales_or_income_tax", map_to="household", period=2026
+    )
+    salt_and_property_tax = real_estate_taxes + sales_or_income_tax
+    income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
+    taxable_income = simulation.calculate("taxable_income", map_to="household", period=2026)
+    amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
+
+    # Create DataFrame with data
+    income_df = pd.DataFrame(
+        {
+            "employment_income": employment_income,
+            "real_estate_taxes": real_estate_taxes,
+            "regular_tax": regular_tax,
+            "amt": amt,
+            "salt_deduction": salt_deduction,
+            "sales_or_income_tax": sales_or_income_tax,
+            "amt_binds": amt > regular_tax,
+            "salt_and_property_tax": salt_and_property_tax,
+            "income_tax": income_tax,
+            "taxable_income": taxable_income,
+            "amt_income": amt_income,
+        }
+    )
+
+    # Add policy information
+    income_df["policy"] = (
+        baseline_scenario if reform_params is None else "Reform"
+    )
+    income_df["state"] = state_code
+
+
+    return income_df
+
+def create_situation_with_two_axes(
+    state_code,
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+):
+    """
+    Create a situation dictionary with two axes (real_estate_taxes and employment_income).
+    """
+    situation_with_two_axes = {
+        "people": {
+            "you": {
+                "age": {"2026": 40},
+                "qualified_dividend_income": {"2026": qualified_dividend_income},
+                "long_term_capital_gains": {"2026": long_term_capital_gains},
+                "short_term_capital_gains": {"2026": short_term_capital_gains},
+                "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
+                "charitable_cash_donations": {"2026": charitable_cash_donations},
+            }
+        }
+    }
+    members = ["you"]
+
+    if is_married:
+        situation_with_two_axes["people"]["spouse"] = {
+            "age": {"2026": 40},
+        }
+        members.append("spouse")
+
+    for i in range(num_children):
+        child_id = f"child_{i}"
+        situation_with_two_axes["people"][child_id] = {
+            "age": {"2026": child_ages[i]},
+        }
+        members.append(child_id)
+
+    situation_with_two_axes.update(
+        {
+            "families": {"your family": {"members": members.copy()}},
+            "marital_units": {"your marital unit": {"members": members.copy()}},
+            "tax_units": {"your tax unit": {"members": members.copy()}},
+            "spm_units": {"your household": {"members": members.copy()}},
+            "households": {
+                "your household": {
+                    "members": members.copy(),
+                    "state_name": {"2026": state_code},
+                }
+            },
+            # Set up axes for property taxes and employment income
+            "axes": [
+                [{"name": "real_estate_taxes", "count": 300, "min": -50000, "max": 140000}],
+                [
+                    {
+                        "name": "employment_income",
+                        "count": 1400,
+                        "min": 0,
+                        "max": 1000000,
+                    }
+                ],
+            ],
+        }
+    )
+    return situation_with_two_axes
+
+
+
 
 
 def calculate_effective_salt_cap_over_earnings(
