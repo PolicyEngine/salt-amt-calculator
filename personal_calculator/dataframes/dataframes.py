@@ -356,7 +356,7 @@ def process_effective_cap_over_property_tax_data(effective_cap_df):
 
     # Calculate the marginal property tax rate for each income level
     effective_cap_df = (
-        effective_cap_df.groupby(["policy", "salt_and_property_tax"])
+        effective_cap_df.groupby(["policy", "employment_income"])
         .apply(calculate_marginal_rate)
         .reset_index(drop=True)
     )

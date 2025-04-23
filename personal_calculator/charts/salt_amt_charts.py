@@ -101,10 +101,10 @@ def display_salt_deduction_comparison_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Effective SALT Cap by Income Level ({state_code})",
+        title=f"SALT Deduction by SALT ({state_code})",
         title_font_size=16,
-        xaxis_title="Employment Income ($)",
-        yaxis_title="Effective SALT Cap ($)",
+        xaxis_title="SALT ($)",
+        yaxis_title="SALT Deduction ($)",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -327,7 +327,7 @@ def display_effective_salt_cap(
 ):
 
     # Calculate for single axis (fixed employment income)
-    result_df = create_situation_with_one_property_tax_axes(
+    result_df = calculate_property_tax_df(
         state_code,
         is_married,
         num_children,
@@ -338,8 +338,8 @@ def display_effective_salt_cap(
         deductible_mortgage_interest,
         charitable_cash_donations,
         employment_income,
-        baseline_scenario="Current Law",
         reform_params=reform_params,
+        baseline_scenario=policy or "Current Law",
     )
 
     # Process the data to calculate marginal rates
@@ -371,7 +371,7 @@ def display_effective_salt_cap(
     st.markdown(
         f"""
         <div style="text-align: center; margin: 5px 0;">
-            <h3 style="color: #777777;">Your household faces {f'an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{cap_display}</span>' if has_cap else 'no effective SALT cap'} under {policy}</h3>
+            <h3 style="color: #777777;">Your household faces {f'an effective SALT cap of <span style="color: {BLUE}; font-weight: bold;">{cap_display}</span>' if has_cap else 'no effective SALT cap'} under {policy or "Current Law"}</h3>
         </div>
         """,
         unsafe_allow_html=True,
@@ -489,7 +489,7 @@ def display_regular_tax_and_amt_chart(
     fig.update_layout(
         title=f"Regular Tax and AMT by Income Level ({state_code})",
         title_font_size=16,
-        xaxis_title="Employment Income ($)",
+        xaxis_title="SALT ($)",
         yaxis_title="Tax Amount ($)",
         xaxis=dict(
             tickformat="$,.0f",
@@ -573,51 +573,51 @@ def display_taxable_income_and_amti_chart(
 
     # Add Current Law lines
     if not current_law_df.empty:
-        # Regular tax under current law (solid blue)
+        # Taxable Income under current law (solid blue)
         fig.add_trace(
             go.Scatter(
                 x=current_law_df["salt_and_property_tax"],
                 y=current_law_df["taxable_income"],
                 mode="lines",
-                name="Regular Tax (Current Law)",
+                name="Taxable Income (Current Law)",
                 line=dict(color=BLUE, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
             )
         )
-        # AMT under current law (dotted blue)
+        # AMTI under current law (dotted blue)
         fig.add_trace(
             go.Scatter(
                 x=current_law_df["salt_and_property_tax"],
                 y=current_law_df["amt_income"],
                 mode="lines",
-                name="AMT (Current Law)",
+                name="AMTI (Current Law)",
                 line=dict(color=BLUE, width=2, dash="dot"),
-                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
             )
         )
 
     # Add Current Policy lines
     if not current_policy_df.empty:
-        # Regular tax under current policy (solid gray)
+        # Taxable Income under current policy (solid gray)
         fig.add_trace(
             go.Scatter(
                 x=current_policy_df["salt_and_property_tax"],
                 y=current_policy_df["taxable_income"],
                 mode="lines",
-                name="Regular Tax (Current Policy)",
+                name="Taxable Income (Current Policy)",
                 line=dict(color=DARK_GRAY, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
             )
         )
-        # AMT under current policy (dotted gray)
+        # AMTI under current policy (dotted gray)
         fig.add_trace(
             go.Scatter(
                 x=current_policy_df["salt_and_property_tax"],
                 y=current_policy_df["amt_income"],
                 mode="lines",
-                name="AMT (Current Policy)",
+                name="AMTI (Current Policy)",
                 line=dict(color=DARK_GRAY, width=2, dash="dot"),
-                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
             )
         )
 

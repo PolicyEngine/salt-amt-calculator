@@ -468,10 +468,10 @@ elif page == "How SALT affects taxes":
 
     # Define the list of available charts
     available_charts = [
-        "SALT Cap Comparison",
         "SALT Deduction Comparison",
-        "Effective SALT Cap Graph",
-        "Effective SALT Cap",
+        "Taxable Income and AMTI Comparison",
+        "Regular Tax and AMT Comparison",
+        "Income Tax Comparison",
     ]
 
     inputs_changed = (
@@ -503,6 +503,7 @@ elif page == "How SALT affects taxes":
                     state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
+                    employment_income=inputs_to_use["employment_income"],
                     child_ages=inputs_to_use["child_ages"],
                     qualified_dividend_income=inputs_to_use[
                         "qualified_dividend_income"
@@ -526,6 +527,7 @@ elif page == "How SALT affects taxes":
                     qualified_dividend_income=inputs_to_use[
                         "qualified_dividend_income"
                     ],
+                    employment_income=inputs_to_use["employment_income"],
                     long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                     short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                     deductible_mortgage_interest=inputs_to_use[
@@ -542,6 +544,7 @@ elif page == "How SALT affects taxes":
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     child_ages=inputs_to_use["child_ages"],
+                    employment_income=inputs_to_use["employment_income"],
                     qualified_dividend_income=inputs_to_use[
                         "qualified_dividend_income"
                     ],
@@ -560,6 +563,7 @@ elif page == "How SALT affects taxes":
                     state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
+                    employment_income=inputs_to_use["employment_income"],
                     child_ages=inputs_to_use["child_ages"],
                     qualified_dividend_income=inputs_to_use[
                         "qualified_dividend_income"
@@ -646,6 +650,7 @@ elif page == "The Effective SALT Cap":
             is_married=inputs_to_use["is_married"],
             num_children=inputs_to_use["num_children"],
             child_ages=inputs_to_use["child_ages"],
+            employment_income=inputs_to_use["employment_income"],
             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
@@ -665,7 +670,7 @@ elif page == "The Effective SALT Cap":
             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             policy="Current Law",
         )
-        display_regular_tax_and_amt_chart(
+        display_effective_salt_cap(
             state_code=inputs_to_use["state_code"],
             employment_income=inputs_to_use["employment_income"],
             is_married=inputs_to_use["is_married"],
