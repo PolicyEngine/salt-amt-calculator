@@ -4,10 +4,23 @@ from constants import STATE_CODES
 
 def create_personal_inputs():
     """Create inputs for personal information"""
-
+    if "personal_inputs" in st.session_state:
+        defaults = st.session_state.personal_inputs
+    else:
+        defaults = {
+            "is_married": True,
+            "state_code": "NY",
+            "num_children": 0,
+            "child_ages": [],
+            "employment_income": 250_000,
+            "qualified_dividend_income": 0,
+            "long_term_capital_gains": 0,
+            "short_term_capital_gains": 0,
+            "real_estate_taxes": 0,
+            "deductible_mortgage_interest": 15_000,
+            "charitable_cash_donations": 10_000,
+        }
     # Create two main columns for Personal and Income Information
-    personal_col, income_col = st.columns(2)
-
     # Personal Information Section
     st.markdown("### Personal Information")
 
@@ -103,7 +116,8 @@ def create_personal_inputs():
     # Create a list of child ages (all 10 years old)
     child_ages = [10] * num_children if num_children > 0 else []
 
-    return {
+    # Create the input dictionary
+    inputs = {
         "is_married": is_married,
         "state_code": state_code,
         "num_children": num_children,
@@ -116,3 +130,5 @@ def create_personal_inputs():
         "deductible_mortgage_interest": mortgage_interest,
         "charitable_cash_donations": charitable_cash_donations,
     }
+    
+    return inputs

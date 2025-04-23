@@ -129,7 +129,7 @@ def create_situation_with_two_axes(
             },
             # Set up axes for property taxes and employment income
             "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": -25000, "max": 140000}],
+                [{"name": "real_estate_taxes", "count": 300, "min": -50000, "max": 140000}],
                 [
                     {
                         "name": "employment_income",
@@ -206,6 +206,8 @@ def calculate_single_axis_effective_salt_cap(
     )
     salt_and_property_tax = property_taxes_axis + sales_or_income_tax
     income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
+    taxable_income = simulation.calculate("taxable_income", map_to="household", period=2026)
+    amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
 
     # Create DataFrame with data
     effective_caps_df = pd.DataFrame(
@@ -219,6 +221,8 @@ def calculate_single_axis_effective_salt_cap(
             "amt_binds": amt > regular_tax,
             "salt_and_property_tax": salt_and_property_tax,
             "income_tax": income_tax,
+            "taxable_income": taxable_income,
+            "amt_income": amt_income,
         }
     )
 
@@ -297,6 +301,8 @@ def calculate_effective_salt_cap_over_earnings(
     )
     salt_and_property_tax = property_taxes_axis + sales_or_income_tax
     income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
+    taxable_income = simulation.calculate("taxable_income", map_to="household", period=2026)
+    amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
 
     # Create DataFrame with data
     effective_caps_over_earnings = pd.DataFrame(
@@ -310,6 +316,8 @@ def calculate_effective_salt_cap_over_earnings(
             "amt_binds": amt > regular_tax,
             "salt_and_property_tax": salt_and_property_tax,
             "income_tax": income_tax,
+            "taxable_income": taxable_income,
+            "amt_income": amt_income,
         }
     )
 
