@@ -1,3 +1,4 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -12,7 +13,7 @@ from personal_calculator.dataframes.situations import (
     create_situation_with_two_axes,
 )
 
-
+@st.cache_data
 def calculate_property_tax_df(
     state_code,
     is_married,
@@ -105,7 +106,7 @@ def calculate_property_tax_df(
 
     return property_tax_df
 
-
+@st.cache_data
 def calculate_income_df(
     state_code,
     is_married,
@@ -196,7 +197,7 @@ def calculate_income_df(
 
     return income_df
 
-
+@st.cache_data
 def calculate_effective_salt_cap_over_earnings(
     state_code,
     is_married,
@@ -327,82 +328,6 @@ def calculate_marginal_rate(group):
     return group
 
 
-def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=150000):
-    """
-    Create a line graph showing the maximum SALT values where marginal_property_tax_rate <= threshold
-    for each employment income increment.
-
-    Parameters:
-    -----------
-    df : pandas DataFrame
-        The dataframe containing the tax data
-    policy : str
-        Policy type (default: 'Current Law')
-    threshold : float
-        Threshold for marginal_property_tax_rate to be considered uncapped (default: 0.1)
-    y_max : int
-        Maximum value for y-axis (default: 150000)
-    """
-    # Filter to only include the specified policy
-    df_filtered = df[df["policy"] == policy]
-
-    # Filter data where marginal_property_tax_rate > threshold
-    state_data = df_filtered[df_filtered["marginal_property_tax_rate"] > threshold]
-
-    # Sort by employment income for line plotting
-    state_data = state_data.sort_values("employment_income")
-
-    # For each unique employment income, find the maximum SALT value
-    max_salt_by_income = (
-        state_data.groupby("employment_income")["salt_and_property_tax"]
-        .max()
-        .reset_index()
-    )
-
-    # Sort by income for proper line plotting
-    max_salt_by_income = max_salt_by_income.sort_values("employment_income")
-
-    # Create figure
-    fig = go.Figure()
-
-    # Add line trace
-    fig.add_trace(
-        go.Scatter(
-            x=max_salt_by_income["employment_income"],
-            y=max_salt_by_income["salt_and_property_tax"],
-            mode="lines",
-            line=dict(color=BLUE, width=1.5),
-            name="Effective SALT Cap",
-            hovertemplate="Income: $%{x:,.0f}<br>SALT: $%{y:,.0f}<extra></extra>",
-        )
-    )
-
-    # Update layout
-    fig.update_layout(
-        title=f"Effective SALT cap under {policy}",
-        title_font_size=16,
-        xaxis_title="Employment Income ($)",
-        yaxis_title="SALT ($)",
-        xaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 1000000],
-        ),
-        yaxis=dict(
-            tickformat="$,.0f",
-            range=[0, min(y_max, max_salt_by_income["employment_income"].max() * 1.1)],
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-        ),
-        margin=dict(t=100, b=100),
-        hovermode="closest",
-        plot_bgcolor="white",
-    )
-
-    return fig
-
-
 def process_effective_cap_data(effective_cap_df):
     """
     Process the effective cap data by calculating marginal rates for each income level
@@ -427,16 +352,16 @@ def process_effective_cap_over_property_tax_data(effective_cap_df):
     Process the effective cap data by calculating marginal rates for each income level
     """
     # Sort the dataframe
-    processed_df = effective_cap_df.sort_values(by=["policy", "employment_income"])
+    # processed_df = effective_cap_df.sort_values(by=["policy", "employment_income"])
 
     # Calculate the marginal property tax rate for each income level
-    processed_df = (
-        processed_df.groupby(["policy", "employment_income"])
+    effective_cap_df = (
+        effective_cap_df.groupby(["policy", "salt_and_property_tax"])
         .apply(calculate_marginal_rate)
         .reset_index(drop=True)
     )
 
-    return processed_df
+    return effective_cap_df
 
 
 def create_max_salt_dataset(df, threshold=0.1):

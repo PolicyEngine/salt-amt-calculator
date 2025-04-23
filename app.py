@@ -28,6 +28,7 @@ from personal_calculator.charts.salt_amt_charts import (
     display_regular_tax_and_amt_chart,
     display_taxable_income_and_amti_chart,
     display_income_tax_chart,
+    display_effective_salt_cap_graph,
 )
 
 # Set up the Streamlit page
@@ -388,6 +389,7 @@ with st.sidebar:
             "Introduction",
             "How SALT affects taxes",
             "The Effective SALT Cap",
+            "How the Effective SALT Cap varies with earnings",
             "Budgetary and distributional impacts",
         ],
         key="sidebar_nav",
@@ -395,6 +397,7 @@ with st.sidebar:
             "Introduction",
             "How SALT affects taxes",
             "The Effective SALT Cap",
+            "How the Effective SALT Cap varies with earnings",
             "Budgetary and distributional impacts",
         ].index(st.session_state.nav_page),
     )
@@ -674,6 +677,46 @@ elif page == "The Effective SALT Cap":
             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             policy="Current Policy",
+        )
+    else:
+        st.info(
+            "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts."
+        )
+
+    # Add a button to go to the next section
+    st.markdown("---")
+    if st.button("Go to Budgetary and distributional impacts →", type="primary"):
+        # Set the page in session state and rerun to navigate
+        st.session_state.nav_page = "Budgetary and distributional impacts"
+        st.rerun()
+
+elif page == "How the Effective SALT Cap varies with earnings":
+    # Display baseline impacts section first
+    inputs_changed = (
+        "personal_inputs" in st.session_state
+        and "last_calculated_inputs" in st.session_state
+        and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
+    )
+
+    calculation_is_valid = (
+        "calculate_clicked" in st.session_state
+        and st.session_state.calculate_clicked
+        and not inputs_changed
+    )
+
+    if calculation_is_valid:
+        inputs_to_use = st.session_state.last_calculated_inputs
+        display_effective_salt_cap_graph(
+            state_code=inputs_to_use["state_code"],
+            is_married=inputs_to_use["is_married"],
+            num_children=inputs_to_use["num_children"],
+            child_ages=inputs_to_use["child_ages"],
+            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+            policy="Current Law",
         )
     else:
         st.info(

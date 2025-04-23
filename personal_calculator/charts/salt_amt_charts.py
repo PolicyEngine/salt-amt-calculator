@@ -8,9 +8,9 @@ from personal_calculator.dataframes.dataframes import (
     calculate_property_tax_df,
     calculate_effective_salt_cap_over_earnings,
     process_effective_cap_data,
-    create_max_salt_line_graph,
     calculate_income_df,
     create_max_salt_dataset,
+    process_effective_cap_over_property_tax_data,
 )
 from personal_calculator.dataframes.situations import (
     create_situation_with_one_property_tax_axes,
@@ -30,7 +30,6 @@ def display_salt_deduction_comparison_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
-    threshold=0.1,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
@@ -344,7 +343,7 @@ def display_effective_salt_cap(
     )
 
     # Process the data to calculate marginal rates
-    processed_df = process_effective_cap_data(result_df)
+    processed_df = process_effective_cap_over_property_tax_data(result_df)
 
     # Find the effective cap (maximum SALT where marginal rate > threshold)
     filtered_df = processed_df[processed_df["marginal_property_tax_rate"] > threshold]
@@ -763,3 +762,78 @@ def display_income_tax_chart(
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
+
+def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=150000):
+    """
+    Create a line graph showing the maximum SALT values where marginal_property_tax_rate <= threshold
+    for each employment income increment.
+
+    Parameters:
+    -----------
+    df : pandas DataFrame
+        The dataframe containing the tax data
+    policy : str
+        Policy type (default: 'Current Law')
+    threshold : float
+        Threshold for marginal_property_tax_rate to be considered uncapped (default: 0.1)
+    y_max : int
+        Maximum value for y-axis (default: 150000)
+    """
+    # Filter to only include the specified policy
+    df_filtered = df[df["policy"] == policy]
+
+    # Filter data where marginal_property_tax_rate > threshold
+    state_data = df_filtered[df_filtered["marginal_property_tax_rate"] > threshold]
+
+    # Sort by employment income for line plotting
+    state_data = state_data.sort_values("employment_income")
+
+    # For each unique employment income, find the maximum SALT value
+    max_salt_by_income = (
+        state_data.groupby("employment_income")["salt_and_property_tax"]
+        .max()
+        .reset_index()
+    )
+
+    # Sort by income for proper line plotting
+    max_salt_by_income = max_salt_by_income.sort_values("employment_income")
+
+    # Create figure
+    fig = go.Figure()
+
+    # Add line trace
+    fig.add_trace(
+        go.Scatter(
+            x=max_salt_by_income["employment_income"],
+            y=max_salt_by_income["salt_and_property_tax"],
+            mode="lines",
+            line=dict(color=BLUE, width=1.5),
+            name="Effective SALT Cap",
+            hovertemplate="Income: $%{x:,.0f}<br>SALT: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Update layout
+    fig.update_layout(
+        title=f"Effective SALT cap under {policy}",
+        title_font_size=16,
+        xaxis_title="Employment Income ($)",
+        yaxis_title="SALT ($)",
+        xaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 1000000],
+        ),
+        yaxis=dict(
+            tickformat="$,.0f",
+            range=[0, min(y_max, max_salt_by_income["employment_income"].max() * 1.1)],
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+        ),
+        margin=dict(t=100, b=100),
+        hovermode="closest",
+        plot_bgcolor="white",
+    )
+
+    return fig
