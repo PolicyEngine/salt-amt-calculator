@@ -9,7 +9,6 @@ def create_personal_inputs():
     else:
         defaults = {
             "is_married": True,
-            "state_code": "NY",
             "num_children": 0,
             "child_ages": [],
             "employment_income": 250_000,
@@ -22,14 +21,6 @@ def create_personal_inputs():
     # Create two main columns for Personal and Income Information
     # Personal Information Section
     st.markdown("### Personal Information")
-
-    # Filing status and state in same row
-    state_code = st.selectbox(
-        "What state do you live in?",
-        STATE_CODES,
-        index=STATE_CODES.index("CA"),
-        help="State income tax varies by state and will impact your SALT deduction.",
-    )
 
     # Marriage status and ages
     is_married = st.checkbox(
@@ -110,7 +101,6 @@ def create_personal_inputs():
     # Create the input dictionary
     inputs = {
         "is_married": is_married,
-        "state_code": state_code,
         "num_children": num_children,
         "child_ages": child_ages,
         "employment_income": employment_income,

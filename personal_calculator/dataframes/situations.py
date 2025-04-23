@@ -9,7 +9,6 @@ from constants import BLUE, DARK_GRAY
 
 
 def create_situation_with_one_property_tax_axes(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -58,12 +57,13 @@ def create_situation_with_one_property_tax_axes(
         {
             "families": {"your family": {"members": members.copy()}},
             "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
+            "tax_units": {"your tax unit": {
+                "members": members.copy(),
+                "state_and_local_sales_or_income_tax": {"2026": 0}}},
             "spm_units": {"your household": {"members": members.copy()}},
             "households": {
                 "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
+                    "members": members.copy()
                 }
             },
             # Set up axes for property taxes only
@@ -76,7 +76,6 @@ def create_situation_with_one_property_tax_axes(
 
 
 def create_situation_with_one_income_axes(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -123,12 +122,13 @@ def create_situation_with_one_income_axes(
         {
             "families": {"your family": {"members": members.copy()}},
             "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
+            "tax_units": {"your tax unit": {
+                "members": members.copy(),
+                "state_and_local_sales_or_income_tax": {"2026": 0}}},
             "spm_units": {"your household": {"members": members.copy()}},
             "households": {
                 "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
+                    "members": members.copy()
                 }
             },
             # Set up axes for property taxes only
@@ -141,7 +141,6 @@ def create_situation_with_one_income_axes(
 
 
 def create_situation_with_two_axes(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -185,12 +184,13 @@ def create_situation_with_two_axes(
         {
             "families": {"your family": {"members": members.copy()}},
             "marital_units": {"your marital unit": {"members": members.copy()}},
-            "tax_units": {"your tax unit": {"members": members.copy()}},
+            "tax_units": {"your tax unit": {
+                "members": members.copy(),
+                "state_and_local_sales_or_income_tax": {"2026": 0}}},
             "spm_units": {"your household": {"members": members.copy()}},
             "households": {
                 "your household": {
-                    "members": members.copy(),
-                    "state_name": {"2026": state_code},
+                    "members": members.copy()
                 }
             },
             # Set up axes for property taxes and employment income

@@ -1,5 +1,4 @@
 def create_situation(
-    state_code,
     employment_income,
     is_married,
     num_children,
@@ -26,7 +25,6 @@ def create_situation(
         "households": {
             "household": {
                 "members": ["head"],
-                "state_code": {"2026": state_code},
             }
         },
         "tax_units": {

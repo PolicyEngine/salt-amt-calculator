@@ -15,7 +15,6 @@ from personal_calculator.dataframes.situations import (
 
 @st.cache_data
 def calculate_property_tax_df(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -33,7 +32,6 @@ def calculate_property_tax_df(
     """
     # Create situation with employment income fixed
     situation = create_situation_with_one_property_tax_axes(
-        state_code,
         is_married,
         num_children,
         child_ages,
@@ -102,13 +100,11 @@ def calculate_property_tax_df(
 
     # Add policy information
     property_tax_df["policy"] = baseline_scenario if reform_params is None else "Reform"
-    property_tax_df["state"] = state_code
 
     return property_tax_df
 
 @st.cache_data
 def calculate_income_df(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -126,7 +122,6 @@ def calculate_income_df(
     """
     # Create situation with employment income fixed
     situation = create_situation_with_one_income_axes(
-        state_code,
         is_married,
         num_children,
         child_ages,
@@ -193,13 +188,11 @@ def calculate_income_df(
 
     # Add policy information
     income_df["policy"] = baseline_scenario if reform_params is None else "Reform"
-    income_df["state"] = state_code
 
     return income_df
 
 @st.cache_data
 def calculate_effective_salt_cap_over_earnings(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -216,7 +209,6 @@ def calculate_effective_salt_cap_over_earnings(
     """
     # Create situation with two axes
     situation = create_situation_with_two_axes(
-        state_code,
         is_married,
         num_children,
         child_ages,
@@ -287,7 +279,6 @@ def calculate_effective_salt_cap_over_earnings(
     effective_caps_over_earnings["policy"] = (
         baseline_scenario if reform_params is None else "Reform"
     )
-    effective_caps_over_earnings["state"] = state_code
 
     return effective_caps_over_earnings
 

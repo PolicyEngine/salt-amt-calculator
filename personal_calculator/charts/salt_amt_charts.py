@@ -20,7 +20,6 @@ from personal_calculator.dataframes.situations import (
 
 
 def display_salt_deduction_comparison_chart(
-    state_code,
     is_married=False,
     num_children=0,
     child_ages=[],
@@ -40,7 +39,6 @@ def display_salt_deduction_comparison_chart(
     """
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -56,7 +54,6 @@ def display_salt_deduction_comparison_chart(
 
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -101,7 +98,7 @@ def display_salt_deduction_comparison_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"SALT Deduction by SALT ({state_code})",
+        title=f"SALT Deduction by SALT",
         title_font_size=16,
         xaxis_title="SALT ($)",
         yaxis_title="SALT Deduction ($)",
@@ -109,13 +106,13 @@ def display_salt_deduction_comparison_chart(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 100000],
         ),
         yaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 120000],
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",
@@ -131,7 +128,6 @@ def display_salt_deduction_comparison_chart(
 
 
 def display_salt_cap_comparison_chart(
-    state_code,
     is_married=False,
     num_children=0,
     child_ages=[],
@@ -152,7 +148,6 @@ def display_salt_cap_comparison_chart(
     """
     # Calculate data for Current Law
     current_law_df = calculate_effective_salt_cap_over_earnings(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -167,7 +162,6 @@ def display_salt_cap_comparison_chart(
 
     # Calculate data for Current Policy
     current_policy_df = calculate_effective_salt_cap_over_earnings(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -217,7 +211,7 @@ def display_salt_cap_comparison_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Effective SALT Cap by Income Level ({state_code})",
+        title=f"Effective SALT Cap by Income Level",
         title_font_size=16,
         xaxis_title="Employment Income ($)",
         yaxis_title="Effective SALT Cap ($)",
@@ -268,7 +262,6 @@ def display_notes():
 
 
 def display_effective_salt_cap_graph(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -285,7 +278,6 @@ def display_effective_salt_cap_graph(
 
     # Calculate for two axes (varying employment income)
     result_df = calculate_effective_salt_cap_over_earnings(
-        state_code,
         is_married,
         num_children,
         child_ages,
@@ -311,7 +303,6 @@ def display_effective_salt_cap_graph(
 
 
 def display_effective_salt_cap(
-    state_code,
     is_married,
     num_children,
     child_ages,
@@ -328,7 +319,6 @@ def display_effective_salt_cap(
 
     # Calculate for single axis (fixed employment income)
     result_df = calculate_property_tax_df(
-        state_code,
         is_married,
         num_children,
         child_ages,
@@ -381,7 +371,6 @@ def display_effective_salt_cap(
 
 
 def display_regular_tax_and_amt_chart(
-    state_code,
     is_married=False,
     num_children=0,
     child_ages=[],
@@ -402,7 +391,6 @@ def display_regular_tax_and_amt_chart(
     """
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -418,7 +406,6 @@ def display_regular_tax_and_amt_chart(
 
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -487,7 +474,7 @@ def display_regular_tax_and_amt_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Regular Tax and AMT by Income Level ({state_code})",
+        title=f"Regular Tax and AMT by Income Level",
         title_font_size=16,
         xaxis_title="SALT ($)",
         yaxis_title="Tax Amount ($)",
@@ -495,13 +482,13 @@ def display_regular_tax_and_amt_chart(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 100000],
         ),
         yaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],  # Adjust as needed to show your data
+            range=[0, 120000],  # Adjust as needed to show your data
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",
@@ -517,7 +504,6 @@ def display_regular_tax_and_amt_chart(
 
 
 def display_taxable_income_and_amti_chart(
-    state_code,
     is_married=False,
     num_children=0,
     child_ages=[],
@@ -538,7 +524,6 @@ def display_taxable_income_and_amti_chart(
     """
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -554,7 +539,6 @@ def display_taxable_income_and_amti_chart(
 
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -623,7 +607,7 @@ def display_taxable_income_and_amti_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Taxable Income and AMTI by SALT ({state_code})",
+        title=f"Taxable Income and AMTI by SALT",
         title_font_size=16,
         xaxis_title="SALT ($)",
         yaxis_title="Taxable Income ($)",
@@ -631,13 +615,13 @@ def display_taxable_income_and_amti_chart(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 100000],
         ),
         yaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 120000],
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",
@@ -653,7 +637,6 @@ def display_taxable_income_and_amti_chart(
 
 
 def display_income_tax_chart(
-    state_code,
     is_married=False,
     num_children=0,
     child_ages=[],
@@ -674,7 +657,6 @@ def display_income_tax_chart(
     """
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -690,7 +672,6 @@ def display_income_tax_chart(
 
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
-        state_code=state_code,
         is_married=is_married,
         num_children=num_children,
         child_ages=child_ages,
@@ -728,14 +709,14 @@ def display_income_tax_chart(
                 y=current_policy_df["income_tax"],
                 mode="lines",
                 name="Current Policy (2025)",
-                line=dict(color="#777777", width=2, dash="dash"),
+                line=dict(color=DARK_GRAY, width=2),
                 hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
             )
         )
 
     # Update layout
     fig.update_layout(
-        title=f"Income Tax by SALT ({state_code})",
+        title=f"Income Tax by SALT",
         title_font_size=16,
         xaxis_title="SALT ($)",
         yaxis_title="Income Tax ($)",
@@ -743,13 +724,13 @@ def display_income_tax_chart(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 100000],
         ),
         yaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 150000],
+            range=[0, 120000],
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",

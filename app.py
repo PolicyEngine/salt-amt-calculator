@@ -346,7 +346,6 @@ with st.sidebar:
                 # Create situation based on inputs
                 log_action("Creating situation...")
                 situation = create_situation(
-                    state_code=personal_inputs["state_code"],
                     employment_income=personal_inputs["employment_income"],
                     is_married=personal_inputs["is_married"],
                     num_children=personal_inputs["num_children"],
@@ -499,7 +498,6 @@ elif page == "How SALT affects taxes":
             if st.session_state.chart_index == 0:
                 st.markdown("### SALT Deduction Comparison")
                 display_salt_deduction_comparison_chart(
-                    state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     employment_income=inputs_to_use["employment_income"],
@@ -519,7 +517,6 @@ elif page == "How SALT affects taxes":
             elif st.session_state.chart_index == 1:
                 st.markdown("### Taxable Income and AMTI Comparison")
                 display_taxable_income_and_amti_chart(
-                    state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     child_ages=inputs_to_use["child_ages"],
@@ -539,7 +536,6 @@ elif page == "How SALT affects taxes":
             elif st.session_state.chart_index == 2:
                 st.markdown("### Regular Tax and AMT Comparison")
                 display_regular_tax_and_amt_chart(
-                    state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     child_ages=inputs_to_use["child_ages"],
@@ -559,7 +555,6 @@ elif page == "How SALT affects taxes":
             elif st.session_state.chart_index == 3:
                 st.markdown("### Income Tax Comparison")
                 display_income_tax_chart(
-                    state_code=inputs_to_use["state_code"],
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     employment_income=inputs_to_use["employment_income"],
@@ -645,7 +640,6 @@ elif page == "The Effective SALT Cap":
     if calculation_is_valid:
         inputs_to_use = st.session_state.last_calculated_inputs
         display_regular_tax_and_amt_chart(
-            state_code=inputs_to_use["state_code"],
             is_married=inputs_to_use["is_married"],
             num_children=inputs_to_use["num_children"],
             child_ages=inputs_to_use["child_ages"],
@@ -657,7 +651,6 @@ elif page == "The Effective SALT Cap":
             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
         )
         display_effective_salt_cap(
-            state_code=inputs_to_use["state_code"],
             employment_income=inputs_to_use["employment_income"],
             is_married=inputs_to_use["is_married"],
             num_children=inputs_to_use["num_children"],
@@ -670,7 +663,6 @@ elif page == "The Effective SALT Cap":
             policy="Current Law",
         )
         display_effective_salt_cap(
-            state_code=inputs_to_use["state_code"],
             employment_income=inputs_to_use["employment_income"],
             is_married=inputs_to_use["is_married"],
             num_children=inputs_to_use["num_children"],
@@ -711,7 +703,6 @@ elif page == "How the Effective SALT Cap varies with earnings":
     if calculation_is_valid:
         inputs_to_use = st.session_state.last_calculated_inputs
         display_effective_salt_cap_graph(
-            state_code=inputs_to_use["state_code"],
             is_married=inputs_to_use["is_married"],
             num_children=inputs_to_use["num_children"],
             child_ages=inputs_to_use["child_ages"],
