@@ -402,6 +402,7 @@ if calculation_is_valid:
                     "deductible_mortgage_interest"
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                show_current_policy=True,
             )
             st.markdown(
                 "TCJA capped SALT at $10,000; prior law allowed deductions for all SALT."
@@ -540,7 +541,7 @@ if calculation_is_valid:
             st.markdown("### How does this vary with wages?")
         elif st.session_state.chart_index == 6:
             st.markdown(
-                "### AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax"
+                """### AMT effectively caps SALT"""
             )
             display_effective_salt_cap_graph(
                 is_married=inputs_to_use["is_married"],
@@ -555,7 +556,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-            st.markdown("In these earnings variation charts, all points assume no SALT.")
+            st.markdown("AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax.")
         # elif st.session_state.chart_index == 5:
         #     st.markdown("### Regular Tax and AMT Comparison")
         #     display_regular_tax_comparison_chart(
@@ -597,7 +598,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "Your AMT phases in at higher income levels than regular tax due to the AMT exemption."
+                "Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
             )
         elif st.session_state.chart_index == 8:
             st.markdown("### The Gap is the excess of regular tax over AMT")
