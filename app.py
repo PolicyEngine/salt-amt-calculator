@@ -799,10 +799,14 @@ if calculation_is_valid:
                                 )
         elif st.session_state.chart_index == 15:
             st.markdown("### Key takeaways")
-            st.markdown("* AMT creates an effective SALT cap")
-            st.markdown("* This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate")
-            st.markdown("* Explore other policy reforms at policyengine.org")
-            st.markdown("* This project was made possible with generous support from Arnold Ventures")
+            st.markdown("""
+            * AMT creates an effective SALT cap
+            * This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate
+            * **Coming soon**: how custom policies affect your household 
+            
+            *This project was made possible with generous support from [Arnold Ventures](https://arnoldventures.org)*
+        """)
+            
 
         st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])
