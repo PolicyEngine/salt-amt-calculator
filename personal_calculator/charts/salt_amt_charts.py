@@ -2,7 +2,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from policyengine_core.charts import format_fig
+from policyengine_core.charts import format_fig as format_fig_
+
+def format_fig(fig):
+    return format_fig_(fig).update_layout(
+        margin_r=100,
+    )
 from constants import BLUE, DARK_GRAY, LIGHT_GRAY
 from personal_calculator.dataframes.dataframes import (
     calculate_property_tax_df,
