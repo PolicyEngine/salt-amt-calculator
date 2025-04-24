@@ -140,7 +140,7 @@ def display_notes():
         st.markdown(
             """
         - The calculator uses tax year 2026 for all calculations excluding budget window estimates
-        - The marginal subsidy rate is computed in $500 increments of property taxes
+        - All computations are performed in $500 increments.
         - We limit the computation to the federal budgetary impact due to:
           - States with AMT parameters tied to federal AMT (e.g., California)
           - States with deductions for federal tax liability (e.g., Oregon)
