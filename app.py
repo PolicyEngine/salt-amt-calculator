@@ -16,7 +16,6 @@ from nationwide_impacts.impacts import (
 from nationwide_impacts.tables import display_summary_metrics
 from nationwide_impacts.charts import ImpactCharts
 
-from baseline_impacts import display_baseline_impacts
 from policy_config import display_policy_config, initialize_policy_config_state
 from constants import BLUE
 
@@ -32,6 +31,7 @@ from personal_calculator.charts.salt_amt_charts import (
     display_amt_comparison_chart,
     display_gap_chart,
     display_marginal_rate_chart,
+    display_regular_tax_and_amt_by_income_chart,
 )
 
 # Set up the Streamlit page
@@ -195,78 +195,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-# Debug function to print session state in a readable format
-def print_session_state():
-    """Print all session state variables in a formatted way"""
-    st.write("### Session State Debug:")
-
-    # Create a container for the debug info
-    debug_container = st.container()
-
-    with debug_container:
-        # Create an expander to hide/show the debug info
-        with st.expander("Click to view session state variables"):
-            if len(st.session_state) == 0:
-                st.write("Session state is empty")
-            else:
-                # Create a DataFrame from session state for better display
-                items = []
-                for key, value in st.session_state.items():
-                    # For complex objects, just show their type
-                    if isinstance(value, dict):
-                        value_display = f"dict with {len(value)} items"
-                    elif isinstance(value, list):
-                        value_display = f"list with {len(value)} items"
-                    elif hasattr(value, "__dict__"):
-                        value_display = f"object of type {type(value).__name__}"
-                    else:
-                        value_display = str(value)
-
-                    items.append({"Key": key, "Value": value_display})
-
-                # Display as a table
-                st.table(items)
-
-
-# Debug function to track a specific action
-def log_action(action_name):
-    """Log an action with timestamp"""
-    import time
-
-    # Initialize action log in session state if it doesn't exist
-    if "action_log" not in st.session_state:
-        st.session_state.action_log = []
-
-    # Add the action with timestamp
-    st.session_state.action_log.append(
-        {"time": time.strftime("%H:%M:%S"), "action": action_name}
-    )
-
-
-# Initialize session state tracking
-if "action_log" not in st.session_state:
-    st.session_state.action_log = []
-
-
-# Display the action log
-def display_action_log():
-    """Display the action log in an expander"""
-    with st.expander("Action Log"):
-        if "action_log" in st.session_state and len(st.session_state.action_log) > 0:
-            # Create a DataFrame from the action log
-            import pandas as pd
-
-            log_df = pd.DataFrame(st.session_state.action_log)
-            st.table(log_df)
-        else:
-            st.write("No actions logged yet")
-
-
-# Call this at the top of your app to see the current state
-print_session_state()
-display_action_log()
-
 # Initialize navigation in session state if not already present
 if "nav_page" not in st.session_state:
     st.session_state.nav_page = "Introduction"
@@ -286,23 +214,17 @@ def change_chart_without_rerun(direction):
     elif direction == "prev":
         st.session_state.chart_index = (current_index - 1) % num_charts
 
-    log_action(
-        f"Changed chart from {current_index} to {st.session_state.chart_index} ({direction})"
-    )
-
 
 # Set up sidebar for navigation
 with st.sidebar:
-    st.title("Navigation")
-    log_action("Sidebar rendering started")
-    section = st.radio("Select Input Section", ["Personal Inputs", "Policy Inputs"])
+    st.title("Inputs")
+    section = st.radio("---", ["Personal Inputs", "Policy Inputs"])
 
     # Set policy config state to default values to prevent error
     # if user skips straight to budgetary impacts
     initialize_policy_config_state()
 
     if section == "Personal Inputs":
-        log_action(f"Section selected: {section}")
 
         # Get personal inputs (will use session state if available)
         personal_inputs = create_personal_inputs()
@@ -313,7 +235,6 @@ with st.sidebar:
             or personal_inputs != st.session_state.personal_inputs
         ):
             st.session_state.personal_inputs = personal_inputs
-            log_action("Storing new personal inputs in session state")
 
         inputs_changed = (
             "last_calculated_inputs" in st.session_state
@@ -341,7 +262,6 @@ with st.sidebar:
             )
 
             if inputs_changed:
-                log_action("Calculate button clicked - inputs changed, recalculating")
                 st.session_state.calculate_clicked = True
                 st.session_state.last_calculated_inputs = (
                     st.session_state.personal_inputs.copy()
@@ -351,7 +271,6 @@ with st.sidebar:
                 reset_results()
 
                 # Create situation based on inputs
-                log_action("Creating situation...")
                 situation = create_situation(
                     employment_income=personal_inputs["employment_income"],
                     is_married=personal_inputs["is_married"],
@@ -371,7 +290,6 @@ with st.sidebar:
                         "charitable_cash_donations"
                     ],
                 )
-                log_action("Situation created")
 
                 # Store calculation results in session state
                 st.session_state.situation = situation
@@ -379,10 +297,7 @@ with st.sidebar:
 
                 # Reset chart index when recalculating
                 st.session_state.chart_index = 0
-            else:
-                log_action("Calculate button clicked - using cached results")
     elif section == "Policy Inputs":
-        log_action(f"Section selected: {section}")
         display_policy_config()
 
     def update_nav_page(new_page):
@@ -433,7 +348,6 @@ if st.session_state.nav_page == "Introduction":
 
 elif st.session_state.nav_page == "The Effective SALT Cap":
     # Only show the How SALT affects taxes part
-    log_action("How SALT affects taxes page loaded")
     st.markdown(
         f"""
     <h2 style="font-family: Roboto; color:;">How SALT and AMT Affect Sample Households</h2>
@@ -445,7 +359,6 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
 
     if "chart_index" not in st.session_state:
         st.session_state.chart_index = 0
-        log_action("Initialized chart_index to 0")
 
     # Define the list of available charts
     available_charts = [
@@ -454,10 +367,12 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
         "Regular Tax and AMT Comparison",
         "Income Tax Comparison",
         "Effective SALT Cap",
-        "Regular Tax and AMT Comparison",
-        "AMT Comparison",
+        # "Regular Tax and AMT Comparison",
+        # "AMT Comparison",
+        "Regular Tax and AMT Comparison by Income",
         "Gap Chart",
         "Marginal Tax Rate Chart",
+        "Effective SALT Cap",
     ]
 
     inputs_changed = (
@@ -474,17 +389,14 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
 
     # Check if the sidebar calculate button was clicked
     if calculation_is_valid:
-        log_action("Valid calculation exists, rendering charts")
         if "last_calculated_inputs" in st.session_state:
-            log_action("Using last calculated inputs for charts")
             inputs_to_use = st.session_state.last_calculated_inputs
 
             current_chart = available_charts[st.session_state.chart_index]
-            log_action(f"Displaying chart: {current_chart}")
 
             # Display the current chart based on the chart_index
             if st.session_state.chart_index == 0:
-                st.markdown("### SALT Deduction Comparison")
+                st.markdown("### Current policy creates an explicit SALT cap")
                 display_salt_deduction_comparison_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -502,8 +414,11 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                         "charitable_cash_donations"
                     ],
                 )
+                st.markdown(
+                    "### TCJA capped SALT at $10,000; prior law allowed deductions for all SALT"
+                )
             elif st.session_state.chart_index == 1:
-                st.markdown("### Taxable Income and AMTI Comparison")
+                st.markdown("### But AMT income does not vary with SALT")
                 display_taxable_income_and_amti_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -521,8 +436,53 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                         "charitable_cash_donations"
                     ],
                 )
+                st.markdown(
+                    "### AMT income equals taxable income plus exemptions and deductions including SALT"
+                )
             elif st.session_state.chart_index == 2:
-                st.markdown("### Regular Tax and AMT Comparison")
+                # Calculate effective SALT caps for both policies
+                current_law_cap = display_effective_salt_cap(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    employment_income=inputs_to_use["employment_income"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                    policy="Current Law",
+                )
+
+                current_policy_cap = display_effective_salt_cap(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    employment_income=inputs_to_use["employment_income"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                    policy="Current Policy",
+                )
+
+                st.markdown(
+                    f"### You face an effective SALT cap of <span style='color: {BLUE}'>{current_policy_cap}</span> under current policy and <span style='color: {BLUE}'>{current_law_cap}</span> under current law",
+                    unsafe_allow_html=True,
+                )
                 display_regular_tax_and_amt_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -540,8 +500,13 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                         "charitable_cash_donations"
                     ],
                 )
+                st.markdown(
+                    "### Additional SALT does not reduce your income tax if AMT exceeds regular tax"
+                )
             elif st.session_state.chart_index == 3:
-                st.markdown("### Income Tax Comparison")
+                st.markdown(
+                    "### SALT could lower your taxes by up to $x under current law and $y under current policy"
+                )
                 display_income_tax_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -559,67 +524,123 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                         "charitable_cash_donations"
                     ],
                 )
+                st.markdown("### Filers pay the greater of regular tax and AMT")
             elif st.session_state.chart_index == 4:
                 st.markdown("### Effective SALT Cap")
                 display_effective_salt_cap_graph(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     child_ages=inputs_to_use["child_ages"],
-                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
                     long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                     short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
                     policy="Current Law",
                 )
+            # elif st.session_state.chart_index == 5:
+            #     st.markdown("### Regular Tax and AMT Comparison")
+            #     display_regular_tax_comparison_chart(
+            #             is_married=inputs_to_use["is_married"],
+            #             num_children=inputs_to_use["num_children"],
+            #             child_ages=inputs_to_use["child_ages"],
+            #             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+            #             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+            #             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+            #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+            #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+            #         )
+            # elif st.session_state.chart_index == 6:
+            #     st.markdown("### AMT Comparison")
+            #     display_amt_comparison_chart(
+            #             is_married=inputs_to_use["is_married"],
+            #             num_children=inputs_to_use["num_children"],
+            #             child_ages=inputs_to_use["child_ages"],
+            #             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+            #             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+            #             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+            #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+            #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+            # )
             elif st.session_state.chart_index == 5:
-                st.markdown("### Regular Tax and AMT Comparison")
-                display_regular_tax_comparison_chart(
-                        is_married=inputs_to_use["is_married"],
-                        num_children=inputs_to_use["num_children"],
-                        child_ages=inputs_to_use["child_ages"],
-                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                    )
+                st.markdown("### Regular Tax and AMT Comparison by Income")
+                display_regular_tax_and_amt_by_income_chart(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                )
             elif st.session_state.chart_index == 6:
-                st.markdown("### AMT Comparison")
-                display_amt_comparison_chart(
-                        is_married=inputs_to_use["is_married"],
-                        num_children=inputs_to_use["num_children"],
-                        child_ages=inputs_to_use["child_ages"],
-                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                    )
-            elif st.session_state.chart_index == 7:
                 st.markdown("### Gap Chart")
                 display_gap_chart(
-                        is_married=inputs_to_use["is_married"],
-                        num_children=inputs_to_use["num_children"],
-                        child_ages=inputs_to_use["child_ages"],
-                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                    )
-            elif st.session_state.chart_index == 8:
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                )
+            elif st.session_state.chart_index == 7:
                 st.markdown("### Marginal Tax Rate Chart")
                 display_marginal_rate_chart(
-                        is_married=inputs_to_use["is_married"],
-                        num_children=inputs_to_use["num_children"],
-                        child_ages=inputs_to_use["child_ages"],
-                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                    )
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                )
+            elif st.session_state.chart_index == 8:
+                st.markdown("### Effective SALT Cap")
+                display_effective_salt_cap_graph(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use[
+                        "qualified_dividend_income"
+                    ],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use[
+                        "deductible_mortgage_interest"
+                    ],
+                    charitable_cash_donations=inputs_to_use[
+                        "charitable_cash_donations"
+                    ],
+                    policy="Current Law",
+                )
             st.markdown("---")
             col1, col2, col3 = st.columns([1, 2, 1])
 
@@ -644,7 +665,6 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                     args=("next",),
                 )
         else:
-            log_action("ERROR: No calculated inputs found in session state")
             st.error("Calculation data is missing. Please recalculate impacts.")
     elif inputs_changed:
         # Show a message that inputs have changed and need recalculation
@@ -661,7 +681,6 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
         )
     else:
         # Some other edge case
-        log_action("Unknown state in How SALT affects taxes page")
         st.warning("Please try recalculating your impacts from the sidebar.")
 
     # Add a button to go to the next section

@@ -13,10 +13,13 @@ policy_config_defaults: dict[str, any] = {
     "behavioral_responses": False,
 }
 
+
 def initialize_policy_config_state():
     """Initialize policy config state in session state"""
     if "policy_config" not in st.session_state:
         st.session_state.policy_config = policy_config_defaults
+
+
 def display_policy_config():
     """Display and collect policy configuration options"""
 

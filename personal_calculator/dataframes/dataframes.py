@@ -440,10 +440,12 @@ def create_values_by_income_dataset(df, threshold=0.1):
     return max_salt_by_income
 
 
-def calculate_marginal_tax_rate_by_income(df, tax_column="income_tax", income_column="employment_income"):
+def calculate_marginal_tax_rate_by_income(
+    df, tax_column="regular_tax", income_column="employment_income"
+):
     """
     Calculate the marginal tax rate based on income increments.
-    
+
     Parameters:
     -----------
     df : pandas DataFrame
@@ -452,7 +454,7 @@ def calculate_marginal_tax_rate_by_income(df, tax_column="income_tax", income_co
         Column name for the tax value to calculate marginal rate for
     income_column : str
         Column name for the income value
-        
+
     Returns:
     --------
     pandas DataFrame
@@ -460,39 +462,39 @@ def calculate_marginal_tax_rate_by_income(df, tax_column="income_tax", income_co
     """
     # Make a copy to avoid modifying the original
     result_df = df.copy()
-    
+
     # Sort by income to ensure proper calculation
     result_df = result_df.sort_values(by=income_column)
-    
+
     # Calculate the difference in tax values
     result_df["tax_diff"] = result_df[tax_column].diff()
-    
+
     # Calculate the difference in income values
     result_df["income_diff"] = result_df[income_column].diff()
-    
+
     # Calculate the marginal tax rate (change in tax / change in income)
     result_df["marginal_tax_rate"] = result_df["tax_diff"] / result_df["income_diff"]
-    
+
     # Handle edge cases (divide by zero, first row)
     result_df["marginal_tax_rate"] = result_df["marginal_tax_rate"].replace(
         [np.inf, -np.inf, np.nan], 0
     )
-    
+
     # Drop the temporary columns
     result_df = result_df.drop(["tax_diff", "income_diff"], axis=1)
-    
+
     return result_df
 
 
 def process_income_marginal_tax_data(income_df):
     """
     Process the income data by calculating marginal tax rates for each income level
-    
+
     Parameters:
     -----------
     income_df : pandas DataFrame
         DataFrame containing income and tax data
-        
+
     Returns:
     --------
     pandas DataFrame
@@ -500,12 +502,12 @@ def process_income_marginal_tax_data(income_df):
     """
     # Sort the dataframe
     processed_df = income_df.sort_values(by=["policy", "employment_income"])
-    
+
     # Calculate the marginal tax rate for each policy
     processed_df = (
         processed_df.groupby("policy")
         .apply(calculate_marginal_tax_rate_by_income)
         .reset_index(drop=True)
     )
-    
+
     return processed_df
