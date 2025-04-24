@@ -343,7 +343,6 @@ available_charts = [
     "Regular Tax and AMT Comparison by Income",
     "Gap Chart",
     "Marginal Tax Rate Chart",
-    "ESALT definition",
     "Effective SALT Cap",
     "Tax Savings Chart",
     "How would you reform SALT/AMT?",
@@ -634,11 +633,8 @@ if calculation_is_valid:
             )
             st.markdown("Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income.")
         elif st.session_state.chart_index == 10:
-            st.markdown("### The effective SALT cap ~= Gap / Marginal tax rate")
-            st.markdown("Gap between regular tax and AMT with no SALT, divided by the marginal tax savings rate over the full SALT deduction. If not itemizing, the standard deduction and personal exemptions are added.")
-        elif st.session_state.chart_index == 11:
             st.markdown(
-                "### The effective SALT cap is computed as: (Gap / Marginal Tax rate) + Standard Deduction + Exemptions"
+                "### The effective SALT cap ~= Gap / Marginal tax rate"
             )
             display_effective_salt_cap_graph(
                 is_married=inputs_to_use["is_married"],
@@ -653,7 +649,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-        elif st.session_state.chart_index == 12:
+        elif st.session_state.chart_index == 11:
             st.markdown(
                 "### Lastly, this is how much you could potentially save due to SALT"
             )
@@ -670,13 +666,13 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-        elif st.session_state.chart_index == 13:
+        elif st.session_state.chart_index == 12:
             st.markdown("### How would you reform the SALT deduction and AMT?")
-        elif st.session_state.chart_index in (14, 15):
+        elif st.session_state.chart_index in (13, 14):
             # Create the Budgetary and distributional impacts section
-            if st.session_state.chart_index == 14:
+            if st.session_state.chart_index == 13:
                 st.markdown("### Budgetary impacts")
-            if st.session_state.chart_index == 15:
+            if st.session_state.chart_index == 14:
                 st.markdown("### Distributional impacts")
 
             policy_config = st.session_state.policy_config
@@ -716,7 +712,7 @@ if calculation_is_valid:
                 else:
                     impact_word = "reduce" if total_revenue_impact > 0 else "increase"
                     impact_amount = abs(total_revenue_impact) / 1e12
-                    if st.session_state.chart_index == 14:
+                    if st.session_state.chart_index == 13:
                         st.markdown(
                             f"""
                             <div style="text-align: center; margin: 25px 0;">
@@ -756,7 +752,7 @@ if calculation_is_valid:
             if not hasattr(st.session_state, "nationwide_impacts"):
                 st.error("No impact data available. Please check data files.")
             else:
-                if st.session_state.chart_index == 15:
+                if st.session_state.chart_index == 14:
                     # Construct reform name
                     reform_name = get_reform_name(
                         st.session_state.policy_config, st.session_state.baseline
@@ -806,7 +802,7 @@ if calculation_is_valid:
                                 st.error(
                                     "No single-year impact data available for this combination."
                                 )
-        elif st.session_state.chart_index == 16:
+        elif st.session_state.chart_index == 15:
             st.markdown("### Key takeaways")
             st.markdown("* AMT creates an effective SALT cap")
             st.markdown("* This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate")

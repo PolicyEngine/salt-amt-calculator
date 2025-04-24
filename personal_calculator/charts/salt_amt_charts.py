@@ -191,6 +191,10 @@ def display_effective_salt_cap_graph(
     fig = create_max_salt_line_graph(processed_df, policy=policy, threshold=threshold)
 
     adjust_chart_limits(fig)
+    
+    fig.update_layout(
+        yaxis_title="Effective SALT cap",
+    )
 
     # Display the graph
     st.plotly_chart(format_fig(fig), use_container_width=True)
