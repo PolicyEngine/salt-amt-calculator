@@ -207,11 +207,6 @@ st.markdown(
             border: 1px solid #3378b2 !important;
             background-color: white !important;
         }}
-
-        .st-eh {{
-            background-color: #3378b2 !important;
-            border: 1px solid #3378b2 !important;
-        }}
         
     </style>
     """,
