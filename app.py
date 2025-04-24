@@ -299,7 +299,6 @@ with st.sidebar:
     elif section == "Policy Inputs":
         display_policy_config()
 
-
     st.markdown("---")
     st.markdown(
         """
@@ -313,8 +312,6 @@ if "nationwide_impacts" not in st.session_state:
         st.session_state.nationwide_impacts = NationwideImpacts()
     except Exception as e:
         st.error(f"Error loading nationwide impacts data: {str(e)}")
-
-
 
 
 if "chart_index" not in st.session_state:
@@ -383,17 +380,13 @@ if calculation_is_valid:
                 num_children=inputs_to_use["num_children"],
                 employment_income=inputs_to_use["employment_income"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
                 "### TCJA capped SALT at $10,000; prior law allowed deductions for all SALT"
@@ -404,18 +397,14 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 employment_income=inputs_to_use["employment_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
                 "### AMT income equals taxable income plus exemptions and deductions including SALT"
@@ -427,17 +416,13 @@ if calculation_is_valid:
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 employment_income=inputs_to_use["employment_income"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
 
             st.markdown(
@@ -449,17 +434,13 @@ if calculation_is_valid:
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 employment_income=inputs_to_use["employment_income"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
                 "### Additional SALT does not reduce your income tax if AMT exceeds regular tax"
@@ -470,17 +451,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 employment_income=inputs_to_use["employment_income"],
                 baseline_scenario="Current Law",
             )
@@ -490,17 +467,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 employment_income=inputs_to_use["employment_income"],
                 baseline_scenario="Current Policy",
             )
@@ -522,17 +495,13 @@ if calculation_is_valid:
                 num_children=inputs_to_use["num_children"],
                 employment_income=inputs_to_use["employment_income"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown("### Filers pay the greater of regular tax and AMT")
         elif st.session_state.chart_index == 5:
@@ -543,17 +512,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
         # elif st.session_state.chart_index == 5:
@@ -588,17 +553,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
                 "### Your AMT phases in at higher income levels than regular tax due to the AMT exemption"
@@ -609,17 +570,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
         elif st.session_state.chart_index == 8:
             st.markdown(
@@ -629,17 +586,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
         elif st.session_state.chart_index == 9:
             st.markdown(
@@ -649,17 +602,13 @@ if calculation_is_valid:
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use[
-                    "qualified_dividend_income"
-                ],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
-                charitable_cash_donations=inputs_to_use[
-                    "charitable_cash_donations"
-                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
         elif st.session_state.chart_index == 10:
@@ -690,7 +639,9 @@ if calculation_is_valid:
             )
 
             # Store behavioral response in session state
-            st.session_state.policy_config["behavioral_responses"] = behavioral_responses
+            st.session_state.policy_config["behavioral_responses"] = (
+                behavioral_responses
+            )
 
             # Show budget window impacts with full width
             budget_window_impacts = []
@@ -711,7 +662,9 @@ if calculation_is_valid:
                     )
 
             if budget_window_impacts:
-                budget_window_impacts_df = pd.concat(budget_window_impacts, ignore_index=True)
+                budget_window_impacts_df = pd.concat(
+                    budget_window_impacts, ignore_index=True
+                )
                 total_revenue_impact = calculate_total_revenue_impact(
                     budget_window_impacts_df,
                     st.session_state.policy_config,
@@ -733,7 +686,9 @@ if calculation_is_valid:
                     )
                     # Create an expander for the 10-year impact graph
                     with st.expander("Show 10-Year Impact Graph"):
-                        st.markdown("**Figure 4: Budgetary Impact Over the 10-Year Window**")
+                        st.markdown(
+                            "**Figure 4: Budgetary Impact Over the 10-Year Window**"
+                        )
 
                         # Show the 10-year impact graph without the title
                         fig = px.line(
@@ -748,7 +703,9 @@ if calculation_is_valid:
                         fig = format_fig(fig)
                         # Add margin to ensure logo is visible
                         fig.update_layout(
-                            margin=dict(l=20, r=60, t=20, b=80),  # Increase bottom margin
+                            margin=dict(
+                                l=20, r=60, t=20, b=80
+                            ),  # Increase bottom margin
                         )
                         st.plotly_chart(fig, use_container_width=False)
             else:
@@ -785,10 +742,8 @@ if calculation_is_valid:
                         )
                         if single_year_impact is not None:
                             # Show the single-year impact graph
-                            dist_data = (
-                                st.session_state.nationwide_impacts.get_income_distribution(
-                                    reform_name
-                                )
+                            dist_data = st.session_state.nationwide_impacts.get_income_distribution(
+                                reform_name
                             )
                             if dist_data is not None:
                                 with st.expander(
@@ -798,7 +753,9 @@ if calculation_is_valid:
                                         "**Figure 5: Average Household Net Income Change by Income Decile**"
                                     )
 
-                                    fig = ImpactCharts.plot_distributional_analysis(dist_data)
+                                    fig = ImpactCharts.plot_distributional_analysis(
+                                        dist_data
+                                    )
                                     fig = format_fig(fig)
                                     # Add margin to ensure logo is visible
                                     fig.update_layout(
@@ -822,9 +779,7 @@ if calculation_is_valid:
             )
 
         with col2:
-            st.markdown(
-                f"**{available_charts[st.session_state.chart_index]}**"
-            )
+            st.markdown(f"**{available_charts[st.session_state.chart_index]}**")
 
         with col3:
             st.button(
