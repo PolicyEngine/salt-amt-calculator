@@ -25,6 +25,7 @@ def display_salt_deduction_comparison_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
@@ -32,6 +33,11 @@ def display_salt_deduction_comparison_chart(
 
 
     The graph shows employment income on x-axis and effective SALT cap on y-axis.
+
+    Parameters:
+    -----------
+    show_current_policy : bool
+        Whether to show the Current Policy line (default: False)
     """
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
@@ -75,12 +81,12 @@ def display_salt_deduction_comparison_chart(
                 mode="lines",
                 name="Current Law ",
                 line=dict(color=BLUE, width=2),
-                hovertemplate="SALT: $%{x:,.0f}<br>SALT Deduction: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>Current Law SALT Deduction: $%{y:,.0f}<extra></extra>",
                 zorder=2,
             )
         )
 
-    # Add Current Policy line
+    # Always add Current Policy line to the legend, but control its visibility
     if not current_policy_df.empty:
         fig.add_trace(
             go.Scatter(
@@ -89,8 +95,9 @@ def display_salt_deduction_comparison_chart(
                 mode="lines",
                 name="Current Policy ",
                 line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
-                hovertemplate="SALT: $%{x:,.0f}<br>SALT Deduction: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>Current Policy SALT Deduction: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 
@@ -111,121 +118,6 @@ def display_salt_deduction_comparison_chart(
             showgrid=True,
             gridcolor="rgba(0,0,0,0.1)",
             range=[0, 120000],
-        ),
-        margin=dict(t=80, b=80),
-        hovermode="closest",
-        plot_bgcolor="white",
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
-    )
-
-    # Format the chart
-    fig = format_fig(fig)
-
-    # Display the chart
-    st.plotly_chart(fig, use_container_width=True)
-
-
-def display_salt_cap_comparison_chart(
-    is_married=False,
-    num_children=0,
-    child_ages=[],
-    qualified_dividend_income=0,
-    long_term_capital_gains=0,
-    short_term_capital_gains=0,
-    deductible_mortgage_interest=0,
-    charitable_cash_donations=0,
-    threshold=0.1,
-):
-    """
-    Create and display a chart showing effective SALT cap by income level,
-    comparing current policy vs current law.
-
-    Parameters match those used in calculate_effective_salt_cap_over_earnings.
-
-    The graph shows employment income on x-axis and effective SALT cap on y-axis.
-    """
-    # Calculate data for Current Law
-    current_law_df = calculate_effective_salt_cap_over_earnings(
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Law",
-    )
-
-    # Calculate data for Current Policy
-    current_policy_df = calculate_effective_salt_cap_over_earnings(
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Policy",
-    )
-
-    # Process data to calculate marginal rates
-    processed_law_df = process_effective_cap_data(current_law_df)
-    processed_policy_df = process_effective_cap_data(current_policy_df)
-
-    # Create a combined figure
-    fig = go.Figure()
-
-    # Add Current Law line
-    law_max_salt = create_max_salt_dataset(processed_law_df, threshold)
-    if not law_max_salt.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=law_max_salt["employment_income"],
-                y=law_max_salt["salt_and_property_tax"],
-                mode="lines",
-                name="Current Law ",
-                line=dict(color=BLUE, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
-                zorder=2,
-            )
-        )
-
-    # Add Current Policy line
-    policy_max_salt = create_max_salt_dataset(processed_policy_df, threshold)
-    if not policy_max_salt.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=policy_max_salt["employment_income"],
-                y=policy_max_salt["salt_and_property_tax"],
-                mode="lines",
-                name="Current Policy",
-                line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
-                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
-                zorder=1,
-            )
-        )
-
-    # Update layout
-    fig.update_layout(
-        title=f"Effective SALT Cap by Income Level",
-        title_font_size=16,
-        xaxis_title="Employment Income ",
-        yaxis_title="Effective SALT Cap ",
-        xaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 1000000],
-        ),
-        yaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 200000],  # Adjust as needed to show your data
         ),
         margin=dict(t=80, b=80),
         hovermode="closest",
@@ -346,22 +238,27 @@ def display_effective_salt_cap(
         baseline_scenario="Current Policy",
     )
 
-
     # Process the data to calculate marginal rates
     processed_law_df = process_effective_cap_over_property_tax_data(current_law_df)
-    processed_policy_df = process_effective_cap_over_property_tax_data(current_policy_df)
+    processed_policy_df = process_effective_cap_over_property_tax_data(
+        current_policy_df
+    )
 
     # Find the effective cap (maximum SALT where marginal rate > threshold)
-    filtered_law_df = processed_law_df[processed_law_df["marginal_property_tax_rate"] > threshold]
-    filtered_policy_df = processed_policy_df[processed_policy_df["marginal_property_tax_rate"] > threshold]
+    filtered_law_df = processed_law_df[
+        processed_law_df["marginal_property_tax_rate"] > threshold
+    ]
+    filtered_policy_df = processed_policy_df[
+        processed_policy_df["marginal_property_tax_rate"] > threshold
+    ]
     effective_cap_law = float("inf")
     effective_cap_policy = float("inf")
     if not filtered_law_df.empty:
         effective_cap_law = filtered_law_df["salt_and_property_tax"].max()
-        
+
     else:
         effective_cap_law = float("inf")
-    
+
     if not filtered_policy_df.empty:
         effective_cap_policy = filtered_policy_df["salt_and_property_tax"].max()
         effective_cap_policy = min(effective_cap_policy, 10000)
@@ -393,6 +290,7 @@ def display_regular_tax_and_amt_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
 ):
     """
     Create and display a chart showing regular tax and AMT by income level,
@@ -447,6 +345,7 @@ def display_regular_tax_and_amt_chart(
                 line=dict(color=LIGHT_GRAY, width=2),
                 hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
         # AMT under current policy (dotted gray)
@@ -459,6 +358,7 @@ def display_regular_tax_and_amt_chart(
                 line=dict(color=LIGHT_GRAY, width=2, dash="dot"),
                 hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 
@@ -530,6 +430,7 @@ def display_taxable_income_and_amti_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
 ):
     """
     Create and display a chart showing regular tax and AMT by income level,
@@ -584,6 +485,7 @@ def display_taxable_income_and_amti_chart(
                 line=dict(color=LIGHT_GRAY, width=2),
                 hovertemplate="SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
         # AMTI under current policy (dotted gray)
@@ -596,6 +498,7 @@ def display_taxable_income_and_amti_chart(
                 line=dict(color=LIGHT_GRAY, width=2, dash="dot"),
                 hovertemplate="SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 
@@ -667,6 +570,7 @@ def display_income_tax_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
     threshold=0.1,
 ):
     """
@@ -718,7 +622,7 @@ def display_income_tax_chart(
                 mode="lines",
                 name="Current Law ",
                 line=dict(color=BLUE, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>Income Tax: $%{y:,.0f}<extra></extra>",
                 zorder=2,
             )
         )
@@ -732,8 +636,9 @@ def display_income_tax_chart(
                 mode="lines",
                 name="Current Policy ",
                 line=dict(color=LIGHT_GRAY, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>SALT Cap: $%{y:,.0f}<extra></extra>",
+                hovertemplate="SALT: $%{x:,.0f}<br>Income Tax: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 
@@ -1067,6 +972,7 @@ def display_gap_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
@@ -1131,6 +1037,7 @@ def display_gap_chart(
                 line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
                 hovertemplate="Income: $%{x:,.0f}<br>Gap: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 
@@ -1174,6 +1081,7 @@ def display_marginal_rate_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
 ):
     """
     Create and display a chart showing marginal tax rate by income level,
@@ -1240,6 +1148,7 @@ def display_marginal_rate_chart(
                 line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
                 hovertemplate="Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 
@@ -1284,6 +1193,7 @@ def display_regular_tax_and_amt_by_income_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    show_current_policy=True,
 ):
     """
     Create and display a chart showing regular tax and AMT by income level,
@@ -1362,6 +1272,7 @@ def display_regular_tax_and_amt_by_income_chart(
                 line=dict(color=LIGHT_GRAY, width=2),
                 hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
         # AMTI under current policy (dotted gray)
@@ -1374,6 +1285,7 @@ def display_regular_tax_and_amt_by_income_chart(
                 line=dict(color=LIGHT_GRAY, width=2, dash="dot"),
                 hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
                 zorder=1,
+                visible="legendonly",
             )
         )
 

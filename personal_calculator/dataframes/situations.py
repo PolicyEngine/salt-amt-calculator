@@ -129,7 +129,14 @@ def create_situation_with_one_income_axes(
             "households": {"your household": {"members": members.copy()}},
             # Set up axes for property taxes only
             "axes": [
-                [{"name": "employment_income", "count": 1000, "min": 0, "max": 1000000}],
+                [
+                    {
+                        "name": "employment_income",
+                        "count": 1000,
+                        "min": 0,
+                        "max": 1000000,
+                    }
+                ],
             ],
         }
     )
