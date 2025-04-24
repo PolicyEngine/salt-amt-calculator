@@ -129,7 +129,6 @@ st.markdown(
         .stRadio > div[role="radiogroup"] > label > div:first-child:focus-within,
         .stCheckbox > div > label > div:first-child:focus,
         .stCheckbox > div > label > div:first-child:focus-within {{
-            border-color: {BLUE} !important;
             box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
         }}
         
@@ -194,6 +193,16 @@ st.markdown(
         [data-testid="stExpander"] > div:first-child:hover svg {{
             fill: {BLUE} !important;
         }}
+
+        .stRadio > div[role="radiogroup"] > label > div:first-child, .stCheckbox > div > label > div:first-child {{
+            background-color: #3378b2 !important;
+        }}
+
+        .stRadio > div[role="radiogroup"] > label > div:first-child > div, .stCheckbox > div > label > div:first-child > div {{
+            border: 1px solid #3378b2 !important;
+            background-color: white !important;
+        }}
+        
     </style>
     """,
     unsafe_allow_html=True,
