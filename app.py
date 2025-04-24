@@ -348,14 +348,6 @@ if st.session_state.nav_page == "Introduction":
 
 elif st.session_state.nav_page == "The Effective SALT Cap":
     # Only show the How SALT affects taxes part
-    st.markdown(
-        f"""
-    <h2 style="font-family: Roboto; color:;">How SALT and AMT Affect Sample Households</h2>
-        
-    **Please select a state and income level to see how SALT and AMT affect a sample household.**
-    """,
-        unsafe_allow_html=True,
-    )
 
     if "chart_index" not in st.session_state:
         st.session_state.chart_index = 0
@@ -441,7 +433,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                 )
             elif st.session_state.chart_index == 2:
                 # Calculate effective SALT caps for both policies
-                current_law_cap = display_effective_salt_cap(
+                cap_display_law, cap_display_policy = display_effective_salt_cap(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
                     child_ages=inputs_to_use["child_ages"],
@@ -457,30 +449,10 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                     charitable_cash_donations=inputs_to_use[
                         "charitable_cash_donations"
                     ],
-                    policy="Current Law",
-                )
-
-                current_policy_cap = display_effective_salt_cap(
-                    is_married=inputs_to_use["is_married"],
-                    num_children=inputs_to_use["num_children"],
-                    child_ages=inputs_to_use["child_ages"],
-                    employment_income=inputs_to_use["employment_income"],
-                    qualified_dividend_income=inputs_to_use[
-                        "qualified_dividend_income"
-                    ],
-                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                    deductible_mortgage_interest=inputs_to_use[
-                        "deductible_mortgage_interest"
-                    ],
-                    charitable_cash_donations=inputs_to_use[
-                        "charitable_cash_donations"
-                    ],
-                    policy="Current Policy",
                 )
 
                 st.markdown(
-                    f"### You face an effective SALT cap of <span style='color: {BLUE}'>{current_policy_cap}</span> under current policy and <span style='color: {BLUE}'>{current_law_cap}</span> under current law",
+                    f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law",
                     unsafe_allow_html=True,
                 )
                 display_regular_tax_and_amt_chart(
@@ -526,7 +498,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                 )
                 st.markdown("### Filers pay the greater of regular tax and AMT")
             elif st.session_state.chart_index == 4:
-                st.markdown("### Effective SALT Cap")
+                st.markdown("### The AMT caps the SALT amount which reduced your income taxes when AMT exceeds regular tax")
                 display_effective_salt_cap_graph(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -569,7 +541,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
             #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             # )
             elif st.session_state.chart_index == 5:
-                st.markdown("### Regular Tax and AMT Comparison by Income")
+                st.markdown("### AMT remains 0 for higher income levels than regular tax due to the AMT exemption")
                 display_regular_tax_and_amt_by_income_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -587,7 +559,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                     ],
                 )
             elif st.session_state.chart_index == 6:
-                st.markdown("### Gap Chart")
+                st.markdown("### The Gap is the excess of regular tax over AMT")
                 display_gap_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
@@ -623,7 +595,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                     ],
                 )
             elif st.session_state.chart_index == 8:
-                st.markdown("### Effective SALT Cap")
+                st.markdown("### The effective SALT cap is computed as: (Gap / Marginal Tax rate) + Standard Deduction + Exemptions")
                 display_effective_salt_cap_graph(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],

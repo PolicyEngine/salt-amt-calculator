@@ -67,7 +67,7 @@ def create_situation_with_one_property_tax_axes(
             "households": {"your household": {"members": members.copy()}},
             # Set up axes for property taxes only
             "axes": [
-                [{"name": "real_estate_taxes", "count": 300, "min": 0, "max": 140000}],
+                [{"name": "real_estate_taxes", "count": 600, "min": 0, "max": 300000}],
             ],
         }
     )
@@ -129,7 +129,7 @@ def create_situation_with_one_income_axes(
             "households": {"your household": {"members": members.copy()}},
             # Set up axes for property taxes only
             "axes": [
-                [{"name": "employment_income", "count": 300, "min": 0, "max": 1000000}],
+                [{"name": "employment_income", "count": 1000, "min": 0, "max": 1000000}],
             ],
         }
     )
@@ -193,9 +193,9 @@ def create_situation_with_two_axes(
                 [
                     {
                         "name": "real_estate_taxes",
-                        "count": 300,
+                        "count": 700,
                         "min": -50000,
-                        "max": 140000,
+                        "max": 250000,
                     }
                 ],
                 [
