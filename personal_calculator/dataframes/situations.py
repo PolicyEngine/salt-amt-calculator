@@ -83,7 +83,6 @@ def create_situation_with_one_income_axes(
     short_term_capital_gains,
     deductible_mortgage_interest,
     charitable_cash_donations,
-    real_estate_taxes,
 ):
     """
     Create a situation dictionary with one axis (real_estate_taxes),
@@ -98,7 +97,6 @@ def create_situation_with_one_income_axes(
                 "short_term_capital_gains": {"2026": short_term_capital_gains},
                 "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
                 "charitable_cash_donations": {"2026": charitable_cash_donations},
-                "real_estate_taxes": {"2026": real_estate_taxes},
             }
         }
     }

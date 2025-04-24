@@ -22,13 +22,15 @@ from constants import BLUE
 
 from personal_calculator.charts.salt_amt_charts import (
     display_salt_deduction_comparison_chart,
-    display_salt_cap_comparison_chart,
     display_notes,
     display_effective_salt_cap,
     display_regular_tax_and_amt_chart,
     display_taxable_income_and_amti_chart,
     display_income_tax_chart,
     display_effective_salt_cap_graph,
+    display_regular_tax_comparison_chart,
+    display_amt_comparison_chart,
+    display_gap_chart,
 )
 
 # Set up the Streamlit page
@@ -381,30 +383,6 @@ with st.sidebar:
     def update_nav_page(new_page):
         st.session_state.nav_page = new_page
 
-    page = st.radio(
-        "Go to",
-        [
-            "Introduction",
-            "How SALT affects taxes",
-            "The Effective SALT Cap",
-            "How the Effective SALT Cap varies with earnings",
-            "Budgetary and distributional impacts",
-        ],
-        key="sidebar_nav",
-        index=[
-            "Introduction",
-            "How SALT affects taxes",
-            "The Effective SALT Cap",
-            "How the Effective SALT Cap varies with earnings",
-            "Budgetary and distributional impacts",
-        ].index(st.session_state.nav_page),
-    )
-    log_action(f"Navigation page selected: {page}")
-
-    # Update nav_page when sidebar selection changes
-    if page != st.session_state.nav_page:
-        st.session_state.nav_page = page
-
     st.markdown("---")
     st.markdown(
         """
@@ -420,7 +398,7 @@ if "nationwide_impacts" not in st.session_state:
         st.error(f"Error loading nationwide impacts data: {str(e)}")
 
 # Display selected section based on sidebar navigation
-if page == "Introduction":
+if st.session_state.nav_page == "Introduction":
     # Show the introduction and basics, without the How SALT affects taxes
     # Custom styled title with teal accents
     st.markdown(
@@ -443,12 +421,12 @@ if page == "Introduction":
 
     # Add a button to go to the next section
     st.markdown("---")
-    if st.button("Go to How SALT affects taxes →", type="primary"):
+    if st.button("Go to The Effective SALT Cap", type="primary"):
         # Set the page in session state and rerun to navigate
-        st.session_state.nav_page = "How SALT affects taxes"
+        st.session_state.nav_page = "The Effective SALT Cap"
         st.rerun()
 
-elif page == "How SALT affects taxes":
+elif st.session_state.nav_page == "The Effective SALT Cap":
     # Only show the How SALT affects taxes part
     log_action("How SALT affects taxes page loaded")
     st.markdown(
@@ -470,6 +448,10 @@ elif page == "How SALT affects taxes":
         "Taxable Income and AMTI Comparison",
         "Regular Tax and AMT Comparison",
         "Income Tax Comparison",
+        "Effective SALT Cap",
+        "Regular Tax and AMT Comparison",
+        "AMT Comparison",
+        "Gap Chart",
     ]
 
     inputs_changed = (
@@ -571,6 +553,55 @@ elif page == "How SALT affects taxes":
                         "charitable_cash_donations"
                     ],
                 )
+            elif st.session_state.chart_index == 4:
+                st.markdown("### Effective SALT Cap")
+                display_effective_salt_cap_graph(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    policy="Current Law",
+                )
+            elif st.session_state.chart_index == 5:
+                st.markdown("### Regular Tax and AMT Comparison")
+                display_regular_tax_comparison_chart(
+                        is_married=inputs_to_use["is_married"],
+                        num_children=inputs_to_use["num_children"],
+                        child_ages=inputs_to_use["child_ages"],
+                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    )
+            elif st.session_state.chart_index == 6:
+                st.markdown("### AMT Comparison")
+                display_amt_comparison_chart(
+                        is_married=inputs_to_use["is_married"],
+                        num_children=inputs_to_use["num_children"],
+                        child_ages=inputs_to_use["child_ages"],
+                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    )
+            elif st.session_state.chart_index == 7:
+                st.markdown("### Gap Chart")
+                display_gap_chart(
+                        is_married=inputs_to_use["is_married"],
+                        num_children=inputs_to_use["num_children"],
+                        child_ages=inputs_to_use["child_ages"],
+                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    )
 
             st.markdown("---")
             col1, col2, col3 = st.columns([1, 2, 1])
@@ -618,114 +649,12 @@ elif page == "How SALT affects taxes":
 
     # Add a button to go to the next section
     st.markdown("---")
-    if st.button("Go to The Effective SALT Cap →", type="primary"):
-        # Set the page in session state and rerun to navigate
-        st.session_state.nav_page = "The Effective SALT Cap"
-        st.rerun()
-
-elif page == "The Effective SALT Cap":
-    # Display baseline impacts section first
-    inputs_changed = (
-        "personal_inputs" in st.session_state
-        and "last_calculated_inputs" in st.session_state
-        and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
-    )
-
-    calculation_is_valid = (
-        "calculate_clicked" in st.session_state
-        and st.session_state.calculate_clicked
-        and not inputs_changed
-    )
-
-    if calculation_is_valid:
-        inputs_to_use = st.session_state.last_calculated_inputs
-        display_regular_tax_and_amt_chart(
-            is_married=inputs_to_use["is_married"],
-            num_children=inputs_to_use["num_children"],
-            child_ages=inputs_to_use["child_ages"],
-            employment_income=inputs_to_use["employment_income"],
-            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-        )
-        display_effective_salt_cap(
-            employment_income=inputs_to_use["employment_income"],
-            is_married=inputs_to_use["is_married"],
-            num_children=inputs_to_use["num_children"],
-            child_ages=inputs_to_use["child_ages"],
-            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-            policy="Current Law",
-        )
-        display_effective_salt_cap(
-            employment_income=inputs_to_use["employment_income"],
-            is_married=inputs_to_use["is_married"],
-            num_children=inputs_to_use["num_children"],
-            child_ages=inputs_to_use["child_ages"],
-            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-            policy="Current Policy",
-        )
-    else:
-        st.info(
-            "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts."
-        )
-
-    # Add a button to go to the next section
-    st.markdown("---")
-    if st.button("Go to Budgetary and distributional impacts →", type="primary"):
+    if st.button("Go to Budgetary and distributional impacts", type="primary"):
         # Set the page in session state and rerun to navigate
         st.session_state.nav_page = "Budgetary and distributional impacts"
         st.rerun()
 
-elif page == "How the Effective SALT Cap varies with earnings":
-    # Display baseline impacts section first
-    inputs_changed = (
-        "personal_inputs" in st.session_state
-        and "last_calculated_inputs" in st.session_state
-        and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
-    )
-
-    calculation_is_valid = (
-        "calculate_clicked" in st.session_state
-        and st.session_state.calculate_clicked
-        and not inputs_changed
-    )
-
-    if calculation_is_valid:
-        inputs_to_use = st.session_state.last_calculated_inputs
-        display_effective_salt_cap_graph(
-            is_married=inputs_to_use["is_married"],
-            num_children=inputs_to_use["num_children"],
-            child_ages=inputs_to_use["child_ages"],
-            qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-            long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-            short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-            deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-            charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-            policy="Current Law",
-        )
-    else:
-        st.info(
-            "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts."
-        )
-
-    # Add a button to go to the next section
-    st.markdown("---")
-    if st.button("Go to Budgetary and distributional impacts →", type="primary"):
-        # Set the page in session state and rerun to navigate
-        st.session_state.nav_page = "Budgetary and distributional impacts"
-        st.rerun()
-
-elif page == "Budgetary and distributional impacts":
+elif st.session_state.nav_page == "Budgetary and distributional impacts":
     # Create the Budgetary and distributional impacts section
     st.markdown(
         f"""
@@ -733,7 +662,6 @@ elif page == "Budgetary and distributional impacts":
     """,
         unsafe_allow_html=True,
     )
-    display_baseline_impacts()
 
     policy_config = st.session_state.policy_config
 
@@ -875,17 +803,17 @@ elif page == "Budgetary and distributional impacts":
                     )
 
 # Add Notes section at the app level after any sections are displayed
-if page in [
-    "How SALT affects taxes",
+if st.session_state.nav_page in [
+    "Introduction",
     "The Effective SALT Cap",
     "Budgetary and distributional impacts",
 ]:
     display_notes()
 
 # Add a button to restart the navigation cycle for the Budgetary and distributional impacts section
-if page == "Budgetary and distributional impacts":
+if st.session_state.nav_page == "Budgetary and distributional impacts":
     st.markdown("---")
-    if st.button("Back to Introduction →", type="primary"):
+    if st.button("Back to Introduction", type="primary"):
         # Set the page in session state and rerun to navigate
         st.session_state.nav_page = "Introduction"
         st.rerun()

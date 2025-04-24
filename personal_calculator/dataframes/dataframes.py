@@ -115,7 +115,6 @@ def calculate_income_df(
     short_term_capital_gains,
     deductible_mortgage_interest,
     charitable_cash_donations,
-    real_estate_taxes,
     reform_params,
     baseline_scenario,
 ):
@@ -132,7 +131,6 @@ def calculate_income_df(
         short_term_capital_gains,
         deductible_mortgage_interest,
         charitable_cash_donations,
-        real_estate_taxes,
     )
 
     # Create simulation based on baseline scenario
@@ -158,33 +156,15 @@ def calculate_income_df(
         "regular_tax_before_credits", map_to="household", period=2026
     )
     amt = simulation.calculate("amt_base_tax", map_to="household", period=2026)
-    salt_deduction = simulation.calculate(
-        "salt_deduction", map_to="household", period=2026
-    )
-    sales_or_income_tax = simulation.calculate(
-        "state_and_local_sales_or_income_tax", map_to="household", period=2026
-    )
-    salt_and_property_tax = real_estate_taxes + sales_or_income_tax
     income_tax = simulation.calculate("income_tax", map_to="household", period=2026)
-    taxable_income = simulation.calculate(
-        "taxable_income", map_to="household", period=2026
-    )
-    amt_income = simulation.calculate("amt_income", map_to="household", period=2026)
-
     # Create DataFrame with data
     income_df = pd.DataFrame(
         {
             "employment_income": employment_income,
-            "real_estate_taxes": real_estate_taxes,
             "regular_tax": regular_tax,
             "amt": amt,
-            "salt_deduction": salt_deduction,
-            "sales_or_income_tax": sales_or_income_tax,
-            "amt_binds": amt > regular_tax,
-            "salt_and_property_tax": salt_and_property_tax,
+            "gap": np.maximum(regular_tax - amt, 0),
             "income_tax": income_tax,
-            "taxable_income": taxable_income,
-            "amt_income": amt_income,
         }
     )
 
