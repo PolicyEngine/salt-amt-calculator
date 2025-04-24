@@ -130,6 +130,10 @@ def display_salt_deduction_comparison_chart(
 
     adjust_chart_limits(fig)
 
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
+
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
 
@@ -194,6 +198,9 @@ def display_effective_salt_cap_graph(
     
     fig.update_layout(
         yaxis_title="Effective SALT cap",
+    )
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
     )
 
     # Display the graph
@@ -339,6 +346,9 @@ def display_regular_tax_and_amt_chart(
     fig = format_fig(fig)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -481,6 +491,9 @@ def display_taxable_income_and_amti_chart(
     fig = format_fig(fig)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -596,6 +609,9 @@ def display_income_tax_chart(
     fig = format_fig(fig)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -997,6 +1013,9 @@ def display_gap_chart(
     fig = format_fig(fig)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1110,6 +1129,10 @@ def display_marginal_rate_chart(
     fig = format_fig(fig)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+        yaxis_range=[0, 1],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1249,6 +1272,9 @@ def display_regular_tax_and_amt_by_income_chart(
     fig = format_fig(fig)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1388,6 +1414,9 @@ def display_tax_savings_chart(
     fig = create_tax_savings_line_graph(tax_savings_df, policy=policy)
 
     adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the graph
     st.plotly_chart(format_fig(fig), use_container_width=True)

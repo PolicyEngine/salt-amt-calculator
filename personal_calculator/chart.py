@@ -144,6 +144,6 @@ def adjust_chart_limits(fig: go.Figure) -> None:
     y_range = y_max - y_min
     
     fig.update_layout(
-        xaxis_range=[int(x_min - SAFETY_MARGIN_FACTOR * x_range), int(x_max + SAFETY_MARGIN_FACTOR * x_range)],
-        yaxis_range=[int(y_min - SAFETY_MARGIN_FACTOR * y_range), int(y_max + SAFETY_MARGIN_FACTOR * y_range)],
+        xaxis_range=[0, int(x_max + SAFETY_MARGIN_FACTOR * x_range)],
+        yaxis_range=[0, int(y_max + SAFETY_MARGIN_FACTOR * y_range)],
     )
