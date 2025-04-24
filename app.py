@@ -582,9 +582,7 @@ if calculation_is_valid:
         #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
         # )
         elif st.session_state.chart_index == 7:
-            st.markdown(
-                "### AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above"
-            )
+            st.markdown("### The gap from AMT to regular tax influences the effective SALT cap")
             display_regular_tax_and_amt_by_income_chart(
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
@@ -598,10 +596,10 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
+                "AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above. Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
             )
         elif st.session_state.chart_index == 8:
-            st.markdown("### The Gap is the excess of regular tax over AMT")
+            st.markdown("### The gap is the excess of regular tax over AMT")
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
@@ -616,7 +614,7 @@ if calculation_is_valid:
             )
         elif st.session_state.chart_index == 9:
             st.markdown(
-                "### Your marginal tax rate"
+                "### SALT reduces income tax at roughly the regular marginal tax rate"
             )
             display_marginal_rate_chart(
                 is_married=inputs_to_use["is_married"],
@@ -630,7 +628,7 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-            st.markdown("Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income.")
+            st.markdown("Your marginal tax rate is the additional regular federal income tax (not including credits) owed per additional dollar of taxable income.")
         elif st.session_state.chart_index == 10:
             st.markdown(
                 "### The effective SALT cap ~= Gap / Marginal tax rate"
