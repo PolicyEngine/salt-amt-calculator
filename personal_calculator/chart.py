@@ -123,3 +123,27 @@ def update_results(df, summary_results, reform_name, income_value):
     df.loc[reform_name] = income_value
     summary_results[reform_name] = income_value
     return df, summary_results
+
+def adjust_chart_limits(fig: go.Figure) -> None:
+    x_min, x_max, y_min, y_max = None, None, None, None
+    for trace in fig.data:
+        if x_min is None or min(trace.x) < x_min:
+            x_min = min(trace.x)
+        
+        if x_max is None or max(trace.x) > x_max:
+            x_max = max(trace.x)
+        
+        if y_min is None or min(trace.y) < y_min:
+            y_min = min(trace.y)
+        
+        if y_max is None or max(trace.y) > y_max:
+            y_max = max(trace.y)
+
+    x_range = x_max - x_min
+    SAFETY_MARGIN_FACTOR = 0.1
+    y_range = y_max - y_min
+    
+    fig.update_layout(
+        xaxis_range=[int(x_min - SAFETY_MARGIN_FACTOR * x_range), int(x_max + SAFETY_MARGIN_FACTOR * x_range)],
+        yaxis_range=[int(y_min - SAFETY_MARGIN_FACTOR * y_range), int(y_max + SAFETY_MARGIN_FACTOR * y_range)],
+    )
