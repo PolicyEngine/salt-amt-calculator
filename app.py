@@ -17,7 +17,7 @@ from nationwide_impacts.tables import display_summary_metrics
 from nationwide_impacts.charts import ImpactCharts
 
 from baseline_impacts import display_baseline_impacts
-from policy_config import display_policy_config
+from policy_config import display_policy_config, initialize_policy_config_state
 from constants import BLUE
 
 from personal_calculator.charts.salt_amt_charts import (
@@ -296,6 +296,10 @@ with st.sidebar:
     st.title("Navigation")
     log_action("Sidebar rendering started")
     section = st.radio("Select Input Section", ["Personal Inputs", "Policy Inputs"])
+
+    # Set policy config state to default values to prevent error
+    # if user skips straight to budgetary impacts
+    initialize_policy_config_state()
 
     if section == "Personal Inputs":
         log_action(f"Section selected: {section}")
