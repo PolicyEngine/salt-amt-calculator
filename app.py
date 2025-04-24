@@ -672,6 +672,10 @@ if calculation_is_valid:
 
             if not hasattr(st.session_state, "baseline"):
                 st.session_state.baseline = "Current Law"
+            if not hasattr(st.session_state, "behavioral_responses"):
+                st.session_state.behavioral_responses = False
+
+            policy_config["behavioral_responses"] = st.session_state.behavioral_responses
 
             # Show budget window impacts with full width
             budget_window_impacts = []
