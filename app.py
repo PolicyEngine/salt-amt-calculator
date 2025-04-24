@@ -31,6 +31,7 @@ from personal_calculator.charts.salt_amt_charts import (
     display_regular_tax_comparison_chart,
     display_amt_comparison_chart,
     display_gap_chart,
+    display_marginal_rate_chart,
 )
 
 # Set up the Streamlit page
@@ -452,6 +453,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
         "Regular Tax and AMT Comparison",
         "AMT Comparison",
         "Gap Chart",
+        "Marginal Tax Rate Chart",
     ]
 
     inputs_changed = (
@@ -602,7 +604,18 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                         deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
                         charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                     )
-
+            elif st.session_state.chart_index == 8:
+                st.markdown("### Marginal Tax Rate Chart")
+                display_marginal_rate_chart(
+                        is_married=inputs_to_use["is_married"],
+                        num_children=inputs_to_use["num_children"],
+                        child_ages=inputs_to_use["child_ages"],
+                        qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                        long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                        short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                        deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                        charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    )
             st.markdown("---")
             col1, col2, col3 = st.columns([1, 2, 1])
 

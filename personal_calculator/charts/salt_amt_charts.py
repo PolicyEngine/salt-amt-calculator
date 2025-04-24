@@ -1131,3 +1131,112 @@ def display_gap_chart(
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
+
+def display_marginal_rate_chart(
+    is_married=False,
+    num_children=0,
+    child_ages=[],
+    qualified_dividend_income=0,
+    long_term_capital_gains=0,
+    short_term_capital_gains=0,
+    deductible_mortgage_interest=0,
+    charitable_cash_donations=0,
+):
+    """
+    Create and display a chart showing marginal tax rate by income level,
+    comparing current policy vs current law.
+
+    The graph shows employment income on x-axis and marginal tax rate on y-axis.
+    """
+    # Calculate data for Current Law
+    current_law_df = calculate_income_df(
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        reform_params=None,
+        baseline_scenario="Current Law",
+    )
+
+    # Calculate data for Current Policy
+    current_policy_df = calculate_income_df(
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        reform_params=None,
+        baseline_scenario="Current Policy",
+    )
+
+    # Process the dataframes to calculate marginal tax rates
+    from personal_calculator.dataframes.dataframes import process_income_marginal_tax_data
+    
+    current_law_marginal_df = process_income_marginal_tax_data(current_law_df)
+    current_policy_marginal_df = process_income_marginal_tax_data(current_policy_df)
+
+    # Create a combined figure
+    fig = go.Figure()
+
+    # Add Current Law line
+    if not current_law_marginal_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=current_law_marginal_df["employment_income"],
+                y=current_law_marginal_df["marginal_tax_rate"],
+                mode="lines",
+                name="Current Law (2026)",
+                line=dict(color=BLUE, width=2),
+                hovertemplate="Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>",
+            )
+        )
+
+    # Add Current Policy line
+    if not current_policy_marginal_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=current_policy_marginal_df["employment_income"],
+                y=current_policy_marginal_df["marginal_tax_rate"],
+                mode="lines",
+                name="Current Policy (2025)",
+                line=dict(color=DARK_GRAY, width=2, dash="dash"),
+                hovertemplate="Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>",
+            )
+        )
+
+    # Update layout
+    fig.update_layout(
+        title=f"Marginal Tax Rate by Income",
+        title_font_size=16,
+        xaxis_title="Income",
+        yaxis_title="Marginal Tax Rate",
+        xaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 1000000],
+        ),
+        yaxis=dict(
+            tickformat=".1%",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 0.5],  # Adjust range as needed for tax rates
+        ),
+        margin=dict(t=80, b=80),
+        hovermode="closest",
+        plot_bgcolor="white",
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+    )
+
+    # Format the chart
+    fig = format_fig(fig)
+
+    # Display the chart
+    st.plotly_chart(fig, use_container_width=True)
