@@ -432,7 +432,7 @@ if calculation_is_valid:
             )
 
             st.markdown(
-                f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law.",
+                f"### With <span style='color: {BLUE}'>{cap_display_law}</span> in SALT, under current law AMT equals regular tax",
                 unsafe_allow_html=True,
             )
             display_regular_tax_and_amt_chart(
@@ -468,6 +468,20 @@ if calculation_is_valid:
                 baseline_scenario="Current Law",
             )
 
+            cap_display_law, cap_display_policy = display_effective_salt_cap(
+                is_married=inputs_to_use["is_married"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+            )
+
             # Calculate income tax reduction for current policy
             current_policy_reduction = calculate_salt_income_tax_reduction(
                 is_married=inputs_to_use["is_married"],
@@ -493,7 +507,7 @@ if calculation_is_valid:
             )
 
             st.markdown(
-                f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy.",
+                f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law.",
                 unsafe_allow_html=True,
             )
             display_income_tax_chart(
@@ -509,7 +523,10 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-            st.markdown("Filers pay the greater of regular tax and AMT.")
+            st.markdown(
+                f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy. Filers pay the greater of regular tax and AMT.",
+                unsafe_allow_html=True,
+            )
         elif st.session_state.chart_index == 5:
             st.markdown(
                 "### AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax"
