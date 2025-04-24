@@ -1,5 +1,24 @@
 import streamlit as st
 
+policy_config_defaults: dict[str, any] = {
+    "salt_cap": "Current Law (Uncapped)",
+    "salt_marriage_bonus": False,
+    "salt_phaseout": "None",
+    "salt_repealed": False,
+    "amt_exemption": "Current Law ($70,500 Single, $109,500 Joint)",
+    "amt_phaseout": "Current Law ($156,700 Single, $209,000 Joint)",
+    "amt_repealed": False,
+    "amt_eliminate_marriage_penalty": False,
+    "other_tcja_provisions_extended": "Current Law",
+    "behavioral_responses": False,
+}
+
+
+def initialize_policy_config_state():
+    """Initialize policy config state in session state"""
+    if "policy_config" not in st.session_state:
+        st.session_state.policy_config = policy_config_defaults
+
 
 def display_policy_config():
     """Display and collect policy configuration options"""
@@ -8,20 +27,7 @@ def display_policy_config():
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
     # Initialize policy config in session state if it doesn't exist
-    if "policy_config" not in st.session_state:
-        # Default values
-        st.session_state.policy_config = {
-            "salt_cap": "Current Law (Uncapped)",
-            "salt_marriage_bonus": False,
-            "salt_phaseout": "None",
-            "salt_repealed": False,
-            "amt_exemption": "Current Law ($70,500 Single, $109,500 Joint)",
-            "amt_phaseout": "Current Law ($156,700 Single, $209,000 Joint)",
-            "amt_repealed": False,
-            "amt_eliminate_marriage_penalty": False,
-            "other_tcja_provisions_extended": "Current Law",
-            "behavioral_responses": False,
-        }
+    initialize_policy_config_state()
 
     with col1:
         st.markdown(

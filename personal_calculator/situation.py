@@ -1,5 +1,4 @@
 def create_situation(
-    state_code,
     employment_income,
     is_married,
     num_children,
@@ -7,7 +6,6 @@ def create_situation(
     qualified_dividend_income,
     long_term_capital_gains,
     short_term_capital_gains,
-    real_estate_taxes,
     deductible_mortgage_interest,
     charitable_cash_donations,
 ):
@@ -20,7 +18,6 @@ def create_situation(
                 "qualified_dividend_income": {"2026": qualified_dividend_income},
                 "long_term_capital_gains": {"2026": long_term_capital_gains},
                 "short_term_capital_gains": {"2026": short_term_capital_gains},
-                "real_estate_taxes": {"2026": real_estate_taxes},
                 "deductible_mortgage_interest": {"2026": deductible_mortgage_interest},
                 "charitable_cash_donations": {"2026": charitable_cash_donations},
             }
@@ -28,7 +25,6 @@ def create_situation(
         "households": {
             "household": {
                 "members": ["head"],
-                "state_code": {"2026": state_code},
             }
         },
         "tax_units": {
