@@ -318,13 +318,6 @@ with st.sidebar:
     elif section == "Policy Inputs":
         display_policy_config()
 
-    st.markdown("---")
-    st.markdown(
-        """
-    _This tool is designed to help you understand and model SALT and AMT policy changes_
-    """
-    )
-
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:
     try:
