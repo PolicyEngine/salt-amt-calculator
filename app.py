@@ -807,5 +807,5 @@ else:
     # Some other edge case
     st.warning("Please try recalculating your impacts from the sidebar.")
 
-# Add a button to go to the next section
-st.markdown("---")
+
+display_notes()
