@@ -217,13 +217,13 @@ def change_chart_without_rerun(direction):
 # Set up sidebar for navigation
 with st.sidebar:
     st.title("Inputs")
-    section = st.radio("---", ["Personal Inputs", "Policy Inputs"])
+    section = st.radio("Section Selection", ["Household Inputs", "Policy Inputs"], label_visibility="collapsed")
 
     # Set policy config state to default values to prevent error
     # if user skips straight to budgetary impacts
     initialize_policy_config_state()
 
-    if section == "Personal Inputs":
+    if section == "Household Inputs":
 
         # Get personal inputs (will use session state if available)
         personal_inputs = create_personal_inputs()
@@ -801,7 +801,7 @@ elif (
 ):
     # No calculation has been performed yet
     st.info(
-        "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to see charts."
+        "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to continue."
     )
 else:
     # Some other edge case

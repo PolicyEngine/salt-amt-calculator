@@ -25,7 +25,6 @@ def create_personal_inputs():
     # Marriage status and ages
     is_married = st.checkbox(
         "Are you married?",
-        help="Marital status impacts AMT related provisions such as income thresholds and tax rates.",
     )
 
     # Children information
@@ -34,7 +33,6 @@ def create_personal_inputs():
         min_value=0,
         max_value=10,
         value=0,
-        help="Each child is assumed to be 10 years old. The AMT exemption amount increases with each child.",
     )
 
     expense_col1, expense_col2 = st.columns(2)
@@ -69,31 +67,33 @@ def create_personal_inputs():
         max_value=10_000_000,
         value=0,
         step=1000,
-        help="All income is attributed to the head of the household",
     )
 
-    qualified_dividends = st.number_input(
-        "Qualified dividends",
-        min_value=0,
-        max_value=10_000_000,
-        value=0,
-        step=1000,
-    )
-
-    long_term_gains = st.number_input(
-        "Long term capital gains",
-        min_value=0,
-        max_value=10_000_000,
-        value=0,
-        step=1_000,
-    )
-    short_term_gains = st.number_input(
-        "Short term capital gains",
-        min_value=0,
-        max_value=10_000_000,
-        value=0,
-        step=1000,
-    )
+    income_col1, income_col2, income_col3 = st.columns(3)
+    with income_col1:
+        qualified_dividends = st.number_input(
+            "Qualified dividends",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1000,
+        )
+    with income_col2:
+        long_term_gains = st.number_input(
+            "Long term capital gains",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1_000,
+        )
+    with income_col3:
+        short_term_gains = st.number_input(
+            "Short term capital gains",
+            min_value=0,
+            max_value=10_000_000,
+            value=0,
+            step=1000,
+        )
 
     # Create a list of child ages (all 10 years old)
     child_ages = [10] * num_children if num_children > 0 else []
