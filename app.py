@@ -395,7 +395,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### TCJA capped SALT at $10,000; prior law allowed deductions for all SALT"
+                "TCJA capped SALT at $10,000; prior law allowed deductions for all SALT."
             )
         elif st.session_state.chart_index == 2:
             st.markdown("### But AMT income does not vary with SALT")
@@ -413,7 +413,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### AMT income equals taxable income plus exemptions and deductions including SALT"
+                "AMT income equals taxable income plus exemptions and deductions including SALT."
             )
         elif st.session_state.chart_index == 3:
             # Calculate effective SALT caps for both policies
@@ -432,7 +432,7 @@ if calculation_is_valid:
             )
 
             st.markdown(
-                f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law",
+                f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law.",
                 unsafe_allow_html=True,
             )
             display_regular_tax_and_amt_chart(
@@ -449,7 +449,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### Additional SALT does not reduce your income tax if AMT exceeds regular tax"
+                "Additional SALT does not reduce your income tax if AMT exceeds regular tax."
             )
         elif st.session_state.chart_index == 4:
             # Calculate income tax reduction for current law
@@ -493,7 +493,7 @@ if calculation_is_valid:
             )
 
             st.markdown(
-                f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy",
+                f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy.",
                 unsafe_allow_html=True,
             )
             display_income_tax_chart(
@@ -509,7 +509,7 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-            st.markdown("### Filers pay the greater of regular tax and AMT")
+            st.markdown("Filers pay the greater of regular tax and AMT.")
         elif st.session_state.chart_index == 5:
             st.markdown(
                 "### AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax"
@@ -568,7 +568,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### Your AMT phases in at higher income levels than regular tax due to the AMT exemption"
+                "Your AMT phases in at higher income levels than regular tax due to the AMT exemption."
             )
         elif st.session_state.chart_index == 7:
             st.markdown("### The Gap is the excess of regular tax over AMT")
@@ -586,7 +586,7 @@ if calculation_is_valid:
             )
         elif st.session_state.chart_index == 8:
             st.markdown(
-                "### Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income"
+                "### Your marginal tax rate"
             )
             display_marginal_rate_chart(
                 is_married=inputs_to_use["is_married"],
@@ -600,6 +600,7 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
+            st.markdown("Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income.")
         elif st.session_state.chart_index == 9:
             st.markdown(
                 "### The effective SALT cap is computed as: (Gap / Marginal Tax rate) + Standard Deduction + Exemptions"
