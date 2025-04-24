@@ -716,7 +716,7 @@ if calculation_is_valid:
                         )
 
                         # Show the 10-year impact graph without the title
-                        fig = px.line(
+                        fig = px.bar(
                             budget_window_impacts_df,
                             x="year",
                             y="total_income_change",
@@ -724,6 +724,9 @@ if calculation_is_valid:
                                 "year": "Year",
                                 "total_income_change": "Budgetary Impact (in billions)",
                             },
+                            text=budget_window_impacts_df.total_income_change.apply(
+                                lambda x: f"${abs(x/1e9):,.0f}B"
+                            ),
                         )
                         fig = format_fig(fig)
                         # Add margin to ensure logo is visible
