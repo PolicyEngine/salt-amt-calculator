@@ -14,7 +14,7 @@ from personal_calculator.dataframes.situations import (
 )
 
 
-@st.cache_data
+@st.cache_data(show_spinner="Calculating property tax data...")
 def calculate_property_tax_df(
     is_married,
     num_children,
@@ -105,7 +105,7 @@ def calculate_property_tax_df(
     return property_tax_df
 
 
-@st.cache_data
+@st.cache_data(show_spinner="Calculating income data...")
 def calculate_income_df(
     is_married,
     num_children,
@@ -174,7 +174,7 @@ def calculate_income_df(
     return income_df
 
 
-@st.cache_data
+@st.cache_data(show_spinner="Calculating effective SALT cap over earnings...")
 def calculate_effective_salt_cap_over_earnings(
     is_married,
     num_children,
