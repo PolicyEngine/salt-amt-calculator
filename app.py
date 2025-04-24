@@ -670,10 +670,6 @@ if calculation_is_valid:
             st.markdown("### How would you reform the SALT deduction and AMT?")
         elif st.session_state.chart_index in (13, 14):
             # Create the Budgetary and distributional impacts section
-            if st.session_state.chart_index == 13:
-                st.markdown("### Budgetary impacts")
-            if st.session_state.chart_index == 14:
-                st.markdown("### Distributional impacts")
 
             policy_config = st.session_state.policy_config
 
@@ -715,14 +711,10 @@ if calculation_is_valid:
                     if st.session_state.chart_index == 13:
                         st.markdown(
                             f"""
-                            <div style="text-align: center; margin: 25px 0;">
-                                <h3 style="color: #777777; font-family: Roboto;">Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
-                            </div>
+                            ### Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-year budget window, compared to {st.session_state.baseline}
+                            
                             """,
                             unsafe_allow_html=True,
-                        )
-                        st.markdown(
-                            "**Figure 4: Budgetary Impact Over the 10-Year Window**"
                         )
 
                         # Show the 10-year impact graph without the title
@@ -730,6 +722,7 @@ if calculation_is_valid:
                             budget_window_impacts_df,
                             x="year",
                             y="total_income_change",
+                            color_discrete_sequence=[BLUE],
                             labels={
                                 "year": "Year",
                                 "total_income_change": "Budgetary Impact (in billions)",
@@ -785,9 +778,6 @@ if calculation_is_valid:
                                     reform_name
                                 )
                                 if dist_data is not None:
-                                    st.markdown(
-                                        "**Figure 5: Average Household Net Income Change by Income Decile**"
-                                    )
 
                                     fig = ImpactCharts.plot_distributional_analysis(
                                         dist_data

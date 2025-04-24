@@ -34,9 +34,7 @@ def display_summary_metrics(impact_data, baseline):
 
     st.markdown(
         f"""
-        <div style="text-align: center; margin: 25px 0;">
-            <h3 style="color: #777777;">This policy would increase the net income for <span style="color: {BLUE}; font-weight: bold;">{percent_better:.1f}%</span> of the 
-            population and decrease it for <span style="color: {BLUE}; font-weight: bold;">{percent_worse:.1f}%</span> in 2026.</h3>
+        ### This policy would increase the net income for <span style="color: {BLUE}; font-weight: bold;">{percent_better:.1f}%</span> of the population and decrease it for <span style="color: {BLUE}; font-weight: bold;">{percent_worse:.1f}%</span> in 2026, compared to {baseline}.
         </div>
         """,
         unsafe_allow_html=True,
