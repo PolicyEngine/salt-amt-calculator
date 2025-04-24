@@ -329,15 +329,17 @@ available_charts = [
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",
     "Income Tax Comparison",
+    "How does this vary w/ wages",
     "Effective SALT Cap",
-    # "Regular Tax and AMT Comparison",
-    # "AMT Comparison",
     "Regular Tax and AMT Comparison by Income",
     "Gap Chart",
     "Marginal Tax Rate Chart",
+    "ESALT definition",
     "Effective SALT Cap",
     "Tax Savings Chart",
+    "How would you reform?",
     "Budgetary and distributional impacts",
+    "Key takeaways",
 ]
 
 inputs_changed = (
@@ -524,10 +526,12 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy. Filers pay the greater of regular tax and AMT.",
+                f"SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy. Filers pay the greater of regular tax and AMT.",
                 unsafe_allow_html=True,
             )
         elif st.session_state.chart_index == 5:
+            st.markdown("### How does this vary with wages?")
+        elif st.session_state.chart_index == 6:
             st.markdown(
                 "### AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax"
             )
@@ -569,7 +573,7 @@ if calculation_is_valid:
         #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
         #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
         # )
-        elif st.session_state.chart_index == 6:
+        elif st.session_state.chart_index == 7:
             st.markdown(
                 "### AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above"
             )
@@ -588,7 +592,7 @@ if calculation_is_valid:
             st.markdown(
                 "Your AMT phases in at higher income levels than regular tax due to the AMT exemption."
             )
-        elif st.session_state.chart_index == 7:
+        elif st.session_state.chart_index == 8:
             st.markdown("### The Gap is the excess of regular tax over AMT")
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
@@ -602,7 +606,7 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-        elif st.session_state.chart_index == 8:
+        elif st.session_state.chart_index == 9:
             st.markdown(
                 "### Your marginal tax rate"
             )
@@ -619,7 +623,10 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown("Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income.")
-        elif st.session_state.chart_index == 9:
+        elif st.session_state.chart_index == 10:
+            st.markdown("### The effective SALT cap ~= Gap / Marginal tax rate")
+            st.markdown("Gap between regular tax and AMT with no SALT, divided by the marginal tax savings rate over the full SALT deduction. If not itemizing, the standard deduction and personal exemptions are added.")
+        elif st.session_state.chart_index == 11:
             st.markdown(
                 "### The effective SALT cap is computed as: (Gap / Marginal Tax rate) + Standard Deduction + Exemptions"
             )
@@ -636,7 +643,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-        elif st.session_state.chart_index == 10:
+        elif st.session_state.chart_index == 12:
             st.markdown(
                 "### Lastly, this is how much you could potentially save due to SALT"
             )
@@ -653,7 +660,9 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-        elif st.session_state.chart_index == 11:
+        elif st.session_state.chart_index == 13:
+            st.markdown("### How would you reform the SALT deduction and AMT?")
+        elif st.session_state.chart_index == 14:
             # Create the Budgetary and distributional impacts section
             st.markdown(
                 f"""
@@ -811,6 +820,12 @@ if calculation_is_valid:
                             st.error(
                                 "No single-year impact data available for this combination."
                             )
+        elif st.session_state.chart_index == 15:
+            st.markdown("### Key takeaways")
+            st.markdown("* AMT creates an effective SALT cap")
+            st.markdown("* This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate")
+            st.markdown("* Explore other policy reforms at policyengine.org")
+            st.markdown("* This project was made possible with generous support from Arnold Ventures")
 
         st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])
