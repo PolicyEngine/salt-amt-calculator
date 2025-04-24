@@ -10,7 +10,6 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
     if not summary_results:  # If no results, return empty figure
         fig = go.Figure()
         fig.update_layout(
-            title="Household Net Income after Income Taxes and Transfers by Reform",
             showlegend=False,
             height=400,
         )
@@ -97,7 +96,6 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
 
     fig.update_layout(
         title=dict(
-            text=f"Figure 6: Household Net Income vs {baseline_scenario}",
             font=dict(size=24),
         ),
         showlegend=False,
