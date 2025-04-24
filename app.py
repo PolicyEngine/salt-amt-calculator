@@ -338,7 +338,7 @@ available_charts = [
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",
     "Income Tax Comparison",
-    "How does this vary w/ wages",
+    "How does this vary with wages",
     "Effective SALT Cap",
     "Regular Tax and AMT Comparison by Income",
     "Gap Chart",
