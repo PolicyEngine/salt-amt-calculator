@@ -129,7 +129,6 @@ st.markdown(
         .stRadio > div[role="radiogroup"] > label > div:first-child:focus-within,
         .stCheckbox > div > label > div:first-child:focus,
         .stCheckbox > div > label > div:first-child:focus-within {{
-            border-color: {BLUE} !important;
             box-shadow: 0 0 0 2px rgba(73, 190, 183, 0.2) !important;
         }}
         
@@ -194,6 +193,16 @@ st.markdown(
         [data-testid="stExpander"] > div:first-child:hover svg {{
             fill: {BLUE} !important;
         }}
+
+        .stRadio > div[role="radiogroup"] > label > div:first-child, .stCheckbox > div > label > div:first-child {{
+            background-color: #3378b2 !important;
+        }}
+
+        .stRadio > div[role="radiogroup"] > label > div:first-child > div, .stCheckbox > div > label > div:first-child > div {{
+            border: 1px solid #3378b2 !important;
+            background-color: white !important;
+        }}
+        
     </style>
     """,
     unsafe_allow_html=True,
@@ -329,15 +338,17 @@ available_charts = [
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",
     "Income Tax Comparison",
+    "How does this vary with wages",
     "Effective SALT Cap",
-    # "Regular Tax and AMT Comparison",
-    # "AMT Comparison",
     "Regular Tax and AMT Comparison by Income",
     "Gap Chart",
     "Marginal Tax Rate Chart",
     "Effective SALT Cap",
     "Tax Savings Chart",
-    "Budgetary and distributional impacts",
+    "How would you reform SALT/AMT?",
+    "Budgetary impacts",
+    "Distributional impacts",
+    "Key takeaways",
 ]
 
 inputs_changed = (
@@ -395,7 +406,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### TCJA capped SALT at $10,000; prior law allowed deductions for all SALT"
+                "TCJA capped SALT at $10,000; prior law allowed deductions for all SALT."
             )
         elif st.session_state.chart_index == 2:
             st.markdown("### But AMT income does not vary with SALT")
@@ -413,7 +424,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### AMT income equals taxable income plus exemptions and deductions including SALT"
+                "AMT income equals taxable income plus exemptions and deductions including SALT."
             )
         elif st.session_state.chart_index == 3:
             # Calculate effective SALT caps for both policies
@@ -432,7 +443,7 @@ if calculation_is_valid:
             )
 
             st.markdown(
-                f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law",
+                f"### With <span style='color: {BLUE}'>{cap_display_law}</span> in SALT, under current law AMT equals regular tax",
                 unsafe_allow_html=True,
             )
             display_regular_tax_and_amt_chart(
@@ -449,7 +460,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### Additional SALT does not reduce your income tax if AMT exceeds regular tax"
+                "Additional SALT does not reduce your income tax if AMT exceeds regular tax."
             )
         elif st.session_state.chart_index == 4:
             # Calculate income tax reduction for current law
@@ -466,6 +477,20 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 employment_income=inputs_to_use["employment_income"],
                 baseline_scenario="Current Law",
+            )
+
+            cap_display_law, cap_display_policy = display_effective_salt_cap(
+                is_married=inputs_to_use["is_married"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
 
             # Calculate income tax reduction for current policy
@@ -493,7 +518,7 @@ if calculation_is_valid:
             )
 
             st.markdown(
-                f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy",
+                f"### You face an effective SALT cap of <span style='color: {BLUE}'>{cap_display_policy}</span> under current policy and <span style='color: {BLUE}'>{cap_display_law}</span> under current law.",
                 unsafe_allow_html=True,
             )
             display_income_tax_chart(
@@ -509,8 +534,13 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-            st.markdown("### Filers pay the greater of regular tax and AMT")
+            st.markdown(
+                f"SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy. Filers pay the greater of regular tax and AMT.",
+                unsafe_allow_html=True,
+            )
         elif st.session_state.chart_index == 5:
+            st.markdown("### How does this vary with wages?")
+        elif st.session_state.chart_index == 6:
             st.markdown(
                 "### AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax"
             )
@@ -527,6 +557,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
+            st.markdown("In these earnings variation charts, all points assume no SALT.")
         # elif st.session_state.chart_index == 5:
         #     st.markdown("### Regular Tax and AMT Comparison")
         #     display_regular_tax_comparison_chart(
@@ -551,7 +582,7 @@ if calculation_is_valid:
         #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
         #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
         # )
-        elif st.session_state.chart_index == 6:
+        elif st.session_state.chart_index == 7:
             st.markdown(
                 "### AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above"
             )
@@ -568,9 +599,9 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "### Your AMT phases in at higher income levels than regular tax due to the AMT exemption"
+                "Your AMT phases in at higher income levels than regular tax due to the AMT exemption."
             )
-        elif st.session_state.chart_index == 7:
+        elif st.session_state.chart_index == 8:
             st.markdown("### The Gap is the excess of regular tax over AMT")
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
@@ -584,9 +615,9 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-        elif st.session_state.chart_index == 8:
+        elif st.session_state.chart_index == 9:
             st.markdown(
-                "### Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income"
+                "### Your marginal tax rate"
             )
             display_marginal_rate_chart(
                 is_married=inputs_to_use["is_married"],
@@ -600,9 +631,10 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-        elif st.session_state.chart_index == 9:
+            st.markdown("Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income.")
+        elif st.session_state.chart_index == 10:
             st.markdown(
-                "### The effective SALT cap is computed as: (Gap / Marginal Tax rate) + Standard Deduction + Exemptions"
+                "### The effective SALT cap ~= Gap / Marginal tax rate"
             )
             display_effective_salt_cap_graph(
                 is_married=inputs_to_use["is_married"],
@@ -617,7 +649,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-        elif st.session_state.chart_index == 10:
+        elif st.session_state.chart_index == 11:
             st.markdown(
                 "### Lastly, this is how much you could potentially save due to SALT"
             )
@@ -634,37 +666,15 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-        elif st.session_state.chart_index == 11:
+        elif st.session_state.chart_index == 12:
+            st.markdown("### How would you reform the SALT deduction and AMT?")
+        elif st.session_state.chart_index in (13, 14):
             # Create the Budgetary and distributional impacts section
-            st.markdown(
-                f"""
-            <h2 style="font-family: Roboto;">Budgetary and distributional impacts</h2>
-            """,
-                unsafe_allow_html=True,
-            )
 
             policy_config = st.session_state.policy_config
 
-            # Baseline selection
-            baseline = st.radio(
-                "Baseline Scenario",
-                ["Current Law", "Current Policy"],
-                help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
-                horizontal=True,
-            )
-            st.session_state.baseline = baseline
-
-            # Behavioral responses checkbox
-            behavioral_responses = st.checkbox(
-                "Include behavioral responses",
-                help="When selected, simulations adjust earnings based on how reforms affect net income and marginal tax rates, applying the Congressional Budget Office's assumptions. [Learn more](https://policyengine.org/us/research/us-behavioral-responses).",
-                disabled=st.session_state.policy_config.get("salt_cap") == "$100k",
-            )
-
-            # Store behavioral response in session state
-            st.session_state.policy_config["behavioral_responses"] = (
-                behavioral_responses
-            )
+            if not hasattr(st.session_state, "baseline"):
+                st.session_state.baseline = "Current Law"
 
             # Show budget window impacts with full width
             budget_window_impacts = []
@@ -694,34 +704,32 @@ if calculation_is_valid:
                     st.session_state.baseline,
                 )
                 if total_revenue_impact == 0:
-                    st.markdown("### Revise your policy to see an impact")
+                    st.markdown("Revise your policy using the left sidebar (policy inputs) to see an impact")
                 else:
                     impact_word = "reduce" if total_revenue_impact > 0 else "increase"
                     impact_amount = abs(total_revenue_impact) / 1e12
-
-                    st.markdown(
-                        f"""
-                        <div style="text-align: center; margin: 25px 0;">
-                            <h3 style="color: #777777; font-family: Roboto;">Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                    # Create an expander for the 10-year impact graph
-                    with st.expander("Show 10-Year Impact Graph"):
+                    if st.session_state.chart_index == 13:
                         st.markdown(
-                            "**Figure 4: Budgetary Impact Over the 10-Year Window**"
+                            f"""
+                            ### Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-year budget window, compared to {st.session_state.baseline}
+                            
+                            """,
+                            unsafe_allow_html=True,
                         )
 
                         # Show the 10-year impact graph without the title
-                        fig = px.line(
+                        fig = px.bar(
                             budget_window_impacts_df,
                             x="year",
                             y="total_income_change",
+                            color_discrete_sequence=[BLUE],
                             labels={
                                 "year": "Year",
                                 "total_income_change": "Budgetary Impact (in billions)",
                             },
+                            text=budget_window_impacts_df.total_income_change.apply(
+                                lambda x: f"${abs(x/1e9):,.0f}B"
+                            ),
                         )
                         fig = format_fig(fig)
                         # Add margin to ensure logo is visible
@@ -737,44 +745,39 @@ if calculation_is_valid:
             if not hasattr(st.session_state, "nationwide_impacts"):
                 st.error("No impact data available. Please check data files.")
             else:
-                # Construct reform name
-                reform_name = get_reform_name(
-                    st.session_state.policy_config, st.session_state.baseline
-                )
+                if st.session_state.chart_index == 14:
+                    # Construct reform name
+                    reform_name = get_reform_name(
+                        st.session_state.policy_config, st.session_state.baseline
+                    )
 
-                # Get impact data for the selected reform
-                impacts_data = st.session_state.nationwide_impacts.single_year_impacts
-                reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
+                    # Get impact data for the selected reform
+                    impacts_data = st.session_state.nationwide_impacts.single_year_impacts
+                    reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
 
-                if reform_impacts.empty:
-                    st.warning(f"No data available for reform: {reform_name}")
-                else:
-                    if total_revenue_impact == 0:
-                        st.markdown("")
+                    if reform_impacts.empty:
+                        st.warning(f"No data available for reform: {reform_name}")
                     else:
-                        # Display summary metrics
-                        filtered_impacts = display_summary_metrics(
-                            reform_impacts, st.session_state.baseline
-                        )
+                        if total_revenue_impact == 0:
+                            st.markdown("")
+                        else:
+                            # Display summary metrics
+                            filtered_impacts = display_summary_metrics(
+                                reform_impacts, st.session_state.baseline
+                            )
 
-                        # Show single-year impacts
-                        single_year_impact = (
-                            st.session_state.nationwide_impacts.get_reform_impact(
-                                reform_name, impact_type="single_year"
+                            # Show single-year impacts
+                            single_year_impact = (
+                                st.session_state.nationwide_impacts.get_reform_impact(
+                                    reform_name, impact_type="single_year"
+                                )
                             )
-                        )
-                        if single_year_impact is not None:
-                            # Show the single-year impact graph
-                            dist_data = st.session_state.nationwide_impacts.get_income_distribution(
-                                reform_name
-                            )
-                            if dist_data is not None:
-                                with st.expander(
-                                    "Show Average Household Net Income Change Chart"
-                                ):
-                                    st.markdown(
-                                        "**Figure 5: Average Household Net Income Change by Income Decile**"
-                                    )
+                            if single_year_impact is not None:
+                                # Show the single-year impact graph
+                                dist_data = st.session_state.nationwide_impacts.get_income_distribution(
+                                    reform_name
+                                )
+                                if dist_data is not None:
 
                                     fig = ImpactCharts.plot_distributional_analysis(
                                         dist_data
@@ -785,10 +788,16 @@ if calculation_is_valid:
                                         margin=dict(l=20, r=60, t=20, b=80),
                                     )
                                     st.plotly_chart(fig, use_container_width=False)
-                        else:
-                            st.error(
-                                "No single-year impact data available for this combination."
-                            )
+                            else:
+                                st.error(
+                                    "No single-year impact data available for this combination."
+                                )
+        elif st.session_state.chart_index == 15:
+            st.markdown("### Key takeaways")
+            st.markdown("* AMT creates an effective SALT cap")
+            st.markdown("* This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate")
+            st.markdown("* Explore other policy reforms at policyengine.org")
+            st.markdown("* This project was made possible with generous support from Arnold Ventures")
 
         st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])

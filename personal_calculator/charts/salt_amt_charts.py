@@ -12,6 +12,7 @@ from personal_calculator.dataframes.dataframes import (
     process_income_marginal_tax_data,
     display_effective_salt_cap,
 )
+from personal_calculator.chart import adjust_chart_limits
 
 
 def display_salt_deduction_comparison_chart(
@@ -102,7 +103,7 @@ def display_salt_deduction_comparison_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"SALT Deduction by SALT",
+        title="",
         title_font_size=16,
         xaxis_title="SALT ",
         yaxis_title="SALT Deduction ",
@@ -126,6 +127,12 @@ def display_salt_deduction_comparison_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -186,6 +193,15 @@ def display_effective_salt_cap_graph(
 
     # Create the graph
     fig = create_max_salt_line_graph(processed_df, policy=policy, threshold=threshold)
+
+    adjust_chart_limits(fig)
+    
+    fig.update_layout(
+        yaxis_title="Effective SALT cap",
+    )
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the graph
     st.plotly_chart(format_fig(fig), use_container_width=True)
@@ -304,7 +320,7 @@ def display_regular_tax_and_amt_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Regular Tax and AMT by Income Level",
+        title="",
         title_font_size=16,
         xaxis_title="SALT ",
         yaxis_title="Tax Amount ",
@@ -328,6 +344,11 @@ def display_regular_tax_and_amt_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -444,7 +465,7 @@ def display_taxable_income_and_amti_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Taxable Income and AMTI by SALT",
+        title="",
         title_font_size=16,
         xaxis_title="SALT ",
         yaxis_title="Taxable Income ",
@@ -468,6 +489,11 @@ def display_taxable_income_and_amti_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -557,7 +583,7 @@ def display_income_tax_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Income Tax by SALT",
+        title="",
         title_font_size=16,
         xaxis_title="SALT ",
         yaxis_title="Income Tax ",
@@ -581,6 +607,11 @@ def display_income_tax_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 100_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -638,7 +669,7 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
 
     # Update layout
     fig.update_layout(
-        title=f"Effective SALT cap under {policy}",
+        title="",
         title_font_size=16,
         xaxis_title="Employment Income ",
         yaxis_title="SALT ",
@@ -740,7 +771,7 @@ def display_regular_tax_comparison_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Regular Tax by Income",
+        title="",
         title_font_size=16,
         xaxis_title="Income",
         yaxis_title="Income Tax",
@@ -847,7 +878,7 @@ def display_amt_comparison_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"AMT by Income",
+        title="",
         title_font_size=16,
         xaxis_title="Income",
         yaxis_title="AMT",
@@ -956,7 +987,7 @@ def display_gap_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Gap by Income",
+        title="",
         title_font_size=16,
         xaxis_title="Income",
         yaxis_title="Gap between Regular Tax and AMT",
@@ -980,6 +1011,11 @@ def display_gap_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1067,7 +1103,7 @@ def display_marginal_rate_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Marginal Tax Rate by Income",
+        title="",
         title_font_size=16,
         xaxis_title="Income",
         yaxis_title="Marginal Tax Rate",
@@ -1091,6 +1127,12 @@ def display_marginal_rate_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+        yaxis_range=[0, 1],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1204,7 +1246,7 @@ def display_regular_tax_and_amt_by_income_chart(
 
     # Update layout
     fig.update_layout(
-        title=f"Regular Tax and AMT by Income",
+        title="",
         title_font_size=16,
         xaxis_title="Income",
         yaxis_title="Tax Amount",
@@ -1228,6 +1270,11 @@ def display_regular_tax_and_amt_by_income_chart(
 
     # Format the chart
     fig = format_fig(fig)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1269,7 +1316,7 @@ def create_tax_savings_line_graph(df, policy="Current Law"):
 
     # Update layout
     fig.update_layout(
-        title=f"Tax Savings from SALT under {policy}",
+        title="",
         title_font_size=16,
         xaxis_title="Employment Income",
         yaxis_title="Tax Savings",
@@ -1365,6 +1412,11 @@ def display_tax_savings_chart(
 
     # Create the graph
     fig = create_tax_savings_line_graph(tax_savings_df, policy=policy)
+
+    adjust_chart_limits(fig)
+    fig.update_layout(
+        xaxis_range=[0, 1_000_000],
+    )
 
     # Display the graph
     st.plotly_chart(format_fig(fig), use_container_width=True)

@@ -10,7 +10,6 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
     if not summary_results:  # If no results, return empty figure
         fig = go.Figure()
         fig.update_layout(
-            title="Household Net Income after Income Taxes and Transfers by Reform",
             showlegend=False,
             height=400,
         )
@@ -97,7 +96,6 @@ def create_reform_comparison_graph(summary_results, baseline_scenario):
 
     fig.update_layout(
         title=dict(
-            text=f"Figure 6: Household Net Income vs {baseline_scenario}",
             font=dict(size=24),
         ),
         showlegend=False,
@@ -123,3 +121,27 @@ def update_results(df, summary_results, reform_name, income_value):
     df.loc[reform_name] = income_value
     summary_results[reform_name] = income_value
     return df, summary_results
+
+def adjust_chart_limits(fig: go.Figure) -> None:
+    x_min, x_max, y_min, y_max = None, None, None, None
+    for trace in fig.data:
+        if x_min is None or min(trace.x) < x_min:
+            x_min = min(trace.x)
+        
+        if x_max is None or max(trace.x) > x_max:
+            x_max = max(trace.x)
+        
+        if y_min is None or min(trace.y) < y_min:
+            y_min = min(trace.y)
+        
+        if y_max is None or max(trace.y) > y_max:
+            y_max = max(trace.y)
+
+    x_range = x_max - x_min
+    SAFETY_MARGIN_FACTOR = 0.1
+    y_range = y_max - y_min
+    
+    fig.update_layout(
+        xaxis_range=[0, int(x_max + SAFETY_MARGIN_FACTOR * x_range)],
+        yaxis_range=[0, int(y_max + SAFETY_MARGIN_FACTOR * y_range)],
+    )
