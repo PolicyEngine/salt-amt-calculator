@@ -527,6 +527,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
+            st.markdown("In these earnings variation charts, all points assume no SALT.")
         # elif st.session_state.chart_index == 5:
         #     st.markdown("### Regular Tax and AMT Comparison")
         #     display_regular_tax_comparison_chart(
