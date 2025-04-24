@@ -337,8 +337,9 @@ available_charts = [
     "ESALT definition",
     "Effective SALT Cap",
     "Tax Savings Chart",
-    "How would you reform?",
-    "Budgetary and distributional impacts",
+    "How would you reform SALT/AMT?",
+    "Budgetary impacts",
+    "Distributional impacts",
     "Key takeaways",
 ]
 
@@ -662,37 +663,14 @@ if calculation_is_valid:
             )
         elif st.session_state.chart_index == 13:
             st.markdown("### How would you reform the SALT deduction and AMT?")
-        elif st.session_state.chart_index == 14:
+        elif st.session_state.chart_index in (14, 15):
             # Create the Budgetary and distributional impacts section
-            st.markdown(
-                f"""
-            <h2 style="font-family: Roboto;">Budgetary and distributional impacts</h2>
-            """,
-                unsafe_allow_html=True,
-            )
+            if st.session_state.chart_index == 14:
+                st.markdown("### Budgetary impacts")
+            if st.session_state.chart_index == 15:
+                st.markdown("### Distributional impacts")
 
             policy_config = st.session_state.policy_config
-
-            # Baseline selection
-            baseline = st.radio(
-                "Baseline Scenario",
-                ["Current Law", "Current Policy"],
-                help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
-                horizontal=True,
-            )
-            st.session_state.baseline = baseline
-
-            # Behavioral responses checkbox
-            behavioral_responses = st.checkbox(
-                "Include behavioral responses",
-                help="When selected, simulations adjust earnings based on how reforms affect net income and marginal tax rates, applying the Congressional Budget Office's assumptions. [Learn more](https://policyengine.org/us/research/us-behavioral-responses).",
-                disabled=st.session_state.policy_config.get("salt_cap") == "$100k",
-            )
-
-            # Store behavioral response in session state
-            st.session_state.policy_config["behavioral_responses"] = (
-                behavioral_responses
-            )
 
             # Show budget window impacts with full width
             budget_window_impacts = []
@@ -722,21 +700,19 @@ if calculation_is_valid:
                     st.session_state.baseline,
                 )
                 if total_revenue_impact == 0:
-                    st.markdown("### Revise your policy to see an impact")
+                    st.markdown("Revise your policy using the left sidebar (policy inputs) to see an impact")
                 else:
                     impact_word = "reduce" if total_revenue_impact > 0 else "increase"
                     impact_amount = abs(total_revenue_impact) / 1e12
-
-                    st.markdown(
-                        f"""
-                        <div style="text-align: center; margin: 25px 0;">
-                            <h3 style="color: #777777; font-family: Roboto;">Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                    # Create an expander for the 10-year impact graph
-                    with st.expander("Show 10-Year Impact Graph"):
+                    if st.session_state.chart_index == 14:
+                        st.markdown(
+                            f"""
+                            <div style="text-align: center; margin: 25px 0;">
+                                <h3 style="color: #777777; font-family: Roboto;">Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-Year Budget window</h3>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
                         st.markdown(
                             "**Figure 4: Budgetary Impact Over the 10-Year Window**"
                         )
@@ -768,41 +744,39 @@ if calculation_is_valid:
             if not hasattr(st.session_state, "nationwide_impacts"):
                 st.error("No impact data available. Please check data files.")
             else:
-                # Construct reform name
-                reform_name = get_reform_name(
-                    st.session_state.policy_config, st.session_state.baseline
-                )
+                if st.session_state.chart_index == 15:
+                    # Construct reform name
+                    reform_name = get_reform_name(
+                        st.session_state.policy_config, st.session_state.baseline
+                    )
 
-                # Get impact data for the selected reform
-                impacts_data = st.session_state.nationwide_impacts.single_year_impacts
-                reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
+                    # Get impact data for the selected reform
+                    impacts_data = st.session_state.nationwide_impacts.single_year_impacts
+                    reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
 
-                if reform_impacts.empty:
-                    st.warning(f"No data available for reform: {reform_name}")
-                else:
-                    if total_revenue_impact == 0:
-                        st.markdown("")
+                    if reform_impacts.empty:
+                        st.warning(f"No data available for reform: {reform_name}")
                     else:
-                        # Display summary metrics
-                        filtered_impacts = display_summary_metrics(
-                            reform_impacts, st.session_state.baseline
-                        )
+                        if total_revenue_impact == 0:
+                            st.markdown("")
+                        else:
+                            # Display summary metrics
+                            filtered_impacts = display_summary_metrics(
+                                reform_impacts, st.session_state.baseline
+                            )
 
-                        # Show single-year impacts
-                        single_year_impact = (
-                            st.session_state.nationwide_impacts.get_reform_impact(
-                                reform_name, impact_type="single_year"
+                            # Show single-year impacts
+                            single_year_impact = (
+                                st.session_state.nationwide_impacts.get_reform_impact(
+                                    reform_name, impact_type="single_year"
+                                )
                             )
-                        )
-                        if single_year_impact is not None:
-                            # Show the single-year impact graph
-                            dist_data = st.session_state.nationwide_impacts.get_income_distribution(
-                                reform_name
-                            )
-                            if dist_data is not None:
-                                with st.expander(
-                                    "Show Average Household Net Income Change Chart"
-                                ):
+                            if single_year_impact is not None:
+                                # Show the single-year impact graph
+                                dist_data = st.session_state.nationwide_impacts.get_income_distribution(
+                                    reform_name
+                                )
+                                if dist_data is not None:
                                     st.markdown(
                                         "**Figure 5: Average Household Net Income Change by Income Decile**"
                                     )
@@ -816,11 +790,11 @@ if calculation_is_valid:
                                         margin=dict(l=20, r=60, t=20, b=80),
                                     )
                                     st.plotly_chart(fig, use_container_width=False)
-                        else:
-                            st.error(
-                                "No single-year impact data available for this combination."
-                            )
-        elif st.session_state.chart_index == 15:
+                            else:
+                                st.error(
+                                    "No single-year impact data available for this combination."
+                                )
+        elif st.session_state.chart_index == 16:
             st.markdown("### Key takeaways")
             st.markdown("* AMT creates an effective SALT cap")
             st.markdown("* This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate")

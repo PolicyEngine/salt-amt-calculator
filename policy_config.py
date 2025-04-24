@@ -24,10 +24,35 @@ def display_policy_config():
     """Display and collect policy configuration options"""
 
     # Create two columns for SALT and AMT with more width for the first column
-    col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
 
     # Initialize policy config in session state if it doesn't exist
     initialize_policy_config_state()
+    st.divider()
+
+    # Baseline selection
+    baseline = st.radio(
+        "Baseline Scenario",
+        ["Current Law", "Current Policy"],
+        help="Choose whether to compare against Current Law or Current Policy (TCJA Extended)",
+        horizontal=True,
+    )
+    st.session_state.baseline = baseline
+
+    # Behavioral responses checkbox
+    behavioral_responses = st.checkbox(
+        "Include behavioral responses",
+        help="When selected, simulations adjust earnings based on how reforms affect net income and marginal tax rates, applying the Congressional Budget Office's assumptions. [Learn more](https://policyengine.org/us/research/us-behavioral-responses).",
+        disabled=st.session_state.policy_config.get("salt_cap") == "$100k",
+    )
+
+    # Store behavioral response in session state
+    st.session_state.policy_config["behavioral_responses"] = (
+        behavioral_responses
+    )
+
+    st.divider()
+    col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
+
 
     with col1:
         st.markdown(
