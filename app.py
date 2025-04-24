@@ -349,6 +349,8 @@ inputs_changed = (
     and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
 )
 
+st.session_state.baseline = "Current Law"
+
 calculation_is_valid = (
     "calculate_clicked" in st.session_state
     and st.session_state.calculate_clicked
