@@ -591,3 +591,88 @@ def calculate_salt_income_tax_reduction(
         "effective_salt_cap": effective_salt_cap,
         "indefinite_reduction": indefinite_reduction,
     }
+
+def display_effective_salt_cap(
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    employment_income,
+    policy=None,
+    reform_params=None,
+    threshold=0.1,
+):
+
+    # Calculate for single axis (fixed employment income)
+    current_law_df = calculate_property_tax_df(
+        is_married,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        employment_income,
+        reform_params=reform_params,
+        baseline_scenario="Current Law",
+    )
+
+    current_policy_df = calculate_property_tax_df(
+        is_married,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        employment_income,
+        reform_params=reform_params,
+        baseline_scenario="Current Policy",
+    )
+
+    # Process the data to calculate marginal rates
+    processed_law_df = process_effective_cap_over_property_tax_data(current_law_df)
+    processed_policy_df = process_effective_cap_over_property_tax_data(
+        current_policy_df
+    )
+
+    # Find the effective cap (maximum SALT where marginal rate > threshold)
+    filtered_law_df = processed_law_df[
+        processed_law_df["marginal_property_tax_rate"] > threshold
+    ]
+    filtered_policy_df = processed_policy_df[
+        processed_policy_df["marginal_property_tax_rate"] > threshold
+    ]
+    effective_cap_law = float("inf")
+    effective_cap_policy = float("inf")
+    if not filtered_law_df.empty:
+        effective_cap_law = filtered_law_df["salt_and_property_tax"].max()
+
+    else:
+        effective_cap_law = float("inf")
+
+    if not filtered_policy_df.empty:
+        effective_cap_policy = filtered_policy_df["salt_and_property_tax"].max()
+        effective_cap_policy = min(effective_cap_policy, 10000)
+
+    # Format the cap value (round to nearest 100)
+    def format_cap(cap_value):
+        if cap_value == float("inf"):
+            return f"\$0"
+        else:
+            # Round to nearest 100
+            rounded_cap = round(cap_value / 100) * 100
+            return f"\${rounded_cap:,.0f}"
+
+    # Get formatted value for display
+    cap_display_law = format_cap(effective_cap_law)
+    cap_display_policy = format_cap(effective_cap_policy)
+
+    # Always return both values regardless of the policy parameter
+    return cap_display_law, cap_display_policy
