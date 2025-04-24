@@ -511,3 +511,81 @@ def process_income_marginal_tax_data(income_df):
     )
 
     return processed_df
+
+
+def calculate_salt_income_tax_reduction(
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    employment_income,
+    reform_params=None,
+    baseline_scenario="Current Law",
+    threshold=0.1,
+):
+    """
+    Calculate the income tax reduction from SALT by comparing income tax at 0 SALT
+    with income tax at the effective SALT cap.
+
+    Returns:
+    --------
+    dict
+        Dictionary containing:
+        - income_tax_reduction: The reduction in income tax from SALT
+        - effective_salt_cap: The effective SALT cap
+        - indefinite_reduction: Whether SALT reduces income tax indefinitely
+    """
+    # Calculate property tax data
+    property_tax_df = calculate_property_tax_df(
+        is_married,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        employment_income,
+        reform_params=reform_params,
+        baseline_scenario=baseline_scenario,
+    )
+
+    # Process the data to calculate marginal rates
+    processed_df = process_effective_cap_over_property_tax_data(property_tax_df)
+
+    # Find the effective cap (maximum SALT where marginal rate > threshold)
+    filtered_df = processed_df[processed_df["marginal_property_tax_rate"] > threshold]
+    
+    if filtered_df.empty:
+        # If no effective cap found, SALT reduces income tax indefinitely
+        return {
+            "income_tax_reduction": 0,
+            "effective_salt_cap": float("inf"),
+            "indefinite_reduction": True
+        }
+
+    # Get income tax at 0 SALT (first row)
+    income_tax_at_zero_salt = property_tax_df.iloc[0]["income_tax"]
+
+    # Get income tax at effective SALT cap
+    effective_salt_cap = filtered_df["salt_and_property_tax"].max()
+    income_tax_at_effective_cap = property_tax_df[
+        property_tax_df["salt_and_property_tax"] <= effective_salt_cap
+    ].iloc[-1]["income_tax"]
+
+    # Calculate the reduction in income tax
+    income_tax_reduction = max(0, income_tax_at_zero_salt - income_tax_at_effective_cap)
+
+    # Check if the last increment still shows a decrease
+    last_increment = property_tax_df.iloc[-1]["income_tax"] - property_tax_df.iloc[-2]["income_tax"]
+    indefinite_reduction = last_increment < 0
+
+    return {
+        "income_tax_reduction": income_tax_reduction,
+        "effective_salt_cap": effective_salt_cap,
+        "indefinite_reduction": indefinite_reduction
+    }

@@ -33,7 +33,7 @@ from personal_calculator.charts.salt_amt_charts import (
     display_marginal_rate_chart,
     display_regular_tax_and_amt_by_income_chart,
 )
-
+from personal_calculator.dataframes.dataframes import calculate_salt_income_tax_reduction
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
@@ -476,8 +476,41 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                     "### Additional SALT does not reduce your income tax if AMT exceeds regular tax"
                 )
             elif st.session_state.chart_index == 3:
+                # Calculate income tax reduction for current law
+                current_law_reduction = calculate_salt_income_tax_reduction(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    employment_income=inputs_to_use["employment_income"],
+                    baseline_scenario="Current Law"
+                )
+                
+                # Calculate income tax reduction for current policy
+                current_policy_reduction = calculate_salt_income_tax_reduction(
+                    is_married=inputs_to_use["is_married"],
+                    num_children=inputs_to_use["num_children"],
+                    child_ages=inputs_to_use["child_ages"],
+                    qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                    long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                    short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                    deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                    charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                    employment_income=inputs_to_use["employment_income"],
+                    baseline_scenario="Current Policy"
+                )
+                
+                # Format the values for display
+                current_law_value = f"\${current_law_reduction['income_tax_reduction']:,.0f}"
+                current_policy_value = f"\${current_policy_reduction['income_tax_reduction']:,.0f}"
+                
                 st.markdown(
-                    "### SALT could lower your taxes by up to $x under current law and $y under current policy"
+                    f"### SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy",
+                    unsafe_allow_html=True,
                 )
                 display_income_tax_chart(
                     is_married=inputs_to_use["is_married"],
@@ -577,7 +610,7 @@ elif st.session_state.nav_page == "The Effective SALT Cap":
                     ],
                 )
             elif st.session_state.chart_index == 7:
-                st.markdown("### Marginal Tax Rate Chart")
+                st.markdown("### Your marginal tax rate on regular taxable income is the additional amount of regular federal income tax you pay for each extra dollar of taxable income.")
                 display_marginal_rate_chart(
                     is_married=inputs_to_use["is_married"],
                     num_children=inputs_to_use["num_children"],
