@@ -2,7 +2,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from policyengine_core.charts import format_fig
+from policyengine_core.charts import format_fig as format_fig_
+
+def format_fig(fig):
+    return format_fig_(fig).update_layout(
+        margin_r=100,
+    )
 from constants import BLUE, DARK_GRAY, LIGHT_GRAY
 from personal_calculator.dataframes.dataframes import (
     calculate_property_tax_df,
@@ -94,10 +99,10 @@ def display_salt_deduction_comparison_chart(
                 y=current_policy_df["salt_deduction"],
                 mode="lines",
                 name="Current Policy ",
-                line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
+                line=dict(color=LIGHT_GRAY, width=2, dash="solid"),
                 hovertemplate="SALT: $%{x:,.0f}<br>Current Policy SALT Deduction: $%{y:,.0f}<extra></extra>",
                 zorder=1,
-                visible="legendonly",
+                visible=show_current_policy,
             )
         )
 
@@ -201,6 +206,7 @@ def display_effective_salt_cap_graph(
     )
     fig.update_layout(
         xaxis_range=[0, 1_000_000],
+        xaxis_title="Wages and salaries",
     )
 
     # Display the graph
@@ -1015,6 +1021,7 @@ def display_gap_chart(
     adjust_chart_limits(fig)
     fig.update_layout(
         xaxis_range=[0, 1_000_000],
+        xaxis_title="Wages and salaries",
     )
 
     # Display the chart
@@ -1132,6 +1139,7 @@ def display_marginal_rate_chart(
     fig.update_layout(
         xaxis_range=[0, 1_000_000],
         yaxis_range=[0, 1],
+        xaxis_title="Wages and salaries",
     )
 
     # Display the chart
@@ -1274,6 +1282,7 @@ def display_regular_tax_and_amt_by_income_chart(
     adjust_chart_limits(fig)
     fig.update_layout(
         xaxis_range=[0, 1_000_000],
+        xaxis_title="Wages and salaries",
     )
 
     # Display the chart
@@ -1318,7 +1327,7 @@ def create_tax_savings_line_graph(df, policy="Current Law"):
     fig.update_layout(
         title="",
         title_font_size=16,
-        xaxis_title="Employment Income",
+        xaxis_title="Wages and salaries",
         yaxis_title="Tax Savings",
         xaxis=dict(
             tickformat="$,.0f",
@@ -1416,6 +1425,7 @@ def display_tax_savings_chart(
     adjust_chart_limits(fig)
     fig.update_layout(
         xaxis_range=[0, 1_000_000],
+        xaxis_title="Wages and salaries",
     )
 
     # Display the graph

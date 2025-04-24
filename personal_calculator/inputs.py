@@ -62,7 +62,7 @@ def create_personal_inputs():
     )
 
     employment_income = st.number_input(
-        "Employment Income",
+        "Wages and salaries",
         min_value=0,
         max_value=10_000_000,
         value=0,

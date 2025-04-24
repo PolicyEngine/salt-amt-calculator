@@ -6,7 +6,12 @@ from personal_calculator.chart import (
 )
 import pandas as pd
 import plotly.express as px
-from policyengine_core.charts import format_fig
+from policyengine_core.charts import format_fig as format_fig_
+
+def format_fig(fig):
+    return format_fig_(fig).update_layout(
+        margin_r=100,
+    )
 
 from nationwide_impacts.impacts import (
     NationwideImpacts,
@@ -313,13 +318,6 @@ with st.sidebar:
     elif section == "Policy Inputs":
         display_policy_config()
 
-    st.markdown("---")
-    st.markdown(
-        """
-    _This tool is designed to help you understand and model SALT and AMT policy changes_
-    """
-    )
-
 # Initialize nationwide impacts if not already done
 if "nationwide_impacts" not in st.session_state:
     try:
@@ -404,6 +402,7 @@ if calculation_is_valid:
                     "deductible_mortgage_interest"
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                show_current_policy=True,
             )
             st.markdown(
                 "TCJA capped SALT at $10,000; prior law allowed deductions for all SALT."
@@ -542,7 +541,7 @@ if calculation_is_valid:
             st.markdown("### How does this vary with wages?")
         elif st.session_state.chart_index == 6:
             st.markdown(
-                "### AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax"
+                """### AMT effectively caps SALT"""
             )
             display_effective_salt_cap_graph(
                 is_married=inputs_to_use["is_married"],
@@ -557,7 +556,7 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-            st.markdown("In these earnings variation charts, all points assume no SALT.")
+            st.markdown("AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax.")
         # elif st.session_state.chart_index == 5:
         #     st.markdown("### Regular Tax and AMT Comparison")
         #     display_regular_tax_comparison_chart(
@@ -583,9 +582,7 @@ if calculation_is_valid:
         #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
         # )
         elif st.session_state.chart_index == 7:
-            st.markdown(
-                "### AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above"
-            )
+            st.markdown("### The gap from AMT to regular tax influences the effective SALT cap")
             display_regular_tax_and_amt_by_income_chart(
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
@@ -599,10 +596,10 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
-                "Your AMT phases in at higher income levels than regular tax due to the AMT exemption."
+                "AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above. Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
             )
         elif st.session_state.chart_index == 8:
-            st.markdown("### The Gap is the excess of regular tax over AMT")
+            st.markdown("### The gap is the excess of regular tax over AMT")
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
@@ -617,7 +614,7 @@ if calculation_is_valid:
             )
         elif st.session_state.chart_index == 9:
             st.markdown(
-                "### Your marginal tax rate"
+                "### SALT reduces income tax at roughly the regular marginal tax rate"
             )
             display_marginal_rate_chart(
                 is_married=inputs_to_use["is_married"],
@@ -631,7 +628,7 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-            st.markdown("Your marginal tax rate is the additional regular federal income tax owed per additional dollar of taxable income.")
+            st.markdown("Your marginal tax rate is the additional regular federal income tax (not including credits) owed per additional dollar of taxable income.")
         elif st.session_state.chart_index == 10:
             st.markdown(
                 "### The effective SALT cap ~= Gap / Marginal tax rate"
@@ -794,10 +791,14 @@ if calculation_is_valid:
                                 )
         elif st.session_state.chart_index == 15:
             st.markdown("### Key takeaways")
-            st.markdown("* AMT creates an effective SALT cap")
-            st.markdown("* This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate")
-            st.markdown("* Explore other policy reforms at policyengine.org")
-            st.markdown("* This project was made possible with generous support from Arnold Ventures")
+            st.markdown("""
+            * AMT creates an effective SALT cap
+            * This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate
+            * **Coming soon**: how custom policies affect your household 
+            
+            *This project was made possible with generous support from [Arnold Ventures](https://arnoldventures.org)*
+        """)
+            
 
         st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])
