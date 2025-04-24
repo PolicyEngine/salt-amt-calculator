@@ -9,8 +9,6 @@ from personal_calculator.dataframes.dataframes import (
     calculate_effective_salt_cap_over_earnings,
     process_effective_cap_data,
     calculate_income_df,
-    create_max_salt_dataset,
-    process_effective_cap_over_property_tax_data,
     process_income_marginal_tax_data,
     display_effective_salt_cap,
 )

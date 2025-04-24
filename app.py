@@ -22,7 +22,6 @@ from constants import BLUE
 from personal_calculator.charts.salt_amt_charts import (
     display_salt_deduction_comparison_chart,
     display_notes,
-    display_effective_salt_cap,
     display_regular_tax_and_amt_chart,
     display_taxable_income_and_amti_chart,
     display_income_tax_chart,
@@ -35,6 +34,7 @@ from personal_calculator.charts.salt_amt_charts import (
 )
 from personal_calculator.dataframes.dataframes import (
     calculate_salt_income_tax_reduction,
+    display_effective_salt_cap,
 )
 
 # Set up the Streamlit page
