@@ -349,8 +349,6 @@ inputs_changed = (
     and st.session_state.personal_inputs != st.session_state.last_calculated_inputs
 )
 
-st.session_state.baseline = "Current Law"
-
 calculation_is_valid = (
     "calculate_clicked" in st.session_state
     and st.session_state.calculate_clicked
@@ -673,6 +671,9 @@ if calculation_is_valid:
                 st.markdown("### Distributional impacts")
 
             policy_config = st.session_state.policy_config
+
+            if not hasattr(st.session_state, "baseline"):
+                st.session_state.baseline = "Current Law"
 
             # Show budget window impacts with full width
             budget_window_impacts = []
