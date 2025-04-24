@@ -193,8 +193,6 @@ def display_effective_salt_cap_graph(
     return processed_df
 
 
-
-
 def display_regular_tax_and_amt_chart(
     is_married=False,
     num_children=0,
@@ -1233,3 +1231,142 @@ def display_regular_tax_and_amt_by_income_chart(
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
+
+
+def create_tax_savings_line_graph(df, policy="Current Law"):
+    """
+    Create a line graph showing tax savings by income level for a specific policy.
+
+    Parameters:
+    -----------
+    df : pandas DataFrame
+        The dataframe containing the tax savings data
+    policy : str
+        Policy type (default: 'Current Law')
+    y_max : int
+        Maximum value for y-axis (default: 50000)
+    """
+    # Filter to only include the specified policy
+    df_filtered = df[df["policy"] == policy]
+
+    # Sort by employment income for line plotting
+    df_filtered = df_filtered.sort_values("employment_income")
+
+    # Create figure
+    fig = go.Figure()
+
+    # Add line trace
+    fig.add_trace(
+        go.Scatter(
+            x=df_filtered["employment_income"],
+            y=df_filtered["tax_savings"],
+            mode="lines",
+            line=dict(color=BLUE, width=1.5),
+            name="Tax Savings",
+            hovertemplate="Income: $%{x:,.0f}<br>Tax Savings: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Update layout
+    fig.update_layout(
+        title=f"Tax Savings from SALT under {policy}",
+        title_font_size=16,
+        xaxis_title="Employment Income",
+        yaxis_title="Tax Savings",
+        xaxis=dict(
+            tickformat="$,.0f",
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+            range=[0, 1000000],
+        ),
+        yaxis=dict(
+            tickformat="$,.0f",
+            range=[0, 200000],
+            showgrid=True,
+            gridcolor="rgba(0,0,0,0.1)",
+        ),
+        margin=dict(t=100, b=100),
+        hovermode="closest",
+        plot_bgcolor="white",
+    )
+
+    return fig
+
+
+def display_tax_savings_chart(
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    policy=None,
+    reform_params=None,
+    threshold=0.1,
+):
+    """Display the tax savings chart showing the difference between income tax at 0 SALT and income tax at effective SALT cap"""
+
+    # Calculate for two axes (varying employment income)
+    result_df = calculate_effective_salt_cap_over_earnings(
+        is_married,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        baseline_scenario=policy,
+        reform_params=reform_params,
+    )
+
+    # Process the data to calculate marginal rates
+    processed_df = process_effective_cap_data(result_df)
+
+    # Group by employment income to find income tax at 0 SALT and at effective SALT cap
+    tax_savings_data = []
+
+    for income, group in processed_df.groupby("employment_income"):
+        # Find income tax at 0 SALT (minimum salt_and_property_tax)
+        min_salt_row = group.loc[group["salt_and_property_tax"].idxmin()]
+        income_tax_at_zero_salt = min_salt_row["income_tax"]
+
+        # Find the effective SALT cap (where marginal_property_tax_rate > threshold)
+        effective_cap_group = group[group["marginal_property_tax_rate"] > threshold]
+
+        if not effective_cap_group.empty:
+            # Get the maximum SALT value where marginal rate exceeds threshold
+            effective_cap = effective_cap_group["salt_and_property_tax"].max()
+
+            # Find the row with the effective SALT cap
+            effective_cap_row = group[
+                group["salt_and_property_tax"] == effective_cap
+            ].iloc[0]
+            income_tax_at_effective_cap = effective_cap_row["income_tax"]
+
+            # Calculate tax savings (capped at 0)
+            tax_savings = max(0, income_tax_at_zero_salt - income_tax_at_effective_cap)
+        else:
+            # If no effective cap found, tax savings is 0
+            tax_savings = 0
+
+        tax_savings_data.append(
+            {
+                "employment_income": income,
+                "tax_savings": tax_savings,
+                "policy": group["policy"].iloc[0],
+            }
+        )
+
+    # Create a new dataframe with tax savings
+    tax_savings_df = pd.DataFrame(tax_savings_data)
+
+    # Create the graph
+    fig = create_tax_savings_line_graph(tax_savings_df, policy=policy)
+
+    # Display the graph
+    st.plotly_chart(format_fig(fig), use_container_width=True)
+
+    return tax_savings_df

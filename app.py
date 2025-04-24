@@ -31,6 +31,7 @@ from personal_calculator.charts.salt_amt_charts import (
     display_gap_chart,
     display_marginal_rate_chart,
     display_regular_tax_and_amt_by_income_chart,
+    display_tax_savings_chart,
 )
 from personal_calculator.dataframes.dataframes import (
     calculate_salt_income_tax_reduction,
@@ -217,7 +218,11 @@ def change_chart_without_rerun(direction):
 # Set up sidebar for navigation
 with st.sidebar:
     st.title("Inputs")
-    section = st.radio("Section Selection", ["Household Inputs", "Policy Inputs"], label_visibility="collapsed")
+    section = st.radio(
+        "Section Selection",
+        ["Household Inputs", "Policy Inputs"],
+        label_visibility="collapsed",
+    )
 
     # Set policy config state to default values to prevent error
     # if user skips straight to budgetary impacts
@@ -331,6 +336,7 @@ available_charts = [
     "Gap Chart",
     "Marginal Tax Rate Chart",
     "Effective SALT Cap",
+    "Tax Savings Chart",
     "Budgetary and distributional impacts",
 ]
 
@@ -612,6 +618,23 @@ if calculation_is_valid:
                 policy="Current Law",
             )
         elif st.session_state.chart_index == 10:
+            st.markdown(
+                "### Lastly, this is how much you could potentially save due to SALT"
+            )
+            display_tax_savings_chart(
+                is_married=inputs_to_use["is_married"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                policy="Current Law",
+            )
+        elif st.session_state.chart_index == 11:
             # Create the Budgetary and distributional impacts section
             st.markdown(
                 f"""

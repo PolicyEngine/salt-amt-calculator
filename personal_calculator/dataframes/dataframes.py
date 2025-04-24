@@ -592,6 +592,7 @@ def calculate_salt_income_tax_reduction(
         "indefinite_reduction": indefinite_reduction,
     }
 
+
 def display_effective_salt_cap(
     is_married,
     num_children,
