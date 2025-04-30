@@ -31,8 +31,6 @@ from personal_calculator.charts.salt_amt_charts import (
     display_taxable_income_and_amti_chart,
     display_income_tax_chart,
     display_effective_salt_cap_graph,
-    display_regular_tax_comparison_chart,
-    display_amt_comparison_chart,
     display_gap_chart,
     display_marginal_rate_chart,
     display_regular_tax_and_amt_by_income_chart,
@@ -557,30 +555,6 @@ if calculation_is_valid:
                 policy="Current Law",
             )
             st.markdown("AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax.")
-        # elif st.session_state.chart_index == 5:
-        #     st.markdown("### Regular Tax and AMT Comparison")
-        #     display_regular_tax_comparison_chart(
-        #             is_married=inputs_to_use["is_married"],
-        #             num_children=inputs_to_use["num_children"],
-        #             child_ages=inputs_to_use["child_ages"],
-        #             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-        #             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-        #             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-        #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-        #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-        #         )
-        # elif st.session_state.chart_index == 6:
-        #     st.markdown("### AMT Comparison")
-        #     display_amt_comparison_chart(
-        #             is_married=inputs_to_use["is_married"],
-        #             num_children=inputs_to_use["num_children"],
-        #             child_ages=inputs_to_use["child_ages"],
-        #             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-        #             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-        #             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-        #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-        #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-        # )
         elif st.session_state.chart_index == 7:
             st.markdown("### The gap from AMT to regular tax influences the effective SALT cap")
             display_regular_tax_and_amt_by_income_chart(
