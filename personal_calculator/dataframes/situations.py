@@ -10,6 +10,7 @@ from constants import BLUE, DARK_GRAY
 
 def create_situation_with_one_property_tax_axes(
     is_married,
+    state_code,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -60,14 +61,14 @@ def create_situation_with_one_property_tax_axes(
             "tax_units": {
                 "your tax unit": {
                     "members": members.copy(),
-                    "state_and_local_sales_or_income_tax": {"2026": 0},
                 }
             },
             "spm_units": {"your household": {"members": members.copy()}},
-            "households": {"your household": {"members": members.copy()}},
+            "households": {"your household": {"members": members.copy(),
+                           "state_name": {"2026": state_code}}},
             # Set up axes for property taxes only
             "axes": [
-                [{"name": "real_estate_taxes", "count": 600, "min": 0, "max": 300000}],
+                [{"name": "reported_salt", "count": 600, "min": 0, "max": 300000, "period": 2026}],
             ],
         }
     )
@@ -76,6 +77,7 @@ def create_situation_with_one_property_tax_axes(
 
 def create_situation_with_one_income_axes(
     is_married,
+    state_code,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -123,10 +125,12 @@ def create_situation_with_one_income_axes(
                 "your tax unit": {
                     "members": members.copy(),
                     "state_and_local_sales_or_income_tax": {"2026": 0},
-                }
+                },
+               
             },
             "spm_units": {"your household": {"members": members.copy()}},
-            "households": {"your household": {"members": members.copy()}},
+            "households": {"your household": {"members": members.copy(),
+                           "state_code": {"2026": state_code}}},
             # Set up axes for property taxes only
             "axes": [
                 [
@@ -135,6 +139,7 @@ def create_situation_with_one_income_axes(
                         "count": 1000,
                         "min": 0,
                         "max": 1000000,
+                        "period": 2026,
                     }
                 ],
             ],
@@ -145,6 +150,7 @@ def create_situation_with_one_income_axes(
 
 def create_situation_with_two_axes(
     is_married,
+    state_code,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -194,15 +200,17 @@ def create_situation_with_two_axes(
                 }
             },
             "spm_units": {"your household": {"members": members.copy()}},
-            "households": {"your household": {"members": members.copy()}},
+            "households": {"your household": {"members": members.copy(),
+                           "state_code": {"2026": state_code}}},
             # Set up axes for property taxes and employment income
             "axes": [
                 [
                     {
-                        "name": "real_estate_taxes",
+                        "name": "reported_salt",
                         "count": 700,
                         "min": -50000,
                         "max": 250000,
+                        "period": 2026,
                     }
                 ],
                 [
@@ -211,6 +219,7 @@ def create_situation_with_two_axes(
                         "count": 1400,
                         "min": 0,
                         "max": 1000000,
+                        "period": 2026,
                     }
                 ],
             ],

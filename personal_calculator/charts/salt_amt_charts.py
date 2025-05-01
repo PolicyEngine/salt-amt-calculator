@@ -22,6 +22,7 @@ from personal_calculator.chart import adjust_chart_limits
 
 def display_salt_deduction_comparison_chart(
     is_married=False,
+    state_code="CA",
     num_children=0,
     child_ages=[],
     qualified_dividend_income=0,
@@ -47,6 +48,7 @@ def display_salt_deduction_comparison_chart(
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -63,6 +65,7 @@ def display_salt_deduction_comparison_chart(
     current_policy_df = calculate_property_tax_df(
         is_married=is_married,
         num_children=num_children,
+        state_code=state_code,
         child_ages=child_ages,
         employment_income=employment_income,
         qualified_dividend_income=qualified_dividend_income,
@@ -81,7 +84,7 @@ def display_salt_deduction_comparison_chart(
     if not current_law_df.empty:
         fig.add_trace(
             go.Scatter(
-                x=current_law_df["salt_and_property_tax"],
+                x=current_law_df["reported_salt"],
                 y=current_law_df["salt_deduction"],
                 mode="lines",
                 name="Current Law ",
@@ -95,7 +98,7 @@ def display_salt_deduction_comparison_chart(
     if not current_policy_df.empty:
         fig.add_trace(
             go.Scatter(
-                x=current_policy_df["salt_and_property_tax"],
+                x=current_policy_df["reported_salt"],
                 y=current_policy_df["salt_deduction"],
                 mode="lines",
                 name="Current Policy ",
@@ -110,7 +113,7 @@ def display_salt_deduction_comparison_chart(
     fig.update_layout(
         title="",
         title_font_size=16,
-        xaxis_title="SALT ",
+        xaxis_title="Reported SALT ",
         yaxis_title="SALT Deduction ",
         xaxis=dict(
             tickformat="$,.0f",
@@ -166,6 +169,7 @@ def display_notes():
 
 def display_effective_salt_cap_graph(
     is_married,
+    state_code,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -182,6 +186,7 @@ def display_effective_salt_cap_graph(
     # Calculate for two axes (varying employment income)
     result_df = calculate_effective_salt_cap_over_earnings(
         is_married,
+        state_code,
         num_children,
         child_ages,
         qualified_dividend_income,
@@ -217,6 +222,7 @@ def display_effective_salt_cap_graph(
 
 def display_regular_tax_and_amt_chart(
     is_married=False,
+    state_code="CA",
     num_children=0,
     child_ages=[],
     employment_income=0,
@@ -238,6 +244,7 @@ def display_regular_tax_and_amt_chart(
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -253,6 +260,7 @@ def display_regular_tax_and_amt_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -273,7 +281,7 @@ def display_regular_tax_and_amt_chart(
         # Regular tax under current policy (solid gray)
         fig.add_trace(
             go.Scatter(
-                x=current_policy_df["salt_and_property_tax"],
+                x=current_policy_df["reported_salt"],
                 y=current_policy_df["regular_tax"],
                 mode="lines",
                 name="Regular Tax (Current Policy)",
@@ -286,7 +294,7 @@ def display_regular_tax_and_amt_chart(
         # AMT under current policy (dotted gray)
         fig.add_trace(
             go.Scatter(
-                x=current_policy_df["salt_and_property_tax"],
+                x=current_policy_df["reported_salt"],
                 y=current_policy_df["amt"],
                 mode="lines",
                 name="AMT (Current Policy)",
@@ -302,7 +310,7 @@ def display_regular_tax_and_amt_chart(
         # Regular tax under current law (solid blue)
         fig.add_trace(
             go.Scatter(
-                x=current_law_df["salt_and_property_tax"],
+                x=current_law_df["reported_salt"],
                 y=current_law_df["regular_tax"],
                 mode="lines",
                 name="Regular Tax (Current Law)",
@@ -314,7 +322,7 @@ def display_regular_tax_and_amt_chart(
         # AMT under current law (dotted blue)
         fig.add_trace(
             go.Scatter(
-                x=current_law_df["salt_and_property_tax"],
+                x=current_law_df["reported_salt"],
                 y=current_law_df["amt"],
                 mode="lines",
                 name="AMT (Current Law)",
@@ -328,7 +336,7 @@ def display_regular_tax_and_amt_chart(
     fig.update_layout(
         title="",
         title_font_size=16,
-        xaxis_title="SALT ",
+        xaxis_title="ReportedSALT ",
         yaxis_title="Tax Amount ",
         xaxis=dict(
             tickformat="$,.0f",
@@ -362,6 +370,7 @@ def display_regular_tax_and_amt_chart(
 
 def display_taxable_income_and_amti_chart(
     is_married=False,
+    state_code="CA",
     num_children=0,
     child_ages=[],
     employment_income=0,
@@ -383,6 +392,7 @@ def display_taxable_income_and_amti_chart(
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -398,6 +408,7 @@ def display_taxable_income_and_amti_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -418,7 +429,7 @@ def display_taxable_income_and_amti_chart(
         # Taxable Income under current policy (solid gray)
         fig.add_trace(
             go.Scatter(
-                x=current_policy_df["salt_and_property_tax"],
+                x=current_policy_df["reported_salt"],
                 y=current_policy_df["taxable_income"],
                 mode="lines",
                 name="Taxable Income (Current Policy)",
@@ -431,7 +442,7 @@ def display_taxable_income_and_amti_chart(
         # AMTI under current policy (dotted gray)
         fig.add_trace(
             go.Scatter(
-                x=current_policy_df["salt_and_property_tax"],
+                x=current_policy_df["reported_salt"],
                 y=current_policy_df["amt_income"],
                 mode="lines",
                 name="AMTI (Current Policy)",
@@ -447,7 +458,7 @@ def display_taxable_income_and_amti_chart(
         # Taxable Income under current law (solid blue)
         fig.add_trace(
             go.Scatter(
-                x=current_law_df["salt_and_property_tax"],
+                x=current_law_df["reported_salt"],
                 y=current_law_df["taxable_income"],
                 mode="lines",
                 name="Taxable Income (Current Law)",
@@ -459,7 +470,7 @@ def display_taxable_income_and_amti_chart(
         # AMTI under current law (dotted blue)
         fig.add_trace(
             go.Scatter(
-                x=current_law_df["salt_and_property_tax"],
+                x=current_law_df["reported_salt"],
                 y=current_law_df["amt_income"],
                 mode="lines",
                 name="AMTI (Current Law)",
@@ -473,7 +484,7 @@ def display_taxable_income_and_amti_chart(
     fig.update_layout(
         title="",
         title_font_size=16,
-        xaxis_title="SALT ",
+        xaxis_title="Reported SALT ",
         yaxis_title="Taxable Income ",
         xaxis=dict(
             tickformat="$,.0f",
@@ -507,6 +518,7 @@ def display_taxable_income_and_amti_chart(
 
 def display_income_tax_chart(
     is_married=False,
+    state_code="CA",
     num_children=0,
     child_ages=[],
     qualified_dividend_income=0,
@@ -528,6 +540,7 @@ def display_income_tax_chart(
     # Calculate data for Current Law
     current_law_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -543,6 +556,7 @@ def display_income_tax_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_property_tax_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         employment_income=employment_income,
@@ -562,7 +576,7 @@ def display_income_tax_chart(
     if not current_law_df.empty:
         fig.add_trace(
             go.Scatter(
-                x=current_law_df["salt_and_property_tax"],
+                x=current_law_df["reported_salt"],
                 y=current_law_df["income_tax"],
                 mode="lines",
                 name="Current Law ",
@@ -576,7 +590,7 @@ def display_income_tax_chart(
     if not current_policy_df.empty:
         fig.add_trace(
             go.Scatter(
-                x=current_policy_df["salt_and_property_tax"],
+                x=current_policy_df["reported_salt"],
                 y=current_policy_df["income_tax"],
                 mode="lines",
                 name="Current Policy ",
@@ -591,7 +605,7 @@ def display_income_tax_chart(
     fig.update_layout(
         title="",
         title_font_size=16,
-        xaxis_title="SALT ",
+        xaxis_title="Reported SALT ",
         yaxis_title="Income Tax ",
         xaxis=dict(
             tickformat="$,.0f",
@@ -650,7 +664,7 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
 
     # For each unique employment income, find the maximum SALT value
     max_salt_by_income = (
-        state_data.groupby("employment_income")["salt_and_property_tax"]
+        state_data.groupby("employment_income")["reported_salt"]
         .max()
         .reset_index()
     )
@@ -665,7 +679,7 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
     fig.add_trace(
         go.Scatter(
             x=max_salt_by_income["employment_income"],
-            y=max_salt_by_income["salt_and_property_tax"],
+            y=max_salt_by_income["reported_salt"],
             mode="lines",
             line=dict(color=BLUE, width=1.5),
             name="Effective SALT Cap",
@@ -701,6 +715,7 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
 
 def display_regular_tax_comparison_chart(
     is_married=False,
+    state_code="CA",
     num_children=0,
     child_ages=[],
     qualified_dividend_income=0,
@@ -708,6 +723,7 @@ def display_regular_tax_comparison_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    real_estate_taxes=0,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
@@ -719,6 +735,7 @@ def display_regular_tax_comparison_chart(
     # Calculate data for Current Law
     current_law_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -726,6 +743,7 @@ def display_regular_tax_comparison_chart(
         short_term_capital_gains=short_term_capital_gains,
         deductible_mortgage_interest=deductible_mortgage_interest,
         charitable_cash_donations=charitable_cash_donations,
+        real_estate_taxes=real_estate_taxes,
         reform_params=None,
         baseline_scenario="Current Law",
     )
@@ -733,7 +751,9 @@ def display_regular_tax_comparison_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
+        real_estate_taxes=real_estate_taxes,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
         long_term_capital_gains=long_term_capital_gains,
@@ -810,6 +830,7 @@ def display_amt_comparison_chart(
     is_married=False,
     num_children=0,
     child_ages=[],
+    state_code="CA",
     qualified_dividend_income=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
@@ -826,6 +847,7 @@ def display_amt_comparison_chart(
     # Calculate data for Current Law
     current_law_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -840,6 +862,7 @@ def display_amt_comparison_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -916,6 +939,7 @@ def display_amt_comparison_chart(
 def display_gap_chart(
     is_married=False,
     num_children=0,
+    state_code="CA",
     child_ages=[],
     qualified_dividend_income=0,
     long_term_capital_gains=0,
@@ -934,6 +958,7 @@ def display_gap_chart(
     # Calculate data for Current Law
     current_law_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -948,6 +973,7 @@ def display_gap_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -1030,6 +1056,7 @@ def display_gap_chart(
 
 def display_marginal_rate_chart(
     is_married=False,
+    state_code="CA",
     num_children=0,
     child_ages=[],
     qualified_dividend_income=0,
@@ -1048,6 +1075,7 @@ def display_marginal_rate_chart(
     # Calculate data for Current Law
     current_law_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -1062,6 +1090,7 @@ def display_marginal_rate_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -1149,8 +1178,8 @@ def display_marginal_rate_chart(
 def display_regular_tax_and_amt_by_income_chart(
     is_married=False,
     num_children=0,
+    state_code="CA",
     child_ages=[],
-    employment_income=0,
     qualified_dividend_income=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
@@ -1169,6 +1198,7 @@ def display_regular_tax_and_amt_by_income_chart(
     # Calculate data for Current Law
     current_law_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -1183,6 +1213,7 @@ def display_regular_tax_and_amt_by_income_chart(
     # Calculate data for Current Policy
     current_policy_df = calculate_income_df(
         is_married=is_married,
+        state_code=state_code,
         num_children=num_children,
         child_ages=child_ages,
         qualified_dividend_income=qualified_dividend_income,
@@ -1351,6 +1382,7 @@ def create_tax_savings_line_graph(df, policy="Current Law"):
 
 def display_tax_savings_chart(
     is_married,
+    state_code,
     num_children,
     child_ages,
     qualified_dividend_income,
@@ -1367,6 +1399,7 @@ def display_tax_savings_chart(
     # Calculate for two axes (varying employment income)
     result_df = calculate_effective_salt_cap_over_earnings(
         is_married,
+        state_code,
         num_children,
         child_ages,
         qualified_dividend_income,
@@ -1385,8 +1418,8 @@ def display_tax_savings_chart(
     tax_savings_data = []
 
     for income, group in processed_df.groupby("employment_income"):
-        # Find income tax at 0 SALT (minimum salt_and_property_tax)
-        min_salt_row = group.loc[group["salt_and_property_tax"].idxmin()]
+        # Find income tax at 0 SALT (minimum reported_salt)
+        min_salt_row = group.loc[group["reported_salt"].idxmin()]
         income_tax_at_zero_salt = min_salt_row["income_tax"]
 
         # Find the effective SALT cap (where marginal_property_tax_rate > threshold)
@@ -1394,11 +1427,11 @@ def display_tax_savings_chart(
 
         if not effective_cap_group.empty:
             # Get the maximum SALT value where marginal rate exceeds threshold
-            effective_cap = effective_cap_group["salt_and_property_tax"].max()
+            effective_cap = effective_cap_group["reported_salt"].max()
 
             # Find the row with the effective SALT cap
             effective_cap_row = group[
-                group["salt_and_property_tax"] == effective_cap
+                group["reported_salt"] == effective_cap
             ].iloc[0]
             income_tax_at_effective_cap = effective_cap_row["income_tax"]
 
