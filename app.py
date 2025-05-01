@@ -1,5 +1,4 @@
 import streamlit as st
-from personal_calculator.situation import create_situation
 from personal_calculator.inputs import create_personal_inputs
 from personal_calculator.chart import (
     reset_results,
@@ -39,7 +38,9 @@ from personal_calculator.charts.salt_amt_charts import (
 from personal_calculator.dataframes.dataframes import (
     calculate_salt_income_tax_reduction,
     display_effective_salt_cap,
+    calculate_df_without_axes,
 )
+from personal_calculator.dataframes.situations import create_situation_without_axes
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
@@ -287,7 +288,9 @@ with st.sidebar:
                 reset_results()
 
                 # Create situation based on inputs
-                situation = create_situation(
+                situation = create_situation_without_axes(
+                    state_code=personal_inputs["state_code"],
+                    real_estate_taxes=personal_inputs["real_estate_taxes"],
                     employment_income=personal_inputs["employment_income"],
                     is_married=personal_inputs["is_married"],
                     num_children=personal_inputs["num_children"],
@@ -384,9 +387,37 @@ if st.session_state.chart_index == 0:
 if calculation_is_valid:
     if "last_calculated_inputs" in st.session_state:
         inputs_to_use = st.session_state.last_calculated_inputs
-
-        # Display the current chart based on the chart_index
-        if st.session_state.chart_index == 1:
+        if st.session_state.chart_index == 0:
+            # Get comparison table
+            comparison_df = calculate_df_without_axes(
+                state_code=inputs_to_use["state_code"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
+                employment_income=inputs_to_use["employment_income"],
+                is_married=inputs_to_use["is_married"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                reform_params=None,
+                baseline_scenario="Current Law",
+            )
+            
+            # Display the comparison table with custom styling
+            st.markdown("### Tax Comparison: Current Law vs Current Policy")
+            st.dataframe(
+                comparison_df,
+                hide_index=True,
+                use_container_width=True,
+                column_config={
+                    "Metric": st.column_config.TextColumn("Metric", width="medium"),
+                    "Current Law": st.column_config.TextColumn("Current Law", width="medium"),
+                    "Current Policy": st.column_config.TextColumn("Current Policy", width="medium")
+                }
+            )
+        elif st.session_state.chart_index == 1:
             st.markdown("### Current policy creates an explicit SALT cap")
             display_salt_deduction_comparison_chart(
                 is_married=inputs_to_use["is_married"],

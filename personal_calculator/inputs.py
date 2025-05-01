@@ -22,6 +22,12 @@ def create_personal_inputs():
     # Personal Information Section
     st.markdown("### Personal Information")
 
+    state_code = st.selectbox(
+        "Select your state",
+        STATE_CODES,
+        index=STATE_CODES.index("CA"),
+    )
+
     # Marriage status and ages
     is_married = st.checkbox(
         "Are you married?",
@@ -33,6 +39,13 @@ def create_personal_inputs():
         min_value=0,
         max_value=10,
         value=0,
+    )
+    real_estate_taxes = st.number_input(
+        "How much do you pay in real estate taxes?",
+        min_value=0,
+        max_value=1_000_000,
+        value=0,
+        step=500,
     )
 
     expense_col1, expense_col2 = st.columns(2)
@@ -100,6 +113,8 @@ def create_personal_inputs():
 
     # Create the input dictionary
     inputs = {
+        "state_code": state_code,
+        "real_estate_taxes": real_estate_taxes,
         "is_married": is_married,
         "num_children": num_children,
         "child_ages": child_ages,
