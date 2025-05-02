@@ -1815,7 +1815,7 @@ def display_tax_savings_chart(
     return tax_savings_df
 
 
-def display_table_comparison(
+def display_sales_or_income_tax_table(
     state_code,
     real_estate_taxes,
     is_married,
@@ -1863,25 +1863,22 @@ def display_table_comparison(
         reform_params=None,
     )
 
+    # Determine which tax type is larger and create appropriate label
+    state_tax_type = (
+        "State Income Tax"
+        if current_law_results["state_income_tax_over_sales_tax"]
+        else "State Sales Tax"
+    )
+    state_tax_value = current_law_results["larger_of_state_sales_or_income_tax"]
+    total_salt = state_tax_value + real_estate_taxes
+
     # Create simplified comparison DataFrame with formatted values
     comparison_data = {
-        "Metric": [
-            "Household Net Income",
-            "Federal Income Tax",
-            "State Income Tax",
-            "State Sales Tax",
-        ],
+        "Metric": [state_tax_type, "Property Taxes", "Total SALT"],
         "Current Law": [
-            f"${current_law_results['household_net_income']:,.0f}",
-            f"${current_law_results['federal_income_tax']:,.0f}",
-            f"${current_law_results['state_income_tax']:,.0f}",
-            f"${current_law_results['state_sales_tax']:,.0f}",
-        ],
-        "Current Policy": [
-            f"${current_policy_results['household_net_income']:,.0f}",
-            f"${current_policy_results['federal_income_tax']:,.0f}",
-            f"${current_policy_results['state_income_tax']:,.0f}",
-            f"${current_policy_results['state_sales_tax']:,.0f}",
+            f"${state_tax_value:,.0f}",
+            f"${real_estate_taxes:,.0f}",
+            f"${total_salt:,.0f}",
         ],
     }
 

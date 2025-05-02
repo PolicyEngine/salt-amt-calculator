@@ -143,7 +143,7 @@ def adjust_chart_limits(fig: go.Figure) -> None:
     y_range = y_max - y_min
 
     # Handle infinite values by setting reasonable maximums
-    if y_max == float('inf'):
+    if y_max == float("inf"):
         y_max = 160_000  # Set a reasonable maximum for y-axis
         y_range = y_max - y_min
 
