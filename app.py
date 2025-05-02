@@ -1,5 +1,4 @@
 import streamlit as st
-from personal_calculator.situation import create_situation
 from personal_calculator.inputs import create_personal_inputs
 from personal_calculator.chart import (
     reset_results,
@@ -8,10 +7,12 @@ import pandas as pd
 import plotly.express as px
 from policyengine_core.charts import format_fig as format_fig_
 
+
 def format_fig(fig):
     return format_fig_(fig).update_layout(
         margin_r=100,
     )
+
 
 from nationwide_impacts.impacts import (
     NationwideImpacts,
@@ -31,17 +32,18 @@ from personal_calculator.charts.salt_amt_charts import (
     display_taxable_income_and_amti_chart,
     display_income_tax_chart,
     display_effective_salt_cap_graph,
-    display_regular_tax_comparison_chart,
-    display_amt_comparison_chart,
     display_gap_chart,
     display_marginal_rate_chart,
     display_regular_tax_and_amt_by_income_chart,
     display_tax_savings_chart,
+    display_sales_or_income_tax_table,
 )
 from personal_calculator.dataframes.dataframes import (
     calculate_salt_income_tax_reduction,
     display_effective_salt_cap,
+    calculate_df_without_axes,
 )
+from personal_calculator.dataframes.situations import create_situation_without_axes
 
 # Set up the Streamlit page
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
@@ -231,10 +233,10 @@ def change_chart_without_rerun(direction):
 
 # Set up sidebar for navigation
 with st.sidebar:
-    st.title("Inputs")
+    st.title("Inputs (2026):")
     section = st.radio(
         "Section Selection",
-        ["Household Inputs", "Policy Inputs"],
+        ["Household", "Policy"],
         label_visibility="collapsed",
     )
 
@@ -242,7 +244,7 @@ with st.sidebar:
     # if user skips straight to budgetary impacts
     initialize_policy_config_state()
 
-    if section == "Household Inputs":
+    if section == "Household":
 
         # Get personal inputs (will use session state if available)
         personal_inputs = create_personal_inputs()
@@ -266,7 +268,7 @@ with st.sidebar:
                 "Your inputs have changed. Click to update charts with new values."
             )
         else:
-            calculate_button_text = "Calculate Impacts"
+            calculate_button_text = "Calculate"
             button_help = "Calculate tax impacts based on your inputs."
 
         calculate_clicked = st.button(calculate_button_text, type="primary")
@@ -289,7 +291,9 @@ with st.sidebar:
                 reset_results()
 
                 # Create situation based on inputs
-                situation = create_situation(
+                situation = create_situation_without_axes(
+                    state_code=personal_inputs["state_code"],
+                    real_estate_taxes=personal_inputs["real_estate_taxes"],
                     employment_income=personal_inputs["employment_income"],
                     is_married=personal_inputs["is_married"],
                     num_children=personal_inputs["num_children"],
@@ -315,7 +319,7 @@ with st.sidebar:
 
                 # Reset chart index when recalculating
                 st.session_state.chart_index = 0
-    elif section == "Policy Inputs":
+    elif section == "Policy":
         display_policy_config()
 
 # Initialize nationwide impacts if not already done
@@ -332,6 +336,7 @@ if "chart_index" not in st.session_state:
 # Define the list of available charts
 available_charts = [
     "Introduction",
+    "SALT and Federal Income Tax Comparison",
     "SALT Deduction Comparison",
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",
@@ -386,14 +391,91 @@ if st.session_state.chart_index == 0:
 if calculation_is_valid:
     if "last_calculated_inputs" in st.session_state:
         inputs_to_use = st.session_state.last_calculated_inputs
-
-        # Display the current chart based on the chart_index
         if st.session_state.chart_index == 1:
+            # Get the tax values before creating the table to use in the message
+            current_law_results = calculate_df_without_axes(
+                state_code=inputs_to_use["state_code"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
+                is_married=inputs_to_use["is_married"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                scenario="Current Law",
+            )
+
+            current_policy_results = calculate_df_without_axes(
+                state_code=inputs_to_use["state_code"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
+                is_married=inputs_to_use["is_married"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                scenario="Current Policy",
+            )
+
+            # Format the tax values
+            law_tax_formatted = f"${current_law_results['federal_income_tax']:,.0f}"
+            policy_tax_formatted = (
+                f"${current_policy_results['federal_income_tax']:,.0f}"
+            )
+
+            # Get the numeric values first
+            real_estate_tax = inputs_to_use["real_estate_taxes"]
+            larger_of_state_sales_or_income_tax = current_law_results[
+                "larger_of_state_sales_or_income_tax"
+            ]
+            total_salt = real_estate_tax + larger_of_state_sales_or_income_tax
+
+            # Now format them as strings
+            real_estate_tax_formatted = f"${real_estate_tax:,.0f}"
+            larger_of_state_sales_or_income_tax_formatted = (
+                f"${larger_of_state_sales_or_income_tax:,.0f}"
+            )
+            total_salt_formatted = f"${total_salt:,.0f}"
+
+            state_tax_type = (
+                "State Income Tax"
+                if current_law_results["state_income_tax_over_sales_tax"]
+                else "State Sales Tax"
+            )
+
+            # Create the sentence with the tax values
+            st.markdown(
+                f"### In 2026, you will pay an estimated <span style='color: {BLUE}'>\{larger_of_state_sales_or_income_tax_formatted}</span> in {state_tax_type}. Combined with your <span style='color: {BLUE}'>\{real_estate_tax_formatted}</span> in property taxes, this totals <span style='color: {BLUE}'>\{total_salt_formatted}</span> in total SALT.",
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                f"Federal law allows deducting property taxes and either state and local income taxes, or (actual or estimated) state and local sales taxes."
+            )
+
+            # Create the sentence with the tax values
+            st.markdown(
+                f"### You will owe <span style='color: {BLUE}'>\{law_tax_formatted}</span> in federal income taxes under current law and <span style='color: {BLUE}'>\{policy_tax_formatted}</span> under current policy.",
+                unsafe_allow_html=True,
+            )
+
+        elif st.session_state.chart_index == 2:
             st.markdown("### Current policy creates an explicit SALT cap")
             display_salt_deduction_comparison_chart(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
                 num_children=inputs_to_use["num_children"],
                 employment_income=inputs_to_use["employment_income"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
@@ -407,9 +489,10 @@ if calculation_is_valid:
             st.markdown(
                 "TCJA capped SALT at $10,000; prior law allowed deductions for all SALT."
             )
-        elif st.session_state.chart_index == 2:
+        elif st.session_state.chart_index == 3:
             st.markdown("### But AMT income does not vary with SALT")
             display_taxable_income_and_amti_chart(
+                state_code=inputs_to_use["state_code"],
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
@@ -421,14 +504,16 @@ if calculation_is_valid:
                     "deductible_mortgage_interest"
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
             )
             st.markdown(
                 "AMT income equals taxable income plus exemptions and deductions including SALT."
             )
-        elif st.session_state.chart_index == 3:
+        elif st.session_state.chart_index == 4:
             # Calculate effective SALT caps for both policies
             cap_display_law, cap_display_policy = display_effective_salt_cap(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 employment_income=inputs_to_use["employment_income"],
@@ -446,6 +531,7 @@ if calculation_is_valid:
                 unsafe_allow_html=True,
             )
             display_regular_tax_and_amt_chart(
+                state_code=inputs_to_use["state_code"],
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
@@ -456,15 +542,17 @@ if calculation_is_valid:
                 deductible_mortgage_interest=inputs_to_use[
                     "deductible_mortgage_interest"
                 ],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
             st.markdown(
                 "Additional SALT does not reduce your income tax if AMT exceeds regular tax."
             )
-        elif st.session_state.chart_index == 4:
+        elif st.session_state.chart_index == 5:
             # Calculate income tax reduction for current law
             current_law_reduction = calculate_salt_income_tax_reduction(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
@@ -480,6 +568,7 @@ if calculation_is_valid:
 
             cap_display_law, cap_display_policy = display_effective_salt_cap(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 employment_income=inputs_to_use["employment_income"],
@@ -495,6 +584,7 @@ if calculation_is_valid:
             # Calculate income tax reduction for current policy
             current_policy_reduction = calculate_salt_income_tax_reduction(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
@@ -521,9 +611,11 @@ if calculation_is_valid:
                 unsafe_allow_html=True,
             )
             display_income_tax_chart(
+                state_code=inputs_to_use["state_code"],
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 employment_income=inputs_to_use["employment_income"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
@@ -537,14 +629,14 @@ if calculation_is_valid:
                 f"SALT could lower your taxes by up to <span style='color: {BLUE}'>{current_law_value}</span> under current law and <span style='color: {BLUE}'>{current_policy_value}</span> under current policy. Filers pay the greater of regular tax and AMT.",
                 unsafe_allow_html=True,
             )
-        elif st.session_state.chart_index == 5:
-            st.markdown("### How does this vary with wages?")
         elif st.session_state.chart_index == 6:
-            st.markdown(
-                """### AMT effectively caps SALT"""
-            )
+            st.markdown("### How does this vary with wages?")
+        elif st.session_state.chart_index == 7:
+            st.markdown("""### AMT effectively caps SALT""")
             display_effective_salt_cap_graph(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
+                employment_income=inputs_to_use["employment_income"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
@@ -556,37 +648,19 @@ if calculation_is_valid:
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
                 policy="Current Law",
             )
-            st.markdown("AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax.")
-        # elif st.session_state.chart_index == 5:
-        #     st.markdown("### Regular Tax and AMT Comparison")
-        #     display_regular_tax_comparison_chart(
-        #             is_married=inputs_to_use["is_married"],
-        #             num_children=inputs_to_use["num_children"],
-        #             child_ages=inputs_to_use["child_ages"],
-        #             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-        #             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-        #             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-        #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-        #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-        #         )
-        # elif st.session_state.chart_index == 6:
-        #     st.markdown("### AMT Comparison")
-        #     display_amt_comparison_chart(
-        #             is_married=inputs_to_use["is_married"],
-        #             num_children=inputs_to_use["num_children"],
-        #             child_ages=inputs_to_use["child_ages"],
-        #             qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-        #             long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-        #             short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-        #             deductible_mortgage_interest=inputs_to_use["deductible_mortgage_interest"],
-        #             charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-        # )
-        elif st.session_state.chart_index == 7:
-            st.markdown("### The gap from AMT to regular tax influences the effective SALT cap")
+            st.markdown(
+                "AMT functions as an implicit cap on SALT by disallowing them under AMTI, limiting the tax benefit when AMT exceeds regular tax."
+            )
+        elif st.session_state.chart_index == 8:
+            st.markdown(
+                "### The gap from AMT to regular tax influences the effective SALT cap"
+            )
             display_regular_tax_and_amt_by_income_chart(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
@@ -598,10 +672,14 @@ if calculation_is_valid:
             st.markdown(
                 "AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above. Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
             )
-        elif st.session_state.chart_index == 8:
-            st.markdown("### The gap is the excess of regular tax over AMT")
+        elif st.session_state.chart_index == 9:
+            st.markdown(
+                "### The gap from AMT to regular tax—absent SALT—influences the effective SALT cap"
+            )
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
+                employment_income=inputs_to_use["employment_income"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
@@ -612,14 +690,16 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-        elif st.session_state.chart_index == 9:
+        elif st.session_state.chart_index == 10:
             st.markdown(
                 "### SALT reduces income tax at roughly the regular marginal tax rate"
             )
             display_marginal_rate_chart(
+                state_code=inputs_to_use["state_code"],
                 is_married=inputs_to_use["is_married"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
                 long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
                 short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
@@ -628,30 +708,15 @@ if calculation_is_valid:
                 ],
                 charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
             )
-            st.markdown("Your marginal tax rate is the additional regular federal income tax (not including credits) owed per additional dollar of taxable income.")
-        elif st.session_state.chart_index == 10:
             st.markdown(
-                "### The effective SALT cap ~= Gap / Marginal tax rate"
-            )
-            display_effective_salt_cap_graph(
-                is_married=inputs_to_use["is_married"],
-                num_children=inputs_to_use["num_children"],
-                child_ages=inputs_to_use["child_ages"],
-                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
-                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
-                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
-                deductible_mortgage_interest=inputs_to_use[
-                    "deductible_mortgage_interest"
-                ],
-                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
-                policy="Current Law",
+                "Your marginal tax rate is the additional regular federal income tax (not including credits) owed per additional dollar of taxable income."
             )
         elif st.session_state.chart_index == 11:
-            st.markdown(
-                "### Lastly, this is how much you could potentially save due to SALT"
-            )
-            display_tax_savings_chart(
+            st.markdown("### The effective SALT cap ~= Gap / Marginal tax rate")
+            display_effective_salt_cap_graph(
                 is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
+                employment_income=inputs_to_use["employment_income"],
                 num_children=inputs_to_use["num_children"],
                 child_ages=inputs_to_use["child_ages"],
                 qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
@@ -664,8 +729,27 @@ if calculation_is_valid:
                 policy="Current Law",
             )
         elif st.session_state.chart_index == 12:
+            st.markdown(
+                "### Lastly, this is how much you could potentially save due to SALT"
+            )
+            display_tax_savings_chart(
+                is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
+                num_children=inputs_to_use["num_children"],
+                child_ages=inputs_to_use["child_ages"],
+                employment_income=inputs_to_use["employment_income"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                policy="Current Law",
+            )
+        elif st.session_state.chart_index == 13:
             st.markdown("### How would you reform the SALT deduction and AMT?")
-        elif st.session_state.chart_index in (13, 14):
+        elif st.session_state.chart_index in (14, 15):
             # Create the Budgetary and distributional impacts section
 
             policy_config = st.session_state.policy_config
@@ -675,7 +759,9 @@ if calculation_is_valid:
             if not hasattr(st.session_state, "behavioral_responses"):
                 st.session_state.behavioral_responses = False
 
-            policy_config["behavioral_responses"] = st.session_state.behavioral_responses
+            policy_config["behavioral_responses"] = (
+                st.session_state.behavioral_responses
+            )
 
             # Show budget window impacts with full width
             budget_window_impacts = []
@@ -705,11 +791,13 @@ if calculation_is_valid:
                     st.session_state.baseline,
                 )
                 if total_revenue_impact == 0:
-                    st.markdown("Revise your policy using the left sidebar (policy inputs) to see an impact")
+                    st.markdown(
+                        "Revise your policy using the left sidebar (policy) to see an impact"
+                    )
                 else:
                     impact_word = "reduce" if total_revenue_impact > 0 else "increase"
                     impact_amount = abs(total_revenue_impact) / 1e12
-                    if st.session_state.chart_index == 13:
+                    if st.session_state.chart_index == 14:
                         st.markdown(
                             f"""
                             ### Your policy would {impact_word} the deficit by <span style="color: {BLUE}; font-weight: bold;">${impact_amount:.2f} trillion</span> over the 10-year budget window, compared to {st.session_state.baseline}
@@ -746,14 +834,16 @@ if calculation_is_valid:
             if not hasattr(st.session_state, "nationwide_impacts"):
                 st.error("No impact data available. Please check data files.")
             else:
-                if st.session_state.chart_index == 14:
+                if st.session_state.chart_index == 15:
                     # Construct reform name
                     reform_name = get_reform_name(
                         st.session_state.policy_config, st.session_state.baseline
                     )
 
                     # Get impact data for the selected reform
-                    impacts_data = st.session_state.nationwide_impacts.single_year_impacts
+                    impacts_data = (
+                        st.session_state.nationwide_impacts.single_year_impacts
+                    )
                     reform_impacts = impacts_data[impacts_data["reform"] == reform_name]
 
                     if reform_impacts.empty:
@@ -793,16 +883,17 @@ if calculation_is_valid:
                                 st.error(
                                     "No single-year impact data available for this combination."
                                 )
-        elif st.session_state.chart_index == 15:
+        elif st.session_state.chart_index == 16:
             st.markdown("### Key takeaways")
-            st.markdown("""
+            st.markdown(
+                """
             * AMT creates an effective SALT cap
             * This moves with the gap between regular tax and AMT (assuming no SALT), and the marginal tax rate
             * **Coming soon**: how custom policies affect your household 
             
             *This project was made possible with generous support from [Arnold Ventures](https://arnoldventures.org)*
-        """)
-            
+        """
+            )
 
         st.markdown("---")
         col1, col2, col3 = st.columns([1, 2, 1])
@@ -830,7 +921,7 @@ if calculation_is_valid:
 elif inputs_changed:
     # Show a message that inputs have changed and need recalculation
     st.info(
-        "Your inputs have changed. Click 'Calculate Impacts' in the sidebar to generate new charts."
+        "Your inputs have changed. Click 'Calculate' in the sidebar to generate new charts."
     )
 elif (
     "calculate_clicked" not in st.session_state
@@ -838,7 +929,7 @@ elif (
 ):
     # No calculation has been performed yet
     st.info(
-        "Please fill out your personal information in the sidebar and click 'Calculate Impacts' to continue."
+        "Please fill out your personal information in the sidebar and click 'Calculate' to continue."
     )
 else:
     # Some other edge case
