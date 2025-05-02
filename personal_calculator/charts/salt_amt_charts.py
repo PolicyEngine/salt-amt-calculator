@@ -120,7 +120,7 @@ def display_salt_deduction_comparison_chart(
         title="",
         title_font_size=16,
         xaxis_title="Reported SALT ",
-        yaxis_title="SALT Deduction ",
+        yaxis_title="SALT Deduction (2026) ",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -300,7 +300,7 @@ def display_effective_salt_cap_graph(
     adjust_chart_limits(fig)
 
     fig.update_layout(
-        yaxis_title="Effective SALT cap",
+        yaxis_title="Effective SALT cap (2026) ",
     )
     fig.update_layout(
         xaxis_range=[0, 1_000_000],
@@ -431,7 +431,7 @@ def display_regular_tax_and_amt_chart(
         title="",
         title_font_size=16,
         xaxis_title="Reported SALT ",
-        yaxis_title="Tax Amount ",
+        yaxis_title="Tax Amount (2026) ",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -663,7 +663,7 @@ def display_taxable_income_and_amti_chart(
         title="",
         title_font_size=16,
         xaxis_title="Reported SALT ",
-        yaxis_title="Taxable Income ",
+        yaxis_title="Taxable Income (2026) ",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -868,7 +868,7 @@ def display_income_tax_chart(
         title="",
         title_font_size=16,
         xaxis_title="Reported SALT ",
-        yaxis_title="Income Tax ",
+        yaxis_title="Income Tax (2026) ",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -1202,7 +1202,7 @@ def display_gap_chart(
         title="",
         title_font_size=16,
         xaxis_title="Income",
-        yaxis_title="Gap between Regular Tax and AMT (assuming no SALT)",
+        yaxis_title="Gap between Regular Tax and AMT (assuming no SALT, 2026)",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -1368,7 +1368,7 @@ def display_marginal_rate_chart(
         title="",
         title_font_size=16,
         xaxis_title="Income",
-        yaxis_title="Marginal Tax Rate",
+        yaxis_title="Marginal Tax Rate (2026) ",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -1516,7 +1516,7 @@ def display_regular_tax_and_amt_by_income_chart(
         title="",
         title_font_size=16,
         xaxis_title="Income",
-        yaxis_title="Tax Amount (assuming no SALT)",
+        yaxis_title="Tax Amount (assuming no SALT, 2026)",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,

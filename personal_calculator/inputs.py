@@ -54,14 +54,6 @@ def create_personal_inputs():
             value=0,
             step=500,
         )
-    # Income Information Section
-    st.markdown(
-        """
-        ### Income Information
-
-        How much income do you receive from the following sources? 
-                """
-    )
 
     employment_income = st.number_input(
         "Wages and salaries",
