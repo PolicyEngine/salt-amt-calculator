@@ -64,11 +64,23 @@ def create_situation_with_one_property_tax_axes(
                 }
             },
             "spm_units": {"your household": {"members": members.copy()}},
-            "households": {"your household": {"members": members.copy(),
-                           "state_name": {"2026": state_code}}},
+            "households": {
+                "your household": {
+                    "members": members.copy(),
+                    "state_code": {"2026": state_code},
+                }
+            },
             # Set up axes for property taxes only
             "axes": [
-                [{"name": "reported_salt", "count": 600, "min": 0, "max": 300000, "period": 2026}],
+                [
+                    {
+                        "name": "reported_salt",
+                        "count": 600,
+                        "min": 0,
+                        "max": 300000,
+                        "period": 2026,
+                    }
+                ],
             ],
         }
     )
@@ -113,7 +125,7 @@ def create_situation_with_one_income_axes(
     for i in range(num_children):
         child_id = f"child_{i}"
         situation_with_one_axes["people"][child_id] = {
-            "age": {"2026": child_ages[i]},
+            "age": {"2026": 10},
         }
         members.append(child_id)
 
@@ -126,11 +138,14 @@ def create_situation_with_one_income_axes(
                     "members": members.copy(),
                     "state_and_local_sales_or_income_tax": {"2026": 0},
                 },
-               
             },
             "spm_units": {"your household": {"members": members.copy()}},
-            "households": {"your household": {"members": members.copy(),
-                           "state_code": {"2026": state_code}}},
+            "households": {
+                "your household": {
+                    "members": members.copy(),
+                    "state_code": {"2026": state_code},
+                }
+            },
             # Set up axes for property taxes only
             "axes": [
                 [
@@ -185,7 +200,7 @@ def create_situation_with_two_axes(
     for i in range(num_children):
         child_id = f"child_{i}"
         situation_with_two_axes["people"][child_id] = {
-            "age": {"2026": child_ages[i]},
+            "age": {"2026": 10},
         }
         members.append(child_id)
 
@@ -200,8 +215,12 @@ def create_situation_with_two_axes(
                 }
             },
             "spm_units": {"your household": {"members": members.copy()}},
-            "households": {"your household": {"members": members.copy(),
-                           "state_code": {"2026": state_code}}},
+            "households": {
+                "your household": {
+                    "members": members.copy(),
+                    "state_code": {"2026": state_code},
+                }
+            },
             # Set up axes for property taxes and employment income
             "axes": [
                 [
@@ -226,6 +245,7 @@ def create_situation_with_two_axes(
         }
     )
     return situation_with_two_axes
+
 
 def create_situation_without_axes(
     state_code,
@@ -257,7 +277,7 @@ def create_situation_without_axes(
         "households": {
             "household": {
                 "members": ["head"],
-                "state_code": state_code,
+                "state_code": {"2026": state_code},
             }
         },
         "tax_units": {
@@ -276,7 +296,13 @@ def create_situation_without_axes(
             "age": {"2026": 40},
         }
         # Add spouse to all units
-        for unit in ["households", "tax_units", "families", "marital_units", "spm_units"]:
+        for unit in [
+            "households",
+            "tax_units",
+            "families",
+            "marital_units",
+            "spm_units",
+        ]:
             situation[unit][list(situation[unit].keys())[0]]["members"].append("spouse")
 
     # Add children
@@ -286,8 +312,13 @@ def create_situation_without_axes(
             "age": {"2026": child_ages[i]},
         }
         # Add child to relevant units
-        for unit in ["households", "tax_units", "families", "marital_units", "spm_units"]:
+        for unit in [
+            "households",
+            "tax_units",
+            "families",
+            "marital_units",
+            "spm_units",
+        ]:
             situation[unit][list(situation[unit].keys())[0]]["members"].append(child_id)
-
 
     return situation

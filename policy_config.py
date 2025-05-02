@@ -46,15 +46,12 @@ def display_policy_config():
     )
 
     # Store behavioral response in session state
-    st.session_state.policy_config["behavioral_responses"] = (
-        behavioral_responses
-    )
+    st.session_state.policy_config["behavioral_responses"] = behavioral_responses
 
     st.session_state.behavioral_responses = behavioral_responses
 
     st.divider()
     col1, col2 = st.columns([1, 1])  # Adjust ratio to give more space to SALT column
-
 
     with col1:
         st.markdown(

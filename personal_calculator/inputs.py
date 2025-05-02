@@ -6,7 +6,7 @@ def create_personal_inputs():
     """Create inputs for personal information"""
     if "personal_inputs" not in st.session_state:
         st.session_state.personal_inputs = {}
-    
+
     # Create two main columns for Personal and Income Information
     # Personal Information Section
     st.markdown("### Personal Information")

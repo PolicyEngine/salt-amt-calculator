@@ -11,7 +11,7 @@ from personal_calculator.dataframes.situations import (
     create_situation_with_one_property_tax_axes,
     create_situation_with_one_income_axes,
     create_situation_with_two_axes,
-    create_situation_without_axes
+    create_situation_without_axes,
 )
 
 
@@ -686,6 +686,7 @@ def display_effective_salt_cap(
     # Always return both values regardless of the policy parameter
     return cap_display_law, cap_display_policy
 
+
 @st.cache_data(show_spinner="Calculating...")
 def calculate_df_without_axes(
     state_code,
@@ -731,32 +732,40 @@ def calculate_df_without_axes(
         simulation = Simulation(situation=situation, reform=reform)
     else:
         raise ValueError(f"Invalid scenario configuration")
-    
-    household_net_income = float(simulation.calculate("household_net_income",map_to ="household", period = 2026))
+
+    household_net_income = float(
+        simulation.calculate("household_net_income", map_to="household", period=2026)
+    )
     # Calculate values
-    federal_income_tax = float(simulation.calculate(
-        "income_tax", map_to="household", period=2026
-    ))
-    state_income_tax = float(simulation.calculate(
-        "state_withheld_income_tax", map_to="household", period=2026
-    ))
-    state_sales_tax = float(simulation.calculate(
-        "state_sales_tax", map_to="household", period=2026
-    ))
-    salt_deduction = float(simulation.calculate(
-        "salt_deduction", map_to="household", period=2026
-    ))
-    reported_salt = float(simulation.calculate(
-        "reported_salt", map_to="household", period=2026
-    ))
-    regular_tax = float(simulation.calculate(
-        "regular_tax_before_credits", map_to="household", period=2026
-    ))
+    federal_income_tax = float(
+        simulation.calculate("income_tax", map_to="household", period=2026)
+    )
+    state_income_tax = float(
+        simulation.calculate(
+            "state_withheld_income_tax", map_to="household", period=2026
+        )
+    )
+    state_sales_tax = float(
+        simulation.calculate("state_sales_tax", map_to="household", period=2026)
+    )
+    salt_deduction = float(
+        simulation.calculate("salt_deduction", map_to="household", period=2026)
+    )
+    reported_salt = float(
+        simulation.calculate("reported_salt", map_to="household", period=2026)
+    )
+    regular_tax = float(
+        simulation.calculate(
+            "regular_tax_before_credits", map_to="household", period=2026
+        )
+    )
     amt = float(simulation.calculate("amt_base_tax", map_to="household", period=2026))
-    taxable_income = float(simulation.calculate(
-        "taxable_income", map_to="household", period=2026
-    ))
-    amt_income = float(simulation.calculate("amt_income", map_to="household", period=2026))
+    taxable_income = float(
+        simulation.calculate("taxable_income", map_to="household", period=2026)
+    )
+    amt_income = float(
+        simulation.calculate("amt_income", map_to="household", period=2026)
+    )
     # Return a dictionary with Python native types (floats, not NumPy arrays)
     return {
         "household_net_income": household_net_income,
@@ -771,5 +780,5 @@ def calculate_df_without_axes(
         "amt_income": amt_income,
         "larger_of_state_sales_or_income_tax": max(state_sales_tax, state_income_tax),
         "state_income_tax_over_sales_tax": bool(state_income_tax > state_sales_tax),
-        "policy": scenario if reform_params is None else "Reform"
+        "policy": scenario if reform_params is None else "Reform",
     }

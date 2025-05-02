@@ -4,10 +4,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from policyengine_core.charts import format_fig as format_fig_
 
+
 def format_fig(fig):
     return format_fig_(fig).update_layout(
         margin_r=100,
     )
+
+
 from constants import BLUE, DARK_GRAY, LIGHT_GRAY
 from personal_calculator.dataframes.dataframes import (
     calculate_property_tax_df,
@@ -17,7 +20,7 @@ from personal_calculator.dataframes.dataframes import (
     process_income_marginal_tax_data,
     display_effective_salt_cap,
     calculate_df_without_axes,
-
+    calculate_salt_income_tax_reduction,
 )
 from personal_calculator.chart import adjust_chart_limits
 
@@ -28,8 +31,8 @@ def display_salt_deduction_comparison_chart(
     num_children=0,
     child_ages=[],
     qualified_dividend_income=0,
-    employment_income=0,
     real_estate_taxes=0,
+    employment_income=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
@@ -237,6 +240,7 @@ def display_effective_salt_cap_graph(
     short_term_capital_gains,
     deductible_mortgage_interest,
     charitable_cash_donations,
+    employment_income,  # Add this parameter
     policy=None,
     reform_params=None,
     threshold=0.1,
@@ -261,11 +265,40 @@ def display_effective_salt_cap_graph(
     # Process the data to calculate marginal rates
     processed_df = process_effective_cap_data(result_df)
 
-    # Create the graph
-    fig = create_max_salt_line_graph(processed_df, policy=policy, threshold=threshold)
+    # Calculate the user's effective SALT cap
+    user_salt_data = calculate_salt_income_tax_reduction(
+        is_married,
+        state_code,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        employment_income,
+        baseline_scenario=policy,
+        reform_params=reform_params,
+        threshold=threshold,
+    )
+
+    # Create user data dictionary
+    user_data = {
+        "employment_income": employment_income,
+        "effective_salt_cap": (
+            user_salt_data["effective_salt_cap"]
+            if not user_salt_data["indefinite_reduction"]
+            else float("inf")
+        ),
+    }
+
+    # Create the graph with user data
+    fig = create_max_salt_line_graph(
+        processed_df, policy=policy, threshold=threshold, user_data=user_data
+    )
 
     adjust_chart_limits(fig)
-    
+
     fig.update_layout(
         yaxis_title="Effective SALT cap",
     )
@@ -289,6 +322,7 @@ def display_regular_tax_and_amt_chart(
     qualified_dividend_income=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
+    real_estate_taxes=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
     show_current_policy=True,
@@ -396,7 +430,7 @@ def display_regular_tax_and_amt_chart(
     fig.update_layout(
         title="",
         title_font_size=16,
-        xaxis_title="ReportedSALT ",
+        xaxis_title="Reported SALT ",
         yaxis_title="Tax Amount ",
         xaxis=dict(
             tickformat="$,.0f",
@@ -416,6 +450,89 @@ def display_regular_tax_and_amt_chart(
         legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
 
+    user_values_law = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Law",
+        reform_params=None,
+    )
+
+    # Then calculate the same values for Current Policy
+    user_values_policy = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[user_values_law["reported_salt"]],
+            y=[user_values_law["regular_tax"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_values_policy["reported_salt"]],
+                y=[user_values_policy["regular_tax"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[user_values_law["reported_salt"]],
+            y=[user_values_law["amt"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_values_policy["reported_salt"]],
+                y=[user_values_policy["amt"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
     # Format the chart
     fig = format_fig(fig)
 
@@ -434,6 +551,7 @@ def display_taxable_income_and_amti_chart(
     num_children=0,
     child_ages=[],
     employment_income=0,
+    real_estate_taxes=0,
     qualified_dividend_income=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
@@ -564,6 +682,89 @@ def display_taxable_income_and_amti_chart(
         legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
 
+    user_values_law = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Law",
+        reform_params=None,
+    )
+
+    # Then calculate the same values for Current Policy
+    user_values_policy = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[user_values_law["reported_salt"]],
+            y=[user_values_law["taxable_income"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_values_policy["reported_salt"]],
+                y=[user_values_policy["taxable_income"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[user_values_law["reported_salt"]],
+            y=[user_values_law["amt_income"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_values_policy["reported_salt"]],
+                y=[user_values_policy["amt_income"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
     # Format the chart
     fig = format_fig(fig)
 
@@ -581,6 +782,7 @@ def display_income_tax_chart(
     state_code="CA",
     num_children=0,
     child_ages=[],
+    real_estate_taxes=0,
     qualified_dividend_income=0,
     employment_income=0,
     long_term_capital_gains=0,
@@ -685,6 +887,64 @@ def display_income_tax_chart(
         legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
 
+    user_values_law = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Law",
+        reform_params=None,
+    )
+
+    # Then calculate the same values for Current Policy
+    user_values_policy = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[user_values_law["reported_salt"]],
+            y=[user_values_law["federal_income_tax"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>Federal Income Tax: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_values_policy["reported_salt"]],
+                y=[user_values_policy["federal_income_tax"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>Federal Income Tax: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
     # Format the chart
     fig = format_fig(fig)
 
@@ -697,7 +957,9 @@ def display_income_tax_chart(
     st.plotly_chart(fig, use_container_width=True)
 
 
-def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=150000):
+def create_max_salt_line_graph(
+    df, policy="Current Law", threshold=0.1, y_max=150000, user_data=None
+):
     """
     Create a line graph showing the maximum SALT values where marginal_property_tax_rate <= threshold
     for each employment income increment.
@@ -712,6 +974,8 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
         Threshold for marginal_property_tax_rate to be considered uncapped (default: 0.1)
     y_max : int
         Maximum value for y-axis (default: 150000)
+    user_data : dict, optional
+        Dictionary containing user's household data with 'employment_income' and 'effective_salt_cap'
     """
     # Filter to only include the specified policy
     df_filtered = df[df["policy"] == policy]
@@ -724,9 +988,7 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
 
     # For each unique employment income, find the maximum SALT value
     max_salt_by_income = (
-        state_data.groupby("employment_income")["reported_salt"]
-        .max()
-        .reset_index()
+        state_data.groupby("employment_income")["reported_salt"].max().reset_index()
     )
 
     # Sort by income for proper line plotting
@@ -746,6 +1008,19 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
             hovertemplate="Effective SALT Cap at<br>Income: $%{x:,.0f}<br>SALT: $%{y:,.0f}<extra></extra>",
         )
     )
+
+    # Add user's household data point if provided
+    if user_data is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_data["employment_income"]],
+                y=[user_data["effective_salt_cap"]],
+                mode="markers",
+                name="Your household",
+                marker=dict(color=BLUE, size=10, symbol="circle"),
+                hovertemplate="Your household<br>Income: $%{x:,.0f}<br>Effective SALT Cap: $%{y:,.0f}<extra></extra>",
+            )
+        )
 
     # Update layout
     fig.update_layout(
@@ -773,229 +1048,6 @@ def create_max_salt_line_graph(df, policy="Current Law", threshold=0.1, y_max=15
     return fig
 
 
-def display_regular_tax_comparison_chart(
-    is_married=False,
-    state_code="CA",
-    num_children=0,
-    child_ages=[],
-    qualified_dividend_income=0,
-    long_term_capital_gains=0,
-    short_term_capital_gains=0,
-    deductible_mortgage_interest=0,
-    charitable_cash_donations=0,
-    real_estate_taxes=0,
-):
-    """
-    Create and display a chart showing effective SALT cap by income level,
-    comparing current policy vs current law.
-
-
-    The graph shows employment income on x-axis and effective SALT cap on y-axis.
-    """
-    # Calculate data for Current Law
-    current_law_df = calculate_income_df(
-        is_married=is_married,
-        state_code=state_code,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        real_estate_taxes=real_estate_taxes,
-        reform_params=None,
-        baseline_scenario="Current Law",
-    )
-
-    # Calculate data for Current Policy
-    current_policy_df = calculate_income_df(
-        is_married=is_married,
-        state_code=state_code,
-        num_children=num_children,
-        real_estate_taxes=real_estate_taxes,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Policy",
-    )
-
-    # Create a combined figure
-    fig = go.Figure()
-
-    # Add Current Law line
-    if not current_law_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=current_law_df["employment_income"],
-                y=current_law_df["regular_tax"],
-                mode="lines",
-                name="Current Law ",
-                line=dict(color=BLUE, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
-                zorder=2,
-            )
-        )
-
-    # Add Current Policy line
-    if not current_policy_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=current_policy_df["employment_income"],
-                y=current_policy_df["regular_tax"],
-                mode="lines",
-                name="Current Policy ",
-                line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
-                hovertemplate="Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
-                zorder=1,
-            )
-        )
-
-    # Update layout
-    fig.update_layout(
-        title="",
-        title_font_size=16,
-        xaxis_title="Income",
-        yaxis_title="Income Tax",
-        xaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 1000000],
-        ),
-        yaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 200000],
-        ),
-        margin=dict(t=80, b=80),
-        hovermode="closest",
-        plot_bgcolor="white",
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
-    )
-
-    # Format the chart
-    fig = format_fig(fig)
-
-    # Display the chart
-    st.plotly_chart(fig, use_container_width=True)
-
-
-def display_amt_comparison_chart(
-    is_married=False,
-    num_children=0,
-    child_ages=[],
-    state_code="CA",
-    qualified_dividend_income=0,
-    long_term_capital_gains=0,
-    short_term_capital_gains=0,
-    deductible_mortgage_interest=0,
-    charitable_cash_donations=0,
-):
-    """
-    Create and display a chart showing effective SALT cap by income level,
-    comparing current policy vs current law.
-
-
-    The graph shows employment income on x-axis and effective SALT cap on y-axis.
-    """
-    # Calculate data for Current Law
-    current_law_df = calculate_income_df(
-        is_married=is_married,
-        state_code=state_code,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Law",
-    )
-
-    # Calculate data for Current Policy
-    current_policy_df = calculate_income_df(
-        is_married=is_married,
-        state_code=state_code,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Policy",
-    )
-
-    # Create a combined figure
-    fig = go.Figure()
-
-    # Add Current Law line
-    if not current_law_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=current_law_df["employment_income"],
-                y=current_law_df["amt"],
-                mode="lines",
-                name="Current Law ",
-                line=dict(color=BLUE, width=2),
-                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
-                zorder=2,
-            )
-        )
-
-    # Add Current Policy line
-    if not current_policy_df.empty:
-        fig.add_trace(
-            go.Scatter(
-                x=current_policy_df["employment_income"],
-                y=current_policy_df["amt"],
-                mode="lines",
-                name="Current Policy ",
-                line=dict(color=LIGHT_GRAY, width=2, dash="dash"),
-                hovertemplate="Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
-                zorder=1,
-            )
-        )
-
-    # Update layout
-    fig.update_layout(
-        title="",
-        title_font_size=16,
-        xaxis_title="Income",
-        yaxis_title="AMT",
-        xaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 1000000],
-        ),
-        yaxis=dict(
-            tickformat="$,.0f",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.1)",
-            range=[0, 200000],
-        ),
-        margin=dict(t=80, b=80),
-        hovermode="closest",
-        plot_bgcolor="white",
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
-    )
-
-    # Format the chart
-    fig = format_fig(fig)
-
-    # Display the chart
-    st.plotly_chart(fig, use_container_width=True)
-
-
 def display_gap_chart(
     is_married=False,
     num_children=0,
@@ -1006,6 +1058,8 @@ def display_gap_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    employment_income=0,  # Add this parameter
+    real_estate_taxes=0,  # Add this parameter
     show_current_policy=True,
 ):
     """
@@ -1077,6 +1131,72 @@ def display_gap_chart(
             )
         )
 
+    # Calculate the user's values for Current Law
+    user_values_law = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Law",
+        reform_params=None,
+    )
+
+    # Calculate the user's values for Current Policy
+    user_values_policy = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+
+    # Calculate the gap for both scenarios
+    user_gap_law = max(0, user_values_law["regular_tax"] - user_values_law["amt"])
+    user_gap_policy = max(
+        0, user_values_policy["regular_tax"] - user_values_policy["amt"]
+    )
+
+    # Add user's point for Current Law
+    fig.add_trace(
+        go.Scatter(
+            x=[employment_income],
+            y=[user_gap_law],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>Income: $%{x:,.0f}<br>Gap: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add user's point for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[employment_income],
+                y=[user_gap_policy],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>Income: $%{x:,.0f}<br>Gap: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
     # Update layout
     fig.update_layout(
         title="",
@@ -1124,6 +1244,8 @@ def display_marginal_rate_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
+    employment_income=0,  # Add this parameter
+    real_estate_taxes=0,  # Add this parameter
     show_current_policy=True,
 ):
     """
@@ -1197,6 +1319,50 @@ def display_marginal_rate_chart(
             )
         )
 
+    # Find the marginal tax rate for the user's income in the current_law_marginal_df
+    user_income = employment_income
+    # Find the closest income value in the dataframe
+    closest_income_idx = (
+        (current_law_marginal_df["employment_income"] - user_income).abs().idxmin()
+    )
+    user_marginal_rate_law = current_law_marginal_df.loc[
+        closest_income_idx, "marginal_tax_rate"
+    ]
+
+    # Do the same for current policy
+    closest_income_idx_policy = (
+        (current_policy_marginal_df["employment_income"] - user_income).abs().idxmin()
+    )
+    user_marginal_rate_policy = current_policy_marginal_df.loc[
+        closest_income_idx_policy, "marginal_tax_rate"
+    ]
+
+    # Add user's point for Current Law
+    fig.add_trace(
+        go.Scatter(
+            x=[user_income],
+            y=[user_marginal_rate_law],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>",
+        )
+    )
+
+    # Add user's point for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_income],
+                y=[user_marginal_rate_policy],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
     # Update layout
     fig.update_layout(
         title="",
@@ -1242,6 +1408,8 @@ def display_regular_tax_and_amt_by_income_chart(
     child_ages=[],
     qualified_dividend_income=0,
     long_term_capital_gains=0,
+    employment_income=0,
+    real_estate_taxes=0,
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
@@ -1367,6 +1535,89 @@ def display_regular_tax_and_amt_by_income_chart(
         legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
 
+    user_values_law = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Law",
+        reform_params=None,
+    )
+
+    # Then calculate the same values for Current Policy
+    user_values_policy = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[employment_income],
+            y=[user_values_law["regular_tax"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>Employment Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[employment_income],
+                y=[user_values_policy["regular_tax"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>Employment Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[employment_income],
+            y=[user_values_law["amt"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>Employment Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[employment_income],
+                y=[user_values_policy["amt"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>Employment Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
+                visible="legendonly",  # Only show if Current Policy is shown
+            )
+        )
+
     # Format the chart
     fig = format_fig(fig)
 
@@ -1380,7 +1631,7 @@ def display_regular_tax_and_amt_by_income_chart(
     st.plotly_chart(fig, use_container_width=True)
 
 
-def create_tax_savings_line_graph(df, policy="Current Law"):
+def create_tax_savings_line_graph(df, policy="Current Law", user_data=None):
     """
     Create a line graph showing tax savings by income level for a specific policy.
 
@@ -1390,8 +1641,8 @@ def create_tax_savings_line_graph(df, policy="Current Law"):
         The dataframe containing the tax savings data
     policy : str
         Policy type (default: 'Current Law')
-    y_max : int
-        Maximum value for y-axis (default: 50000)
+    user_data : dict, optional
+        Dictionary containing user's household data with 'employment_income' and 'tax_savings'
     """
     # Filter to only include the specified policy
     df_filtered = df[df["policy"] == policy]
@@ -1413,6 +1664,19 @@ def create_tax_savings_line_graph(df, policy="Current Law"):
             hovertemplate="Income: $%{x:,.0f}<br>Tax Savings: $%{y:,.0f}<extra></extra>",
         )
     )
+
+    # Add user's household data point if provided
+    if user_data is not None:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_data["employment_income"]],
+                y=[user_data["tax_savings"]],
+                mode="markers",
+                name="Your household",
+                marker=dict(color=BLUE, size=10, symbol="circle"),
+                hovertemplate="Your household<br>Income: $%{x:,.0f}<br>Tax Savings: $%{y:,.0f}<extra></extra>",
+            )
+        )
 
     # Update layout
     fig.update_layout(
@@ -1450,6 +1714,7 @@ def display_tax_savings_chart(
     short_term_capital_gains,
     deductible_mortgage_interest,
     charitable_cash_donations,
+    employment_income,
     policy=None,
     reform_params=None,
     threshold=0.1,
@@ -1490,9 +1755,7 @@ def display_tax_savings_chart(
             effective_cap = effective_cap_group["reported_salt"].max()
 
             # Find the row with the effective SALT cap
-            effective_cap_row = group[
-                group["reported_salt"] == effective_cap
-            ].iloc[0]
+            effective_cap_row = group[group["reported_salt"] == effective_cap].iloc[0]
             income_tax_at_effective_cap = effective_cap_row["income_tax"]
 
             # Calculate tax savings (capped at 0)
@@ -1512,8 +1775,33 @@ def display_tax_savings_chart(
     # Create a new dataframe with tax savings
     tax_savings_df = pd.DataFrame(tax_savings_data)
 
-    # Create the graph
-    fig = create_tax_savings_line_graph(tax_savings_df, policy=policy)
+    # Calculate user's tax savings
+    user_savings = calculate_salt_income_tax_reduction(
+        is_married,
+        state_code,
+        num_children,
+        child_ages,
+        qualified_dividend_income,
+        long_term_capital_gains,
+        short_term_capital_gains,
+        deductible_mortgage_interest,
+        charitable_cash_donations,
+        employment_income,
+        baseline_scenario=policy,
+        reform_params=reform_params,
+        threshold=threshold,
+    )
+
+    # Create user data dictionary
+    user_data = {
+        "employment_income": employment_income,
+        "tax_savings": user_savings["income_tax_reduction"],
+    }
+
+    # Create the graph with user data
+    fig = create_tax_savings_line_graph(
+        tax_savings_df, policy=policy, user_data=user_data
+    )
 
     adjust_chart_limits(fig)
     fig.update_layout(
@@ -1525,6 +1813,7 @@ def display_tax_savings_chart(
     st.plotly_chart(format_fig(fig), use_container_width=True)
 
     return tax_savings_df
+
 
 def display_table_comparison(
     state_code,
@@ -1557,7 +1846,7 @@ def display_table_comparison(
         scenario="Current Law",
         reform_params=None,
     )
-    
+
     current_policy_results = calculate_df_without_axes(
         state_code=state_code,
         real_estate_taxes=real_estate_taxes,
@@ -1573,7 +1862,7 @@ def display_table_comparison(
         scenario="Current Policy",
         reform_params=None,
     )
-    
+
     # Create simplified comparison DataFrame with formatted values
     comparison_data = {
         "Metric": [
@@ -1593,10 +1882,8 @@ def display_table_comparison(
             f"${current_policy_results['federal_income_tax']:,.0f}",
             f"${current_policy_results['state_income_tax']:,.0f}",
             f"${current_policy_results['state_sales_tax']:,.0f}",
-        ]
+        ],
     }
-    
+
     df = pd.DataFrame(comparison_data)
     return df.set_index("Metric")
-
-
