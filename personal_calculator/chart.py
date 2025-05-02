@@ -142,6 +142,11 @@ def adjust_chart_limits(fig: go.Figure) -> None:
     SAFETY_MARGIN_FACTOR = 0.1
     y_range = y_max - y_min
 
+    # Handle infinite values by setting reasonable maximums
+    if y_max == float('inf'):
+        y_max = 160_000  # Set a reasonable maximum for y-axis
+        y_range = y_max - y_min
+
     fig.update_layout(
         xaxis_range=[0, int(x_max + SAFETY_MARGIN_FACTOR * x_range)],
         yaxis_range=[0, int(y_max + SAFETY_MARGIN_FACTOR * y_range)],
