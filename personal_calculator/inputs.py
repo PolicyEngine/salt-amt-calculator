@@ -20,7 +20,7 @@ def create_personal_inputs():
     # Marriage status and ages
     is_married = st.checkbox(
         "Are you married?",
-        value=st.session_state.personal_inputs.get("is_married", True),
+        value=st.session_state.personal_inputs.get("is_married", False),
     )
 
     # Children information
