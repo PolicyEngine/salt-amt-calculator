@@ -1058,8 +1058,8 @@ def display_gap_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
-    employment_income=0,  # Add this parameter
-    real_estate_taxes=0,  # Add this parameter
+    employment_income=0,  
+    real_estate_taxes=0, 
     show_current_policy=True,
 ):
     """
@@ -1202,7 +1202,7 @@ def display_gap_chart(
         title="",
         title_font_size=16,
         xaxis_title="Income",
-        yaxis_title="Gap between Regular Tax and AMT",
+        yaxis_title="Gap between Regular Tax and AMT (assuming no SALT)",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -1516,7 +1516,7 @@ def display_regular_tax_and_amt_by_income_chart(
         title="",
         title_font_size=16,
         xaxis_title="Income",
-        yaxis_title="Tax Amount",
+        yaxis_title="Tax Amount (assuming no SALT)",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,

@@ -672,7 +672,7 @@ if calculation_is_valid:
                 "AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above. Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
             )
         elif st.session_state.chart_index == 9:
-            st.markdown("### The gap is the excess of regular tax over AMT")
+            st.markdown("### The gap from AMT to regular tax--absent SALT--influences the effective SALT cap")
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
                 state_code=inputs_to_use["state_code"],
