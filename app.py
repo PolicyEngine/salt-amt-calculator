@@ -674,7 +674,7 @@ if calculation_is_valid:
             )
         elif st.session_state.chart_index == 9:
             st.markdown(
-                "### The gap from AMT to regular tax--absent SALT--influences the effective SALT cap"
+                "### The gap from AMT to regular tax—absent SALT—influences the effective SALT cap"
             )
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
