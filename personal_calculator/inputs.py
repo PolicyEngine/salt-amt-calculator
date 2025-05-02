@@ -54,7 +54,7 @@ def create_personal_inputs():
             value=0,
             step=500,
         )
-
+    st.markdown("### Income Information")
     employment_income = st.number_input(
         "Wages and salaries",
         min_value=0,
