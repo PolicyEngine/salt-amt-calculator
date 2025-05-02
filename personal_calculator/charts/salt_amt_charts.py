@@ -1058,15 +1058,13 @@ def display_gap_chart(
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
     charitable_cash_donations=0,
-    employment_income=0,  
-    real_estate_taxes=0, 
+    employment_income=0,
+    real_estate_taxes=0,
     show_current_policy=True,
 ):
     """
     Create and display a chart showing effective SALT cap by income level,
     comparing current policy vs current law.
-
-
     The graph shows employment income on x-axis and effective SALT cap on y-axis.
     """
     # Calculate data for Current Law
@@ -1131,50 +1129,24 @@ def display_gap_chart(
             )
         )
 
-    # Calculate the user's values for Current Law
-    user_values_law = calculate_df_without_axes(
-        state_code=state_code,
-        real_estate_taxes=real_estate_taxes,
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        employment_income=employment_income,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        scenario="Current Law",
-        reform_params=None,
-    )
+    # Find the closest point in the dataframe to the user's income
+    # This ensures the dot falls exactly on the line
+    def find_closest_value(df, income):
+        idx = (df["employment_income"] - income).abs().idxmin()
+        return df.loc[idx]["employment_income"], df.loc[idx]["gap"]
 
-    # Calculate the user's values for Current Policy
-    user_values_policy = calculate_df_without_axes(
-        state_code=state_code,
-        real_estate_taxes=real_estate_taxes,
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        employment_income=employment_income,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        scenario="Current Policy",
-        reform_params=None,
+    # Get exact points from the precalculated lines
+    user_income_law, user_gap_law = find_closest_value(
+        current_law_df, employment_income
     )
-
-    # Calculate the gap for both scenarios
-    user_gap_law = max(0, user_values_law["regular_tax"] - user_values_law["amt"])
-    user_gap_policy = max(
-        0, user_values_policy["regular_tax"] - user_values_policy["amt"]
+    user_income_policy, user_gap_policy = find_closest_value(
+        current_policy_df, employment_income
     )
 
     # Add user's point for Current Law
     fig.add_trace(
         go.Scatter(
-            x=[employment_income],
+            x=[user_income_law],
             y=[user_gap_law],
             mode="markers",
             name="Your household (Current Law)",
@@ -1187,7 +1159,7 @@ def display_gap_chart(
     if show_current_policy:
         fig.add_trace(
             go.Scatter(
-                x=[employment_income],
+                x=[user_income_policy],
                 y=[user_gap_policy],
                 mode="markers",
                 name="Your household (Current Policy)",
@@ -1202,7 +1174,7 @@ def display_gap_chart(
         title="",
         title_font_size=16,
         xaxis_title="Income",
-        yaxis_title="Gap between Regular Tax and AMT (assuming no SALT, 2026)",
+        yaxis_title="Gap between Regular Tax and AMT (assuming no SALT)",
         xaxis=dict(
             tickformat="$,.0f",
             showgrid=True,
@@ -1535,43 +1507,34 @@ def display_regular_tax_and_amt_by_income_chart(
         legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
     )
 
-    user_values_law = calculate_df_without_axes(
-        state_code=state_code,
-        real_estate_taxes=real_estate_taxes,
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        employment_income=employment_income,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        scenario="Current Law",
-        reform_params=None,
+    # Find the closest point in the dataframe to the user's income for current law
+    def find_closest_value(df, income, column):
+        idx = (df["employment_income"] - income).abs().idxmin()
+        return df.loc[idx]["employment_income"], df.loc[idx][column]
+
+    # Get exact points from the regular tax line for current law
+    user_income_law_regular, user_regular_tax_law = find_closest_value(
+        current_law_df, employment_income, "regular_tax"
+    )
+    # Get exact points from the AMT line for current law
+    user_income_law_amt, user_amt_law = find_closest_value(
+        current_law_df, employment_income, "amt"
     )
 
-    # Then calculate the same values for Current Policy
-    user_values_policy = calculate_df_without_axes(
-        state_code=state_code,
-        real_estate_taxes=real_estate_taxes,
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        employment_income=employment_income,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        scenario="Current Policy",
-        reform_params=None,
+    # Get exact points from the regular tax line for current policy
+    user_income_policy_regular, user_regular_tax_policy = find_closest_value(
+        current_policy_df, employment_income, "regular_tax"
+    )
+    # Get exact points from the AMT line for current policy
+    user_income_policy_amt, user_amt_policy = find_closest_value(
+        current_policy_df, employment_income, "amt"
     )
 
+    # Add user's point for Current Law Regular Tax
     fig.add_trace(
         go.Scatter(
-            x=[employment_income],
-            y=[user_values_law["regular_tax"]],
+            x=[user_income_law_regular],
+            y=[user_regular_tax_law],
             mode="markers",
             name="Your household (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
@@ -1579,12 +1542,12 @@ def display_regular_tax_and_amt_by_income_chart(
         )
     )
 
-    # Add dot for Current Policy (only if Current Policy is shown)
+    # Add dot for Current Policy Regular Tax (only if Current Policy is shown)
     if show_current_policy:
         fig.add_trace(
             go.Scatter(
-                x=[employment_income],
-                y=[user_values_policy["regular_tax"]],
+                x=[user_income_policy_regular],
+                y=[user_regular_tax_policy],
                 mode="markers",
                 name="Your household (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
@@ -1593,10 +1556,11 @@ def display_regular_tax_and_amt_by_income_chart(
             )
         )
 
+    # Add user's point for Current Law AMT
     fig.add_trace(
         go.Scatter(
-            x=[employment_income],
-            y=[user_values_law["amt"]],
+            x=[user_income_law_amt],
+            y=[user_amt_law],
             mode="markers",
             name="Your household (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
@@ -1604,12 +1568,12 @@ def display_regular_tax_and_amt_by_income_chart(
         )
     )
 
-    # Add dot for Current Policy (only if Current Policy is shown)
+    # Add dot for Current Policy AMT (only if Current Policy is shown)
     if show_current_policy:
         fig.add_trace(
             go.Scatter(
-                x=[employment_income],
-                y=[user_values_policy["amt"]],
+                x=[user_income_policy_amt],
+                y=[user_amt_policy],
                 mode="markers",
                 name="Your household (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
@@ -1775,27 +1739,22 @@ def display_tax_savings_chart(
     # Create a new dataframe with tax savings
     tax_savings_df = pd.DataFrame(tax_savings_data)
 
-    # Calculate user's tax savings
-    user_savings = calculate_salt_income_tax_reduction(
-        is_married,
-        state_code,
-        num_children,
-        child_ages,
-        qualified_dividend_income,
-        long_term_capital_gains,
-        short_term_capital_gains,
-        deductible_mortgage_interest,
-        charitable_cash_donations,
-        employment_income,
-        baseline_scenario=policy,
-        reform_params=reform_params,
-        threshold=threshold,
+    # Find the closest point in the dataframe to the user's income
+    def find_closest_value(df, income):
+        if df.empty:
+            return income, 0
+        idx = (df["employment_income"] - income).abs().idxmin()
+        return df.loc[idx]["employment_income"], df.loc[idx]["tax_savings"]
+
+    # Get exact point from the pre-calculated line
+    user_income, user_tax_savings = find_closest_value(
+        tax_savings_df, employment_income
     )
 
-    # Create user data dictionary
+    # Create user data dictionary using the point from the line
     user_data = {
-        "employment_income": employment_income,
-        "tax_savings": user_savings["income_tax_reduction"],
+        "employment_income": user_income,
+        "tax_savings": user_tax_savings,
     }
 
     # Create the graph with user data

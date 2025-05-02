@@ -125,7 +125,7 @@ def create_situation_with_one_income_axes(
     for i in range(num_children):
         child_id = f"child_{i}"
         situation_with_one_axes["people"][child_id] = {
-            "age": {"2026": 10},
+            "age": {"2026": child_ages[i]},
         }
         members.append(child_id)
 
@@ -200,7 +200,7 @@ def create_situation_with_two_axes(
     for i in range(num_children):
         child_id = f"child_{i}"
         situation_with_two_axes["people"][child_id] = {
-            "age": {"2026": 10},
+            "age": {"2026": child_ages[i]},
         }
         members.append(child_id)
 

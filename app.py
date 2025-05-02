@@ -336,7 +336,8 @@ if "chart_index" not in st.session_state:
 # Define the list of available charts
 available_charts = [
     "Introduction",
-    "Table" "SALT Deduction Comparison",
+    "SALT and Federal Income Tax Comparison", 
+    "SALT Deduction Comparison",
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",
     "Income Tax Comparison",
@@ -672,7 +673,9 @@ if calculation_is_valid:
                 "AMT taxes income at a 26% rate for AMTI under $244,000 and 28% above. Your AMT phases in at higher income levels than regular tax due to the AMT exemption. In these earnings variation charts, all points assume no SALT."
             )
         elif st.session_state.chart_index == 9:
-            st.markdown("### The gap from AMT to regular tax--absent SALT--influences the effective SALT cap")
+            st.markdown(
+                "### The gap from AMT to regular tax--absent SALT--influences the effective SALT cap"
+            )
             display_gap_chart(
                 is_married=inputs_to_use["is_married"],
                 state_code=inputs_to_use["state_code"],
@@ -831,7 +834,7 @@ if calculation_is_valid:
             if not hasattr(st.session_state, "nationwide_impacts"):
                 st.error("No impact data available. Please check data files.")
             else:
-                if st.session_state.chart_index == 14:
+                if st.session_state.chart_index == 15:
                     # Construct reform name
                     reform_name = get_reform_name(
                         st.session_state.policy_config, st.session_state.baseline
