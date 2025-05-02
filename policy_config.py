@@ -168,7 +168,7 @@ def display_policy_config():
         )
 
         amt_phaseout = st.selectbox(
-            "AMT phase-out threshold",
+            "AMT exemption phase-out threshold",
             amt_phaseout_options,
             index=amt_phaseout_index,
             disabled=amt_repealed,
