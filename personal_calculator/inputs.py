@@ -59,7 +59,7 @@ def create_personal_inputs():
         """
         ### Income Information
 
-        How much income did you receive from the following sources? 
+        How much income do you receive from the following sources? 
                 """
     )
 
