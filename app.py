@@ -336,7 +336,7 @@ if "chart_index" not in st.session_state:
 # Define the list of available charts
 available_charts = [
     "Introduction",
-    "SALT and Federal Income Tax Comparison", 
+    "SALT and Federal Income Tax Comparison",
     "SALT Deduction Comparison",
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",

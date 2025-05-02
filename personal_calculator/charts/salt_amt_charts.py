@@ -447,7 +447,7 @@ def display_regular_tax_and_amt_chart(
         margin=dict(t=80, b=80),
         hovermode="closest",
         plot_bgcolor="white",
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+        legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.5),
     )
 
     user_values_law = calculate_df_without_axes(
@@ -488,7 +488,7 @@ def display_regular_tax_and_amt_chart(
             x=[user_values_law["reported_salt"]],
             y=[user_values_law["regular_tax"]],
             mode="markers",
-            name="Your household (Current Law)",
+            name="Your household regular tax (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
             hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
         )
@@ -501,7 +501,7 @@ def display_regular_tax_and_amt_chart(
                 x=[user_values_policy["reported_salt"]],
                 y=[user_values_policy["regular_tax"]],
                 mode="markers",
-                name="Your household (Current Policy)",
+                name="Your household regular tax (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
                 hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
                 visible="legendonly",  # Only show if Current Policy is shown
@@ -513,7 +513,7 @@ def display_regular_tax_and_amt_chart(
             x=[user_values_law["reported_salt"]],
             y=[user_values_law["amt"]],
             mode="markers",
-            name="Your household (Current Law)",
+            name="Your household AMT (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
             hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
         )
@@ -526,7 +526,7 @@ def display_regular_tax_and_amt_chart(
                 x=[user_values_policy["reported_salt"]],
                 y=[user_values_policy["amt"]],
                 mode="markers",
-                name="Your household (Current Policy)",
+                name="Your household AMT (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
                 hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
                 visible="legendonly",  # Only show if Current Policy is shown
@@ -679,7 +679,7 @@ def display_taxable_income_and_amti_chart(
         margin=dict(t=80, b=80),
         hovermode="closest",
         plot_bgcolor="white",
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+        legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.55),
     )
 
     user_values_law = calculate_df_without_axes(
@@ -720,7 +720,7 @@ def display_taxable_income_and_amti_chart(
             x=[user_values_law["reported_salt"]],
             y=[user_values_law["taxable_income"]],
             mode="markers",
-            name="Your household (Current Law)",
+            name="Your household taxable income (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
             hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
         )
@@ -733,7 +733,7 @@ def display_taxable_income_and_amti_chart(
                 x=[user_values_policy["reported_salt"]],
                 y=[user_values_policy["taxable_income"]],
                 mode="markers",
-                name="Your household (Current Policy)",
+                name="Your household taxable income (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
                 hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>",
                 visible="legendonly",  # Only show if Current Policy is shown
@@ -745,7 +745,7 @@ def display_taxable_income_and_amti_chart(
             x=[user_values_law["reported_salt"]],
             y=[user_values_law["amt_income"]],
             mode="markers",
-            name="Your household (Current Law)",
+            name="Your household AMTI (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
             hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
         )
@@ -758,7 +758,7 @@ def display_taxable_income_and_amti_chart(
                 x=[user_values_policy["reported_salt"]],
                 y=[user_values_policy["amt_income"]],
                 mode="markers",
-                name="Your household (Current Policy)",
+                name="Your household AMTI (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
                 hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>",
                 visible="legendonly",  # Only show if Current Policy is shown
@@ -884,7 +884,7 @@ def display_income_tax_chart(
         margin=dict(t=80, b=80),
         hovermode="closest",
         plot_bgcolor="white",
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+        legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.4),
     )
 
     user_values_law = calculate_df_without_axes(
@@ -1536,7 +1536,7 @@ def display_regular_tax_and_amt_by_income_chart(
             x=[user_income_law_regular],
             y=[user_regular_tax_law],
             mode="markers",
-            name="Your household (Current Law)",
+            name="Your household regular tax (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
             hovertemplate="Your household (Current Law)<br>Employment Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
         )
@@ -1549,7 +1549,7 @@ def display_regular_tax_and_amt_by_income_chart(
                 x=[user_income_policy_regular],
                 y=[user_regular_tax_policy],
                 mode="markers",
-                name="Your household (Current Policy)",
+                name="Your household regular tax (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
                 hovertemplate="Your household (Current Policy)<br>Employment Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>",
                 visible="legendonly",  # Only show if Current Policy is shown
@@ -1562,7 +1562,7 @@ def display_regular_tax_and_amt_by_income_chart(
             x=[user_income_law_amt],
             y=[user_amt_law],
             mode="markers",
-            name="Your household (Current Law)",
+            name="Your household AMT (Current Law)",
             marker=dict(color=BLUE, size=10, symbol="circle"),
             hovertemplate="Your household (Current Law)<br>Employment Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
         )
@@ -1575,7 +1575,7 @@ def display_regular_tax_and_amt_by_income_chart(
                 x=[user_income_policy_amt],
                 y=[user_amt_policy],
                 mode="markers",
-                name="Your household (Current Policy)",
+                name="Your household AMT (Current Policy)",
                 marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
                 hovertemplate="Your household (Current Policy)<br>Employment Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>",
                 visible="legendonly",  # Only show if Current Policy is shown
