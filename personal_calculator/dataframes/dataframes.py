@@ -699,13 +699,10 @@ def calculate_df_without_axes(
     deductible_mortgage_interest,
     charitable_cash_donations,
     employment_income,
-    reform_params,
-    baseline_scenario,
+    scenario,
+    reform_params=None,
 ):
-    """
-    Calculate effective SALT cap for a single axis situation (fixed employment income)
-    If compare_scenarios is True, returns a comparison DataFrame of Current Law vs Current Policy
-    """
+    """Calculate tax values for a single scenario"""
     # Create situation with employment income fixed
     situation = create_situation_without_axes(
         state_code,
@@ -721,10 +718,10 @@ def calculate_df_without_axes(
         employment_income,
     )
 
-    # Create simulation based on baseline scenario
-    if baseline_scenario == "Current Law":
+    # Create simulation based on scenario
+    if scenario == "Current Law":
         simulation = Simulation(situation=situation)
-    elif baseline_scenario == "Current Policy":
+    elif scenario == "Current Policy":
         current_policy_reform = PolicyReforms.policy_reforms(CURRENT_POLICY_PARAMS)
         reform = Reform.from_dict(current_policy_reform, country_id="us")
         simulation = Simulation(situation=situation, reform=reform)
@@ -734,84 +731,45 @@ def calculate_df_without_axes(
         simulation = Simulation(situation=situation, reform=reform)
     else:
         raise ValueError(f"Invalid scenario configuration")
-
-    federal_income_tax = simulation.calculate(
+    
+    household_net_income = float(simulation.calculate("household_net_income",map_to ="household", period = 2026))
+    # Calculate values
+    federal_income_tax = float(simulation.calculate(
         "income_tax", map_to="household", period=2026
-    )
-    state_income_tax = simulation.calculate(
+    ))
+    state_income_tax = float(simulation.calculate(
         "state_withheld_income_tax", map_to="household", period=2026
-    )
-    state_sales_tax = simulation.calculate(
+    ))
+    state_sales_tax = float(simulation.calculate(
         "state_sales_tax", map_to="household", period=2026
-    )
-    larger_of_state_sales_or_income_tax = max(state_sales_tax, state_income_tax)
-    state_income_tax_over_sales_tax = state_income_tax > state_sales_tax
-
-    # Create DataFrame with data
-    property_tax_df = pd.DataFrame(
-        {
-            "employment_income": employment_income,
-            "federal_income_tax": federal_income_tax,
-            "state_income_tax": state_income_tax,
-            "state_sales_tax": state_sales_tax,
-            "larger_of_state_sales_or_income_tax": larger_of_state_sales_or_income_tax,
-            "state_income_tax_over_sales_tax": state_income_tax_over_sales_tax,
-        }
-    )
-
-    # Add policy information
-    property_tax_df["policy"] = baseline_scenario if reform_params is None else "Reform"
-
-    # Calculate both scenarios
-    current_law_df = calculate_df_without_axes(
-        state_code=state_code,
-        real_estate_taxes=real_estate_taxes,
-        employment_income=employment_income,
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Law",
-    )
-
-    current_policy_df = calculate_df_without_axes(
-        state_code=state_code,
-        real_estate_taxes=real_estate_taxes,
-        employment_income=employment_income,
-        is_married=is_married,
-        num_children=num_children,
-        child_ages=child_ages,
-        qualified_dividend_income=qualified_dividend_income,
-        long_term_capital_gains=long_term_capital_gains,
-        short_term_capital_gains=short_term_capital_gains,
-        deductible_mortgage_interest=deductible_mortgage_interest,
-        charitable_cash_donations=charitable_cash_donations,
-        reform_params=None,
-        baseline_scenario="Current Policy",
-    )
-
-    # Create comparison DataFrame
-    comparison_data = {
-        "Metric": [
-            "Federal Income Tax",
-            "State Income Tax",
-            "State Sales Tax",
-        ],
-        "Current Law": [
-            f"${current_law_df['federal_income_tax'].iloc[0]:,.0f}",
-            f"${current_law_df['state_income_tax'].iloc[0]:,.0f}",
-            f"${current_law_df['state_sales_tax'].iloc[0]:,.0f}",
-        ],
-        "Current Policy": [
-            f"${current_policy_df['federal_income_tax'].iloc[0]:,.0f}",
-            f"${current_policy_df['state_income_tax'].iloc[0]:,.0f}",
-            f"${current_policy_df['state_sales_tax'].iloc[0]:,.0f}",
-        ]
+    ))
+    salt_deduction = float(simulation.calculate(
+        "salt_deduction", map_to="household", period=2026
+    ))
+    reported_salt = float(simulation.calculate(
+        "reported_salt", map_to="household", period=2026
+    ))
+    regular_tax = float(simulation.calculate(
+        "regular_tax_before_credits", map_to="household", period=2026
+    ))
+    amt = float(simulation.calculate("amt_base_tax", map_to="household", period=2026))
+    taxable_income = float(simulation.calculate(
+        "taxable_income", map_to="household", period=2026
+    ))
+    amt_income = float(simulation.calculate("amt_income", map_to="household", period=2026))
+    # Return a dictionary with Python native types (floats, not NumPy arrays)
+    return {
+        "household_net_income": household_net_income,
+        "federal_income_tax": federal_income_tax,
+        "state_income_tax": state_income_tax,
+        "state_sales_tax": state_sales_tax,
+        "salt_deduction": salt_deduction,
+        "reported_salt": reported_salt,
+        "regular_tax": regular_tax,
+        "amt": amt,
+        "taxable_income": taxable_income,
+        "amt_income": amt_income,
+        "larger_of_state_sales_or_income_tax": max(state_sales_tax, state_income_tax),
+        "state_income_tax_over_sales_tax": bool(state_income_tax > state_sales_tax),
+        "policy": scenario if reform_params is None else "Reform"
     }
-
-    return pd.DataFrame(comparison_data)

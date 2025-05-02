@@ -34,11 +34,11 @@ from personal_calculator.charts.salt_amt_charts import (
     display_marginal_rate_chart,
     display_regular_tax_and_amt_by_income_chart,
     display_tax_savings_chart,
+    display_table_comparison,
 )
 from personal_calculator.dataframes.dataframes import (
     calculate_salt_income_tax_reduction,
     display_effective_salt_cap,
-    calculate_df_without_axes,
 )
 from personal_calculator.dataframes.situations import create_situation_without_axes
 
@@ -333,6 +333,7 @@ if "chart_index" not in st.session_state:
 # Define the list of available charts
 available_charts = [
     "Introduction",
+    "Table"
     "SALT Deduction Comparison",
     "Taxable Income and AMTI Comparison",
     "Regular Tax and AMT Comparison",
@@ -387,8 +388,25 @@ if st.session_state.chart_index == 0:
 if calculation_is_valid:
     if "last_calculated_inputs" in st.session_state:
         inputs_to_use = st.session_state.last_calculated_inputs
-        
-        if st.session_state.chart_index == 1:
+        if st.session_state.chart_index == 0:
+            st.markdown("### Your household comparison")
+            comparison_df = display_table_comparison(
+                is_married=inputs_to_use["is_married"],
+                state_code=inputs_to_use["state_code"],
+                num_children=inputs_to_use["num_children"],
+                employment_income=inputs_to_use["employment_income"],
+                child_ages=inputs_to_use["child_ages"],
+                qualified_dividend_income=inputs_to_use["qualified_dividend_income"],
+                long_term_capital_gains=inputs_to_use["long_term_capital_gains"],
+                short_term_capital_gains=inputs_to_use["short_term_capital_gains"],
+                deductible_mortgage_interest=inputs_to_use[
+                    "deductible_mortgage_interest"
+                ],
+                charitable_cash_donations=inputs_to_use["charitable_cash_donations"],
+                real_estate_taxes=inputs_to_use["real_estate_taxes"],
+            )
+            st.table(comparison_df)
+        elif st.session_state.chart_index == 1:
             st.markdown("### Current policy creates an explicit SALT cap")
             display_salt_deduction_comparison_chart(
                 is_married=inputs_to_use["is_married"],

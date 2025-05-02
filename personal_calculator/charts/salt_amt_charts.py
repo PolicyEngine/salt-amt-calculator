@@ -16,6 +16,8 @@ from personal_calculator.dataframes.dataframes import (
     calculate_income_df,
     process_income_marginal_tax_data,
     display_effective_salt_cap,
+    calculate_df_without_axes,
+
 )
 from personal_calculator.chart import adjust_chart_limits
 
@@ -27,6 +29,7 @@ def display_salt_deduction_comparison_chart(
     child_ages=[],
     qualified_dividend_income=0,
     employment_income=0,
+    real_estate_taxes=0,
     long_term_capital_gains=0,
     short_term_capital_gains=0,
     deductible_mortgage_interest=0,
@@ -141,6 +144,63 @@ def display_salt_deduction_comparison_chart(
     fig.update_layout(
         xaxis_range=[0, 100_000],
     )
+    user_values_law = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Law",
+        reform_params=None,
+    )
+
+    # Then calculate the same values for Current Policy
+    user_values_policy = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        employment_income=employment_income,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=[user_values_law["reported_salt"]],
+            y=[user_values_law["salt_deduction"]],
+            mode="markers",
+            name="Your household (Current Law)",
+            marker=dict(color=BLUE, size=10, symbol="circle"),
+            hovertemplate="Your household (Current Law)<br>SALT: $%{x:,.0f}<br>SALT Deduction: $%{y:,.0f}<extra></extra>",
+        )
+    )
+
+    # Add dot for Current Policy (only if Current Policy is shown)
+    if show_current_policy:
+        fig.add_trace(
+            go.Scatter(
+                x=[user_values_policy["reported_salt"]],
+                y=[user_values_policy["salt_deduction"]],
+                mode="markers",
+                name="Your household (Current Policy)",
+                marker=dict(color=LIGHT_GRAY, size=10, symbol="circle"),
+                hovertemplate="Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>SALT Deduction: $%{y:,.0f}<extra></extra>",
+                visible=show_current_policy,  # Only show if Current Policy is shown
+            )
+        )
 
     # Display the chart
     st.plotly_chart(fig, use_container_width=True)
@@ -1465,3 +1525,78 @@ def display_tax_savings_chart(
     st.plotly_chart(format_fig(fig), use_container_width=True)
 
     return tax_savings_df
+
+def display_table_comparison(
+    state_code,
+    real_estate_taxes,
+    is_married,
+    num_children,
+    child_ages,
+    qualified_dividend_income,
+    long_term_capital_gains,
+    short_term_capital_gains,
+    deductible_mortgage_interest,
+    charitable_cash_donations,
+    employment_income,
+    reform_params=None,
+):
+    """Compare Current Law and Current Policy scenarios with simplified output"""
+    # Calculate both scenarios
+    current_law_results = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        employment_income=employment_income,
+        scenario="Current Law",
+        reform_params=None,
+    )
+    
+    current_policy_results = calculate_df_without_axes(
+        state_code=state_code,
+        real_estate_taxes=real_estate_taxes,
+        is_married=is_married,
+        num_children=num_children,
+        child_ages=child_ages,
+        qualified_dividend_income=qualified_dividend_income,
+        long_term_capital_gains=long_term_capital_gains,
+        short_term_capital_gains=short_term_capital_gains,
+        deductible_mortgage_interest=deductible_mortgage_interest,
+        charitable_cash_donations=charitable_cash_donations,
+        employment_income=employment_income,
+        scenario="Current Policy",
+        reform_params=None,
+    )
+    
+    # Create simplified comparison DataFrame with formatted values
+    comparison_data = {
+        "Metric": [
+            "Household Net Income",
+            "Federal Income Tax",
+            "State Income Tax",
+            "State Sales Tax",
+        ],
+        "Current Law": [
+            f"${current_law_results['household_net_income']:,.0f}",
+            f"${current_law_results['federal_income_tax']:,.0f}",
+            f"${current_law_results['state_income_tax']:,.0f}",
+            f"${current_law_results['state_sales_tax']:,.0f}",
+        ],
+        "Current Policy": [
+            f"${current_policy_results['household_net_income']:,.0f}",
+            f"${current_policy_results['federal_income_tax']:,.0f}",
+            f"${current_policy_results['state_income_tax']:,.0f}",
+            f"${current_policy_results['state_sales_tax']:,.0f}",
+        ]
+    }
+    
+    df = pd.DataFrame(comparison_data)
+    return df.set_index("Metric")
+
+

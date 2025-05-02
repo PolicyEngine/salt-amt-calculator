@@ -229,7 +229,7 @@ def create_situation_with_two_axes(
 
 def create_situation_without_axes(
     state_code,
-    employment_income,
+    real_estate_taxes,
     is_married,
     num_children,
     child_ages,
@@ -238,7 +238,7 @@ def create_situation_without_axes(
     short_term_capital_gains,
     deductible_mortgage_interest,
     charitable_cash_donations,
-    real_estate_taxes,
+    employment_income,
 ):
     """Creates a situation dictionary based on user inputs"""
     situation = {
@@ -266,6 +266,7 @@ def create_situation_without_axes(
             }
         },
         "families": {"family": {"members": ["head"]}},
+        "spm_units": {"spm_unit": {"members": ["head"]}},
         "marital_units": {"marital_unit": {"members": ["head"]}},
     }
 
@@ -275,7 +276,7 @@ def create_situation_without_axes(
             "age": {"2026": 40},
         }
         # Add spouse to all units
-        for unit in ["households", "tax_units", "families", "marital_units"]:
+        for unit in ["households", "tax_units", "families", "marital_units", "spm_units"]:
             situation[unit][list(situation[unit].keys())[0]]["members"].append("spouse")
 
     # Add children
@@ -285,7 +286,7 @@ def create_situation_without_axes(
             "age": {"2026": child_ages[i]},
         }
         # Add child to relevant units
-        for unit in ["households", "tax_units", "families"]:
+        for unit in ["households", "tax_units", "families", "marital_units", "spm_units"]:
             situation[unit][list(situation[unit].keys())[0]]["members"].append(child_id)
 
 
