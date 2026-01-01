@@ -67,37 +67,38 @@ def calculate_single_point(
 
     simulation = _create_simulation(situation, baseline_scenario, reform_params)
 
+    # Use .item() to convert numpy 0-d arrays to Python scalars
     household_net_income = float(
-        simulation.calculate("household_net_income", map_to="household", period=2026)
+        simulation.calculate("household_net_income", map_to="household", period=2026).item()
     )
     federal_income_tax = float(
-        simulation.calculate("income_tax", map_to="household", period=2026)
+        simulation.calculate("income_tax", map_to="household", period=2026).item()
     )
     state_income_tax = float(
         simulation.calculate(
             "state_withheld_income_tax", map_to="household", period=2026
-        )
+        ).item()
     )
     state_sales_tax = float(
-        simulation.calculate("state_sales_tax", map_to="household", period=2026)
+        simulation.calculate("state_sales_tax", map_to="household", period=2026).item()
     )
     salt_deduction = float(
-        simulation.calculate("salt_deduction", map_to="household", period=2026)
+        simulation.calculate("salt_deduction", map_to="household", period=2026).item()
     )
     reported_salt = float(
-        simulation.calculate("reported_salt", map_to="household", period=2026)
+        simulation.calculate("reported_salt", map_to="household", period=2026).item()
     )
     regular_tax = float(
         simulation.calculate(
             "regular_tax_before_credits", map_to="household", period=2026
-        )
+        ).item()
     )
-    amt = float(simulation.calculate("amt_base_tax", map_to="household", period=2026))
+    amt = float(simulation.calculate("amt_base_tax", map_to="household", period=2026).item())
     taxable_income = float(
-        simulation.calculate("taxable_income", map_to="household", period=2026)
+        simulation.calculate("taxable_income", map_to="household", period=2026).item()
     )
     amt_income = float(
-        simulation.calculate("amt_income", map_to="household", period=2026)
+        simulation.calculate("amt_income", map_to="household", period=2026).item()
     )
 
     return {
