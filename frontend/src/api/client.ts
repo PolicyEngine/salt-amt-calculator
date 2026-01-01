@@ -11,8 +11,15 @@ import type {
   BaselineScenario,
 } from '@/types';
 
-// Modal API base URL - update after deployment
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://policyengine--salt-amt-api.modal.run';
+// Modal API endpoints - each function has its own URL
+const MODAL_BASE = 'https://maxghenis--salt-amt-api';
+const ENDPOINTS = {
+  health: `${MODAL_BASE}-health.modal.run`,
+  calculateSingle: `${MODAL_BASE}-calculate-single.modal.run`,
+  calculateSaltAxis: `${MODAL_BASE}-calculate-salt-axis.modal.run`,
+  calculateIncomeAxis: `${MODAL_BASE}-calculate-income-axis.modal.run`,
+  calculateTwoAxes: `${MODAL_BASE}-calculate-two-axes.modal.run`,
+};
 
 // Convert camelCase to snake_case for API
 function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
@@ -42,8 +49,8 @@ function toCamelCase(obj: Record<string, unknown>): Record<string, unknown> {
   return result;
 }
 
-async function apiCall<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+async function apiCall<T>(url: string, body: Record<string, unknown>): Promise<T> {
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -65,7 +72,7 @@ export async function calculateSinglePoint(
   baselineScenario: BaselineScenario,
   policyConfig?: PolicyConfig
 ): Promise<SinglePointResult> {
-  return apiCall<SinglePointResult>('calculate_single', {
+  return apiCall<SinglePointResult>(ENDPOINTS.calculateSingle, {
     household,
     baselineScenario,
     policyConfig,
@@ -80,7 +87,7 @@ export async function calculateSaltAxis(
   maxSalt = 300000,
   count = 600
 ): Promise<AxisResult> {
-  return apiCall<AxisResult>('calculate_salt_axis', {
+  return apiCall<AxisResult>(ENDPOINTS.calculateSaltAxis, {
     household,
     baselineScenario,
     policyConfig,
@@ -98,7 +105,7 @@ export async function calculateIncomeAxis(
   maxIncome = 1000000,
   count = 1000
 ): Promise<AxisResult> {
-  return apiCall<AxisResult>('calculate_income_axis', {
+  return apiCall<AxisResult>(ENDPOINTS.calculateIncomeAxis, {
     household,
     baselineScenario,
     policyConfig,
@@ -121,7 +128,7 @@ export async function calculateTwoAxes(
     incomeCount?: number;
   }
 ): Promise<TwoAxesResult> {
-  return apiCall<TwoAxesResult>('calculate_two_axes', {
+  return apiCall<TwoAxesResult>(ENDPOINTS.calculateTwoAxes, {
     household,
     baselineScenario,
     policyConfig,
@@ -130,6 +137,6 @@ export async function calculateTwoAxes(
 }
 
 export async function healthCheck(): Promise<{ status: string; service: string }> {
-  const response = await fetch(`${API_BASE_URL}/health`);
+  const response = await fetch(ENDPOINTS.health);
   return response.json();
 }

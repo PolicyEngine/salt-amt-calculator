@@ -5,31 +5,29 @@ import modal
 # Create the Modal app
 app = modal.App("salt-amt-api")
 
-# Define the image with dependencies
-image = modal.Image.debian_slim(python_version="3.13").pip_install(
-    "policyengine-us>=1.0.0",
-    "pandas>=2.0.0",
-    "numpy>=1.24.0",
-    "pydantic>=2.0.0",
-    "fastapi>=0.100.0",
+# Define the image with dependencies and local package code
+image = (
+    modal.Image.debian_slim(python_version="3.13")
+    .pip_install(
+        "policyengine-us>=1.0.0",
+        "pandas>=2.0.0",
+        "numpy>=1.24.0",
+        "pydantic>=2.0.0",
+        "fastapi>=0.100.0",
+    )
+    .add_local_dir("salt_amt_api", remote_path="/root/salt_amt_api")
 )
 
-# Mount the package code
-package_mount = modal.Mount.from_local_dir(
-    "salt_amt_api",
-    remote_path="/root/salt_amt_api",
-)
 
-
-@app.function(image=image, mounts=[package_mount], timeout=300)
-@modal.web_endpoint(method="GET")
+@app.function(image=image, timeout=300)
+@modal.fastapi_endpoint(method="GET")
 def health():
     """Health check endpoint."""
     return {"status": "healthy", "service": "salt-amt-api"}
 
 
-@app.function(image=image, mounts=[package_mount], timeout=300)
-@modal.web_endpoint(method="POST")
+@app.function(image=image, timeout=300)
+@modal.fastapi_endpoint(method="POST")
 def calculate_single(request: dict) -> dict:
     """Calculate tax values for a single household configuration."""
     import sys
@@ -66,8 +64,8 @@ def calculate_single(request: dict) -> dict:
     return SinglePointResponse(**result).model_dump()
 
 
-@app.function(image=image, mounts=[package_mount], timeout=600)
-@modal.web_endpoint(method="POST")
+@app.function(image=image, timeout=600)
+@modal.fastapi_endpoint(method="POST")
 def calculate_salt_axis(request: dict) -> dict:
     """Calculate tax values along the SALT axis (varying SALT, fixed income)."""
     import sys
@@ -104,8 +102,8 @@ def calculate_salt_axis(request: dict) -> dict:
     return AxisResponse(**result).model_dump()
 
 
-@app.function(image=image, mounts=[package_mount], timeout=600)
-@modal.web_endpoint(method="POST")
+@app.function(image=image, timeout=600)
+@modal.fastapi_endpoint(method="POST")
 def calculate_income_axis(request: dict) -> dict:
     """Calculate tax values along the income axis (varying income)."""
     import sys
@@ -141,8 +139,8 @@ def calculate_income_axis(request: dict) -> dict:
     return AxisResponse(**result).model_dump()
 
 
-@app.function(image=image, mounts=[package_mount], timeout=900, memory=4096)
-@modal.web_endpoint(method="POST")
+@app.function(image=image, timeout=900, memory=4096)
+@modal.fastapi_endpoint(method="POST")
 def calculate_two_axes(request: dict) -> dict:
     """Calculate tax values on a 2D grid (SALT x income)."""
     import sys
