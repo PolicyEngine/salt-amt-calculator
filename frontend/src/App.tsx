@@ -12,7 +12,7 @@ import { calculateSinglePoint, calculateSaltAxis, calculateIncomeAxis } from './
 import { colors, spacing } from './designTokens';
 
 export default function App() {
-  const [drawerOpened, setDrawerOpened] = useState(false);
+  const [drawerOpened, setDrawerOpened] = useState(true); // Start open
   const {
     slideIndex,
     hasCalculated,

@@ -35,7 +35,19 @@ export function InputDrawer({ opened, onClose }: InputDrawerProps) {
       padding="md"
       size="sm"
       position="left"
+      offset={8}
+      radius="md"
       styles={{
+        root: {
+          marginTop: '64px',
+        },
+        inner: {
+          top: '64px',
+          height: 'calc(100% - 64px)',
+        },
+        content: {
+          height: '100%',
+        },
         header: {
           borderBottom: `1px solid ${colors.border.light}`,
           marginBottom: 0,

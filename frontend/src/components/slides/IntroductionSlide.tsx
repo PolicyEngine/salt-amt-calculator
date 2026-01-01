@@ -66,16 +66,16 @@ export function IntroductionSlide() {
           </Text>
           <List spacing="sm">
             <List.Item>
-              Enter your household details and income in the sidebar
+              Enter your household details in the Settings panel (open on the left)
             </List.Item>
             <List.Item>
-              Select your preferred policy scenario to analyze
+              Customize policy options in the Policy tab
             </List.Item>
             <List.Item>
-              Click "Calculate" to run the PolicyEngine simulation
+              Click the teal "Calculate" button in the header
             </List.Item>
             <List.Item>
-              Navigate through the slides to explore your personalized tax analysis
+              Navigate through slides to explore your personalized analysis
             </List.Item>
           </List>
         </Box>

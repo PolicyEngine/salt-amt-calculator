@@ -74,6 +74,7 @@ export function SlideContainer({ slideIndex, hasCalculated, isCalculating }: Sli
       <Card
         style={{
           maxWidth: '600px',
+          margin: '0 auto',
           textAlign: 'center',
           padding: spacing.xl,
         }}
@@ -89,8 +90,8 @@ export function SlideContainer({ slideIndex, hasCalculated, isCalculating }: Sli
           Ready to Calculate
         </Text>
         <Text style={{ color: colors.text.secondary }}>
-          Fill out your household information and policy options in the sidebar,
-          then click "Calculate" to see your personalized tax analysis.
+          Fill out your household information in the Settings panel on the left,
+          then click the "Calculate" button in the header to see your personalized tax analysis.
         </Text>
       </Card>
     );
