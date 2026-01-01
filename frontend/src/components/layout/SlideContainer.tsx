@@ -51,6 +51,8 @@ export function SlideContainer({ slideIndex, hasCalculated, isCalculating }: Sli
           alignItems: 'center',
           justifyContent: 'center',
           gap: spacing.md,
+          flex: 1,
+          width: '100%',
         }}
       >
         <Loader size="xl" color={colors.primary[500]} />
