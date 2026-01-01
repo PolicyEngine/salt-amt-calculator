@@ -15,3 +15,23 @@ __pycache__/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Python virtual environments
+.venv/
+venv/
+ENV/
+
+# Node.js
+node_modules/
+dist/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+
+# Test output
+coverage/
+.pytest_cache/
+
+# Build artifacts (keep lock files for reproducibility)
