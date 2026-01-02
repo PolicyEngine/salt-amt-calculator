@@ -141,7 +141,7 @@ export default function App() {
             </Text>
           </AppShell.Section>
 
-          <AppShell.Section grow component={ScrollArea}>
+          <AppShell.Section grow component={ScrollArea} scrollbarSize={8}>
             <Tabs value={activeTab} onChange={setActiveTab}>
               <Tabs.List>
                 <Tabs.Tab value="household" leftSection={<IconHome size={16} />}>
@@ -152,7 +152,7 @@ export default function App() {
                 </Tabs.Tab>
               </Tabs.List>
 
-              <Box mt="md">
+              <Box mt="md" pr="md">
                 <Tabs.Panel value="household">
                   <HouseholdInputs />
                 </Tabs.Panel>
