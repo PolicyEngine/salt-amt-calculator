@@ -66,16 +66,16 @@ export function IntroductionSlide() {
           </Text>
           <List spacing="sm">
             <List.Item>
-              Enter your household details in the Settings panel (open on the left)
+              Enter your household details in the sidebar on the left
             </List.Item>
             <List.Item>
               Customize policy options in the Policy tab
             </List.Item>
             <List.Item>
-              Click the teal "Calculate" button in the header
+              Click "Calculate" to run the simulation
             </List.Item>
             <List.Item>
-              Navigate through slides to explore your personalized analysis
+              Navigate through slides to explore your results
             </List.Item>
           </List>
         </Box>

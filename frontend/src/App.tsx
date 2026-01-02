@@ -1,18 +1,22 @@
 import { useState } from 'react';
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider, AppShell, Burger, Group, Text, Button, Loader, Tabs, Box, ScrollArea } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconHome, IconSettings, IconCalculator } from '@tabler/icons-react';
 import '@mantine/core/styles.css';
 import { theme } from './theme';
 import { useStore } from './store';
-import { Header } from './components/layout/Header';
-import { InputDrawer } from './components/layout/InputDrawer';
 import { SlideNavigation } from './components/layout/SlideNavigation';
 import { SlideContainer } from './components/layout/SlideContainer';
+import { HouseholdInputs } from './components/inputs/HouseholdInputs';
+import { PolicyConfigInputs } from './components/inputs/PolicyConfigInputs';
 import { useUrlSync } from './hooks/useUrlSync';
 import { calculateSinglePoint, calculateSaltAxis, calculateIncomeAxis } from './api/client';
-import { colors, spacing } from './designTokens';
+import { colors, spacing, typography } from './designTokens';
 
 export default function App() {
-  const [drawerOpened, setDrawerOpened] = useState(true); // Start open
+  const [opened, { toggle }] = useDisclosure(true);
+  const [activeTab, setActiveTab] = useState<string | null>('household');
+
   const {
     slideIndex,
     hasCalculated,
@@ -32,16 +36,13 @@ export default function App() {
     setError,
   } = useStore();
 
-  // Sync state with URL for iframe embedding
   useUrlSync();
 
   const handleCalculate = async () => {
-    setDrawerOpened(false);
     setCalculating(true);
     setError(null);
 
     try {
-      // Calculate baseline (without policy reform)
       const [baselineSingle, baselineSalt, baselineIncome] = await Promise.all([
         calculateSinglePoint(household, baselineScenario),
         calculateSaltAxis(household, baselineScenario),
@@ -52,7 +53,6 @@ export default function App() {
       setBaselineSaltAxis(baselineSalt);
       setBaselineIncomeAxis(baselineIncome);
 
-      // Calculate with reform if different from baseline
       const hasReform =
         policyConfig.saltCap !== 'Current Law (Uncapped)' ||
         policyConfig.saltRepealed ||
@@ -65,7 +65,6 @@ export default function App() {
           calculateSaltAxis(household, baselineScenario, policyConfig),
           calculateIncomeAxis(household, baselineScenario, policyConfig),
         ]);
-
         setSinglePointResult(reformSingle);
         setSaltAxisResult(reformSalt);
         setIncomeAxisResult(reformIncome);
@@ -76,7 +75,7 @@ export default function App() {
       }
 
       setHasCalculated(true);
-      setSlideIndex(1); // Go to first content slide
+      setSlideIndex(1);
     } catch (error) {
       console.error('Calculation error:', error);
       setError(error instanceof Error ? error.message : 'Calculation failed');
@@ -87,47 +86,103 @@ export default function App() {
 
   return (
     <MantineProvider theme={theme}>
-      {/* Header */}
-      <Header
-        onMenuClick={() => setDrawerOpened((o) => !o)}
-        menuOpened={drawerOpened}
-        onCalculate={handleCalculate}
-        isCalculating={isCalculating}
-      />
-
-      {/* Input Drawer */}
-      <InputDrawer opened={drawerOpened} onClose={() => setDrawerOpened(false)} />
-
-      {/* Main Content - Full Width */}
-      <main
-        style={{
-          marginTop: '64px',
-          minHeight: 'calc(100vh - 64px)',
-          backgroundColor: colors.background.secondary,
-          display: 'flex',
-          flexDirection: 'column',
+      <AppShell
+        header={{ height: 60 }}
+        navbar={{
+          width: 320,
+          breakpoint: 'sm',
+          collapsed: { mobile: !opened, desktop: !opened },
         }}
+        padding="md"
       >
-        {/* Slide Content - Full Width */}
-        <div
+        {/* Header */}
+        <AppShell.Header>
+          <Group h="100%" px="md" justify="space-between">
+            <Group>
+              <Burger opened={opened} onClick={toggle} size="sm" />
+              <div>
+                <Text
+                  style={{
+                    fontSize: typography.fontSize.lg,
+                    fontWeight: typography.fontWeight.bold,
+                    color: colors.primary[600],
+                    lineHeight: 1.2,
+                  }}
+                >
+                  SALTernative
+                </Text>
+                <Text size="xs" c="dimmed">SALT & AMT Tax Calculator</Text>
+              </div>
+            </Group>
+            <Button
+              size="md"
+              leftSection={isCalculating ? <Loader size={16} color="white" /> : <IconCalculator size={18} />}
+              onClick={handleCalculate}
+              disabled={isCalculating}
+              color="teal"
+            >
+              {isCalculating ? 'Calculating...' : 'Calculate'}
+            </Button>
+          </Group>
+        </AppShell.Header>
+
+        {/* Navbar/Sidebar */}
+        <AppShell.Navbar p="md">
+          <AppShell.Section>
+            <Text
+              style={{
+                fontSize: typography.fontSize.md,
+                fontWeight: typography.fontWeight.semibold,
+                color: colors.text.primary,
+                marginBottom: spacing.sm,
+              }}
+            >
+              Settings
+            </Text>
+          </AppShell.Section>
+
+          <AppShell.Section grow component={ScrollArea}>
+            <Tabs value={activeTab} onChange={setActiveTab}>
+              <Tabs.List>
+                <Tabs.Tab value="household" leftSection={<IconHome size={16} />}>
+                  Household
+                </Tabs.Tab>
+                <Tabs.Tab value="policy" leftSection={<IconSettings size={16} />}>
+                  Policy
+                </Tabs.Tab>
+              </Tabs.List>
+
+              <Box mt="md">
+                <Tabs.Panel value="household">
+                  <HouseholdInputs />
+                </Tabs.Panel>
+                <Tabs.Panel value="policy">
+                  <PolicyConfigInputs />
+                </Tabs.Panel>
+              </Box>
+            </Tabs>
+          </AppShell.Section>
+        </AppShell.Navbar>
+
+        {/* Main Content */}
+        <AppShell.Main
           style={{
-            flex: 1,
-            width: '100%',
-            padding: spacing.lg,
+            backgroundColor: colors.background.secondary,
             display: 'flex',
             flexDirection: 'column',
+            minHeight: 'calc(100vh - 60px)',
           }}
         >
-          <SlideContainer
-            slideIndex={slideIndex}
-            hasCalculated={hasCalculated}
-            isCalculating={isCalculating}
-          />
-        </div>
-
-        {/* Navigation */}
-        <SlideNavigation />
-      </main>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <SlideContainer
+              slideIndex={slideIndex}
+              hasCalculated={hasCalculated}
+              isCalculating={isCalculating}
+            />
+          </div>
+          <SlideNavigation />
+        </AppShell.Main>
+      </AppShell>
     </MantineProvider>
   );
 }
