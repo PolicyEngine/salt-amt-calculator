@@ -49,19 +49,19 @@ from personal_calculator.dataframes.situations import create_situation_without_a
 st.set_page_config(page_title="SALT and AMT Policy Calculator")
 
 
-# Inject custom CSS with Roboto font and styling
+# Inject custom CSS with Inter font and styling
 st.markdown(
     f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&display=swap');
         
         /* ===== FONT STYLING ===== */
-        /* Apply Roboto font to all elements */
+        /* Apply Inter font to all elements */
         html, body, [class*="css"], .stMarkdown, .stButton, .stHeader, 
         div, p, h1, h2, h3, h4, h5, h6, span,
         .stRadio > label, .stCheckbox > label, .stExpander > label,
         .stMarkdown p, .stMarkdown span, .stMarkdown div {{
-            font-family: 'Roboto', sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
         }}
         
         /* ===== LAYOUT STYLING ===== */
@@ -371,7 +371,7 @@ if st.session_state.chart_index == 0:
     # Custom styled title with teal accents
     st.markdown(
         f"""
-        <h1 style="font-family: Roboto;">
+        <h1 style="font-family: Inter;">
             <span style="color:; font-weight: bold;">What's the SALT</span><span style="color: ; font-weight: normal;">ernative?</span>
         </h1>
         """,

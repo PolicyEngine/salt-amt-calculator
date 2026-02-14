@@ -65,11 +65,11 @@ export const colors = {
 
 export const typography = {
   fontFamily: {
-    primary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    primary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     secondary: "'Public Sans', sans-serif",
-    body: "'Roboto', sans-serif",
+    body: "'Inter', sans-serif",
     mono: "'JetBrains Mono', 'Fira Code', monospace",
-    chart: "'Roboto Serif', serif",
+    chart: "'Inter', sans-serif",
   },
   fontSize: {
     xs: '12px',
