@@ -3,7 +3,16 @@
  */
 
 import { Box, Text, Stack } from '@mantine/core';
-import Plot from 'react-plotly.js';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LabelList,
+} from 'recharts';
 import { colors, spacing, typography } from '@/designTokens';
 
 interface BudgetYearImpact {
@@ -17,6 +26,12 @@ interface BudgetaryImpactsSlideProps {
   baselineScenario: string;
 }
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+
 export function BudgetaryImpactsSlide({
   budgetWindowImpacts,
   totalDeficitChange,
@@ -25,39 +40,11 @@ export function BudgetaryImpactsSlide({
   const impactWord = totalDeficitChange > 0 ? 'reduce' : 'increase';
   const impactAmount = Math.abs(totalDeficitChange) / 1e12;
 
-  const years = budgetWindowImpacts.map((d) => d.year);
-  const impacts = budgetWindowImpacts.map((d) => d.totalIncomeChange);
-  const labels = budgetWindowImpacts.map((d) =>
-    `$${Math.abs(d.totalIncomeChange / 1e9).toFixed(0)}B`
-  );
-
-  const data: Plotly.Data[] = [
-    {
-      x: years,
-      y: impacts,
-      type: 'bar',
-      marker: { color: colors.primary[500] },
-      text: labels,
-      textposition: 'outside',
-      hovertemplate: 'Year: %{x}<br>Impact: $%{y:,.0f}<extra></extra>',
-    },
-  ];
-
-  const layout: Partial<Plotly.Layout> = {
-    xaxis: {
-      title: { text: 'Year' },
-      tickmode: 'linear',
-      dtick: 1,
-    },
-    yaxis: {
-      title: { text: 'Budgetary Impact (in billions)' },
-      tickformat: '$,.0f',
-    },
-    margin: { t: 40, b: 80, l: 80, r: 60 },
-    plot_bgcolor: 'white',
-    paper_bgcolor: 'white',
-    font: { family: 'Inter, sans-serif' },
-  };
+  const data = budgetWindowImpacts.map((d) => ({
+    year: d.year,
+    impact: d.totalIncomeChange,
+    label: `$${Math.abs(d.totalIncomeChange / 1e9).toFixed(0)}B`,
+  }));
 
   if (totalDeficitChange === 0) {
     return (
@@ -97,13 +84,29 @@ export function BudgetaryImpactsSlide({
       </Text>
 
       <Box style={{ width: '100%', minHeight: '400px' }}>
-        <Plot
-          data={data}
-          layout={layout}
-          useResizeHandler={true}
-          style={{ width: '100%', height: '400px' }}
-          config={{ responsive: true, displayModeBar: false }}
-        />
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={data} margin={{ top: 30, right: 60, left: 80, bottom: 60 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+            <XAxis
+              dataKey="year"
+              label={{ value: 'Year', position: 'insideBottom', offset: -10, style: { fontFamily: 'Inter, sans-serif', fontSize: 14 } }}
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }}
+            />
+            <YAxis
+              tickFormatter={(v: number) => currencyFormatter.format(v)}
+              label={{ value: 'Budgetary Impact (in billions)', angle: -90, position: 'insideLeft', dx: -20, style: { fontFamily: 'Inter, sans-serif', fontSize: 14, textAnchor: 'middle' } }}
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }}
+            />
+            <Tooltip
+              formatter={(value) => [value != null ? currencyFormatter.format(Number(value)) : '', 'Impact']}
+              labelFormatter={(label) => `Year: ${label}`}
+              contentStyle={{ fontFamily: 'Inter, sans-serif' }}
+            />
+            <Bar dataKey="impact" fill={colors.primary[500]}>
+              <LabelList dataKey="label" position="top" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }} />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </Box>
     </Stack>
   );

@@ -65,11 +65,11 @@ export const colors = {
 
 export const typography = {
   fontFamily: {
-    primary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    secondary: "'Public Sans', sans-serif",
-    body: "'Roboto', sans-serif",
+    primary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    secondary: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    body: "'Inter', sans-serif",
     mono: "'JetBrains Mono', 'Fira Code', monospace",
-    chart: "'Roboto Serif', serif",
+    chart: "'Inter', sans-serif",
   },
   fontSize: {
     xs: '12px',
@@ -145,13 +145,9 @@ export const chartColors = {
   negative: colors.error,
 } as const;
 
-export const chartLayout = {
-  font: {
-    family: typography.fontFamily.chart,
-    size: 14,
-    color: colors.text.primary,
-  },
-  paper_bgcolor: colors.background.primary,
-  plot_bgcolor: colors.background.primary,
-  margin: { l: 60, r: 40, t: 40, b: 60 },
+export const chartStyle = {
+  fontFamily: typography.fontFamily.chart,
+  fontSize: 14,
+  color: colors.text.primary,
+  margin: { top: 20, right: 40, left: 80, bottom: 60 },
 } as const;

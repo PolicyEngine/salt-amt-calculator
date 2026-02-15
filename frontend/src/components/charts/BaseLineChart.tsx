@@ -3,7 +3,17 @@
  * Handles common patterns: Current Law vs Current Policy, user markers.
  */
 
-import Plot from 'react-plotly.js';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ReferenceDot,
+} from 'recharts';
 import { colors } from '@/designTokens';
 
 interface LineData {
@@ -34,6 +44,47 @@ interface BaseLineChartProps {
   height?: number;
 }
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+
+const percentFormatter = (value: number) => `${(value * 100).toFixed(1)}%`;
+
+function formatValue(value: number, format?: string): string {
+  if (!format) return currencyFormatter.format(value);
+  if (format.includes('%')) return percentFormatter(value);
+  return currencyFormatter.format(value);
+}
+
+/**
+ * Merge parallel x/y arrays from multiple lines into a single
+ * array of {x, line0, line1, ...} objects for Recharts.
+ */
+function mergeLineData(lines: LineData[]): Record<string, number>[] {
+  const dataMap = new Map<number, Record<string, number>>();
+
+  lines.forEach((line, idx) => {
+    if (line.visible === false) return;
+    for (let i = 0; i < line.x.length; i++) {
+      const xVal = line.x[i];
+      if (!dataMap.has(xVal)) {
+        dataMap.set(xVal, { x: xVal });
+      }
+      dataMap.get(xVal)![`line${idx}`] = line.y[i];
+    }
+  });
+
+  return Array.from(dataMap.values()).sort((a, b) => a.x - b.x);
+}
+
+const STROKE_DASH: Record<string, string> = {
+  solid: '',
+  dot: '4 4',
+  dash: '8 4',
+};
+
 export function BaseLineChart({
   lines,
   markers = [],
@@ -45,76 +96,79 @@ export function BaseLineChart({
   yTickFormat = '$,.0f',
   height = 400,
 }: BaseLineChartProps) {
-  const data: Plotly.Data[] = [
-    // Lines
-    ...lines.map((line) => ({
-      x: line.x,
-      y: line.y,
-      type: 'scatter' as const,
-      mode: 'lines' as const,
-      name: line.name,
-      line: {
-        color: line.color || colors.primary[500],
-        width: 2,
-        dash: line.dash || 'solid',
-      },
-      visible: line.visible ?? true,
-      hovertemplate: `${xAxisTitle}: %{x:${xTickFormat}}<br>${yAxisTitle}: %{y:${yTickFormat}}<extra></extra>`,
-    })),
-    // Markers
-    ...markers.map((marker) => ({
-      x: [marker.x],
-      y: [marker.y],
-      type: 'scatter' as const,
-      mode: 'markers' as const,
-      name: marker.name,
-      marker: {
-        color: marker.color || colors.primary[500],
-        size: 10,
-        symbol: 'circle' as const,
-      },
-      hovertemplate: `${marker.name}<br>${xAxisTitle}: %{x:${xTickFormat}}<br>${yAxisTitle}: %{y:${yTickFormat}}<extra></extra>`,
-    })),
-  ];
-
-  const layout: Partial<Plotly.Layout> = {
-    xaxis: {
-      title: { text: xAxisTitle },
-      tickformat: xTickFormat,
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-      range: xRange,
-    },
-    yaxis: {
-      title: { text: yAxisTitle },
-      tickformat: yTickFormat,
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-      range: yRange,
-    },
-    margin: { t: 40, b: 80, l: 80, r: 40 },
-    hovermode: 'closest',
-    plot_bgcolor: 'white',
-    paper_bgcolor: 'white',
-    legend: {
-      yanchor: 'top',
-      y: 0.99,
-      xanchor: 'right',
-      x: 0.99,
-    },
-    font: {
-      family: 'Inter, sans-serif',
-    },
-  };
+  const data = mergeLineData(lines);
 
   return (
-    <Plot
-      data={data}
-      layout={layout}
-      useResizeHandler={true}
-      style={{ width: '100%', height: `${height}px` }}
-      config={{ responsive: true, displayModeBar: false }}
-    />
+    <ResponsiveContainer width="100%" height={height}>
+      <LineChart data={data} margin={{ top: 20, right: 40, left: 80, bottom: 60 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+        <XAxis
+          dataKey="x"
+          type="number"
+          domain={xRange || ['auto', 'auto']}
+          tickFormatter={(v: number) => formatValue(v, xTickFormat)}
+          label={{ value: xAxisTitle, position: 'insideBottom', offset: -10, style: { fontFamily: 'Inter, sans-serif', fontSize: 14 } }}
+          style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }}
+        />
+        <YAxis
+          type="number"
+          domain={yRange || ['auto', 'auto']}
+          tickFormatter={(v: number) => formatValue(v, yTickFormat)}
+          label={{ value: yAxisTitle, angle: -90, position: 'insideLeft', dx: -20, style: { fontFamily: 'Inter, sans-serif', fontSize: 14, textAnchor: 'middle' } }}
+          style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }}
+        />
+        <Tooltip
+          formatter={(value, name) => {
+            if (value == null) return ['', name ?? ''];
+            const lineIdx = parseInt(String(name).replace('line', ''), 10);
+            const line = lines[lineIdx];
+            return [formatValue(Number(value), yTickFormat), line?.name || String(name)];
+          }}
+          labelFormatter={(label) => `${xAxisTitle}: ${formatValue(Number(label), xTickFormat)}`}
+          contentStyle={{ fontFamily: 'Inter, sans-serif' }}
+        />
+        <Legend
+          formatter={(value: string) => {
+            const lineIdx = parseInt(value.replace('line', ''), 10);
+            return lines[lineIdx]?.name || value;
+          }}
+          wrapperStyle={{ fontFamily: 'Inter, sans-serif', paddingTop: '10px' }}
+        />
+        {lines.map((line, idx) => {
+          if (line.visible === false) return null;
+          return (
+            <Line
+              key={`line${idx}`}
+              dataKey={`line${idx}`}
+              name={`line${idx}`}
+              stroke={line.color || colors.primary[500]}
+              strokeWidth={2}
+              strokeDasharray={STROKE_DASH[line.dash || 'solid'] || ''}
+              dot={false}
+              activeDot={{ r: 4 }}
+              hide={line.visible === 'legendonly'}
+            />
+          );
+        })}
+        {markers.map((marker, idx) => (
+          <ReferenceDot
+            key={`marker${idx}`}
+            x={marker.x}
+            y={marker.y}
+            r={6}
+            fill={marker.color || colors.primary[500]}
+            stroke="white"
+            strokeWidth={2}
+            label={{
+              value: marker.name,
+              position: 'top',
+              offset: 10,
+              style: { fontFamily: 'Inter, sans-serif', fontSize: 11, fill: marker.color || colors.primary[500] },
+            }}
+          />
+        ))}
+      </LineChart>
+    </ResponsiveContainer>
   );
 }
 
@@ -148,7 +202,7 @@ export function ComparisonChart({
   xRange,
   yTickFormat = '$,.0f',
 }: ComparisonChartProps) {
-  const lines: LineData[] = [
+  const lineData: LineData[] = [
     {
       x: currentLawX,
       y: currentLawY,
@@ -164,11 +218,11 @@ export function ComparisonChart({
     },
   ];
 
-  const markers: MarkerData[] = [
+  const markerData: MarkerData[] = [
     {
       x: userX,
       y: userYLaw,
-      name: 'Your household (Current Law)',
+      name: 'You (Law)',
       color: colors.primary[500],
     },
     ...(showCurrentPolicy
@@ -176,7 +230,7 @@ export function ComparisonChart({
           {
             x: userX,
             y: userYPolicy,
-            name: 'Your household (Current Policy)',
+            name: 'You (Policy)',
             color: colors.gray[400],
           },
         ]
@@ -185,8 +239,8 @@ export function ComparisonChart({
 
   return (
     <BaseLineChart
-      lines={lines}
-      markers={markers}
+      lines={lineData}
+      markers={markerData}
       xAxisTitle={xAxisTitle}
       yAxisTitle={yAxisTitle}
       xRange={xRange}

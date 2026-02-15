@@ -2,7 +2,7 @@
  * Marginal Rate chart - shows marginal tax rate by income level.
  */
 
-import Plot from 'react-plotly.js';
+import { BaseLineChart } from './BaseLineChart';
 import { colors } from '@/designTokens';
 
 interface MarginalRateChartProps {
@@ -26,86 +26,39 @@ export function MarginalRateChart({
   userMarginalRatePolicy,
   showCurrentPolicy = true,
 }: MarginalRateChartProps) {
-  const data: Plotly.Data[] = [
-    // Current Law line
+  const lines = [
     {
       x: currentLawIncome,
       y: currentLawMarginalRate,
-      type: 'scatter',
-      mode: 'lines',
       name: 'Current Law',
-      line: { color: colors.primary[500], width: 2 },
-      hovertemplate: 'Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>',
+      color: colors.primary[500],
     },
-    // Current Policy line
     {
       x: currentPolicyIncome,
       y: currentPolicyMarginalRate,
-      type: 'scatter',
-      mode: 'lines',
       name: 'Current Policy',
-      line: { color: colors.gray[400], width: 2, dash: 'dash' },
-      visible: showCurrentPolicy ? 'legendonly' : false,
-      hovertemplate: 'Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>',
+      color: colors.gray[400],
+      dash: 'dash' as const,
+      visible: showCurrentPolicy ? ('legendonly' as const) : (false as const),
     },
-    // User marker - Current Law
-    {
-      x: [userIncome],
-      y: [userMarginalRateLaw],
-      type: 'scatter',
-      mode: 'markers',
-      name: 'Your household (Current Law)',
-      marker: { color: colors.primary[500], size: 10 },
-      hovertemplate: 'Your household (Current Law)<br>Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>',
-    },
-    // User marker - Current Policy
-    ...(showCurrentPolicy ? [{
-      x: [userIncome],
-      y: [userMarginalRatePolicy],
-      type: 'scatter' as const,
-      mode: 'markers' as const,
-      name: 'Your household (Current Policy)',
-      marker: { color: colors.gray[400], size: 10 },
-      visible: 'legendonly' as const,
-      hovertemplate: 'Your household (Current Policy)<br>Income: $%{x:,.0f}<br>Marginal Tax Rate: %{y:.1%}<extra></extra>',
-    }] : []),
   ];
 
-  const layout: Partial<Plotly.Layout> = {
-    xaxis: {
-      title: { text: 'Wages and salaries' },
-      tickformat: '$,.0f',
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-      range: [0, 1000000],
-    },
-    yaxis: {
-      title: { text: 'Marginal Tax Rate (2026)' },
-      tickformat: '.1%',
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-      range: [0, 1],
-    },
-    margin: { t: 40, b: 80, l: 80, r: 40 },
-    hovermode: 'closest',
-    plot_bgcolor: 'white',
-    paper_bgcolor: 'white',
-    legend: {
-      yanchor: 'top',
-      y: 0.99,
-      xanchor: 'right',
-      x: 0.99,
-    },
-    font: { family: 'Inter, sans-serif' },
-  };
+  const markers = [
+    { x: userIncome, y: userMarginalRateLaw, name: 'You (Law)', color: colors.primary[500] },
+    ...(showCurrentPolicy
+      ? [{ x: userIncome, y: userMarginalRatePolicy, name: 'You (Policy)', color: colors.gray[400] }]
+      : []),
+  ];
 
   return (
-    <Plot
-      data={data}
-      layout={layout}
-      useResizeHandler={true}
-      style={{ width: '100%', height: '400px' }}
-      config={{ responsive: true, displayModeBar: false }}
+    <BaseLineChart
+      lines={lines}
+      markers={markers}
+      xAxisTitle="Wages and salaries"
+      yAxisTitle="Marginal Tax Rate (2026)"
+      xRange={[0, 1000000]}
+      yRange={[0, 1]}
+      yTickFormat=".1%"
     />
   );
 }
