@@ -2,7 +2,7 @@
  * Introduction slide component - the landing page of the calculator.
  */
 
-import { Box, Text, Card, Stack, List } from '@mantine/core';
+import { Box, Text, Card, Stack } from '@mantine/core';
 import { colors, spacing, typography } from '@/designTokens';
 
 export function IntroductionSlide() {
@@ -19,37 +19,28 @@ export function IntroductionSlide() {
         <Box style={{ textAlign: 'center' }}>
           <Text
             style={{
-              fontSize: typography.fontSize['3xl'],
+              fontSize: typography.fontSize['4xl'],
               fontWeight: typography.fontWeight.bold,
-              color: colors.primary[500],
-              marginBottom: spacing.sm,
-            }}
-          >
-            The SALTernative
-          </Text>
-          <Text
-            style={{
-              fontSize: typography.fontSize.xl,
-              fontWeight: typography.fontWeight.medium,
               color: colors.text.primary,
-              marginBottom: spacing.md,
+              marginBottom: spacing.xs,
             }}
           >
-            SALT Cap and Alternative Minimum Tax Analysis
-          </Text>
-          <Text
-            style={{
-              fontSize: typography.fontSize.md,
-              color: colors.text.secondary,
-            }}
-          >
-            Explore how SALT cap reforms and AMT changes affect your taxes
+            What&apos;s the{' '}
+            <Text
+              component="span"
+              style={{
+                color: colors.primary[500],
+                fontWeight: typography.fontWeight.bold,
+              }}
+            >
+              SALT
+            </Text>
+            ernative?
           </Text>
         </Box>
 
         <Box
           style={{
-            background: colors.background.secondary,
             padding: spacing.lg,
             borderRadius: '8px',
           }}
@@ -57,30 +48,32 @@ export function IntroductionSlide() {
           <Text
             style={{
               fontSize: typography.fontSize.md,
-              fontWeight: typography.fontWeight.semibold,
-              color: colors.text.primary,
-              marginBottom: spacing.sm,
+              color: colors.text.secondary,
+              fontStyle: 'italic',
+              marginBottom: spacing.md,
             }}
           >
-            How to Use This Calculator
+            The state and local tax (SALT) deduction and alternative minimum tax (AMT) are
+            scheduled to change next year. We&apos;ll walk you through these policies and allow you
+            to model your custom reform.
           </Text>
-          <List spacing="sm">
-            <List.Item>
-              Enter your household details in the sidebar on the left
-            </List.Item>
-            <List.Item>
-              Customize policy options in the Policy tab
-            </List.Item>
-            <List.Item>
-              Click "Calculate" to run the simulation
-            </List.Item>
-            <List.Item>
-              Navigate through slides to explore your results
-            </List.Item>
-          </List>
+          <Text
+            style={{
+              fontSize: typography.fontSize.md,
+              color: colors.text.primary,
+              lineHeight: typography.lineHeight.relaxed,
+            }}
+          >
+            This tool starts by describing the SALT deduction and AMT, both under{' '}
+            <em>current law</em> (given the expiration of the Tax Cuts and Jobs Act (TCJA) in 2026)
+            and under <em>current policy</em> (if the TCJA was extended beyond 2025). Then we&apos;ll
+            explain these policies in the context of sample households. Finally, we&apos;ll put you in
+            the driver&apos;s seat &mdash; you can design and simulate a range of SALT and AMT reforms,
+            and we&apos;ll calculate how it affects the US and your household. Let&apos;s dive in!
+          </Text>
         </Box>
 
-        <Box style={{ textAlign: 'center' }}>
+        <Box style={{ textAlign: 'center', marginTop: spacing.md }}>
           <Text
             style={{
               fontSize: typography.fontSize.sm,

@@ -25,6 +25,7 @@ export interface PolicyConfig {
   amtPhaseout: string;
   amtRepealed: boolean;
   amtEliminateMarriagePenalty: boolean;
+  behavioralResponses: boolean;
   otherTcjaProvisionsExtended: string;
 }
 
@@ -123,6 +124,11 @@ export const DEFAULT_HOUSEHOLD: HouseholdInput = {
   charitableCashDonations: 5000,
 };
 
+export const OTHER_TCJA_OPTIONS = [
+  'Current Law',
+  'Current Policy (Extended)',
+] as const;
+
 export const DEFAULT_POLICY: PolicyConfig = {
   saltCap: 'Current Law (Uncapped)',
   saltMarriageBonus: false,
@@ -132,5 +138,6 @@ export const DEFAULT_POLICY: PolicyConfig = {
   amtPhaseout: 'Current Law ($156,700 Single, $209,000 Joint)',
   amtRepealed: false,
   amtEliminateMarriagePenalty: false,
+  behavioralResponses: false,
   otherTcjaProvisionsExtended: 'Current Law',
 };

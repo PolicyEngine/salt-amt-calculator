@@ -5,6 +5,8 @@
 import { Box, Text, Loader, Card } from '@mantine/core';
 import { colors, spacing, typography } from '@/designTokens';
 import { useStore } from '@/store';
+import { useNationwideImpacts } from '@/hooks/useNationwideImpacts';
+import { getReformName } from '@/utils/getReformName';
 import {
   IntroductionSlide,
   SaltFederalTaxSlide,
@@ -32,6 +34,7 @@ interface SlideContainerProps {
 export function SlideContainer({ slideIndex, hasCalculated, isCalculating }: SlideContainerProps) {
   const {
     household,
+    policyConfig,
     singlePointResult,
     saltAxisResult,
     incomeAxisResult,
@@ -40,6 +43,8 @@ export function SlideContainer({ slideIndex, hasCalculated, isCalculating }: Sli
     baselineIncomeAxis,
     baselineScenario,
   } = useStore();
+
+  const { getReformImpact, getBudgetWindowImpacts } = useNationwideImpacts();
 
   // Show loading state
   if (isCalculating) {
@@ -294,49 +299,60 @@ export function SlideContainer({ slideIndex, hasCalculated, isCalculating }: Sli
         />
       );
 
-    case 14:
-      // Budgetary impacts - placeholder for now
+    case 14: {
+      const reformName = getReformName(policyConfig, baselineScenario);
+      const budgetImpacts = getBudgetWindowImpacts(reformName, baselineScenario);
+      const budgetData = budgetImpacts.map((i) => ({
+        year: i.year ?? 2026,
+        totalIncomeChange: i.totalIncomeChange,
+      }));
+      // Fill missing years with zeros
+      for (let y = 2026; y <= 2035; y++) {
+        if (!budgetData.find((d) => d.year === y)) {
+          budgetData.push({ year: y, totalIncomeChange: 0 });
+        }
+      }
+      budgetData.sort((a, b) => a.year - b.year);
+      const totalDeficit = budgetData.reduce((sum, d) => sum + d.totalIncomeChange, 0);
       return (
         <BudgetaryImpactsSlide
-          budgetWindowImpacts={[
-            { year: 2026, totalIncomeChange: 0 },
-            { year: 2027, totalIncomeChange: 0 },
-            { year: 2028, totalIncomeChange: 0 },
-            { year: 2029, totalIncomeChange: 0 },
-            { year: 2030, totalIncomeChange: 0 },
-            { year: 2031, totalIncomeChange: 0 },
-            { year: 2032, totalIncomeChange: 0 },
-            { year: 2033, totalIncomeChange: 0 },
-            { year: 2034, totalIncomeChange: 0 },
-            { year: 2035, totalIncomeChange: 0 },
-          ]}
-          totalDeficitChange={0}
+          budgetWindowImpacts={budgetData}
+          totalDeficitChange={totalDeficit}
           baselineScenario={baselineScenario}
         />
       );
+    }
 
-    case 15:
-      // Distributional impacts - placeholder for now
+    case 15: {
+      const reformName15 = getReformName(policyConfig, baselineScenario);
+      const singleYearImpact = getReformImpact(reformName15, baselineScenario);
+      if (singleYearImpact) {
+        return (
+          <DistributionalImpactsSlide
+            distributionData={singleYearImpact.decileImpacts.map((d) => ({
+              decile: d.decile,
+              avgImpact: d.avgImpact,
+              pctBetterOff: singleYearImpact.percentBetterOff,
+              pctWorseOff: singleYearImpact.percentWorseOff,
+            }))}
+            pctBetterOff={singleYearImpact.percentBetterOff}
+            pctWorseOff={singleYearImpact.percentWorseOff}
+            avgImpactForAffected={
+              singleYearImpact.decileImpacts.reduce((s, d) => s + d.avgImpact, 0) /
+              Math.max(1, singleYearImpact.decileImpacts.filter((d) => d.avgImpact !== 0).length)
+            }
+            baselineScenario={baselineScenario}
+          />
+        );
+      }
       return (
-        <DistributionalImpactsSlide
-          distributionData={[
-            { decile: '10-20%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '20-30%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '30-40%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '40-50%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '50-60%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '60-70%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '70-80%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '80-90%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: '90-100%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-            { decile: 'Top 1%', avgImpact: 0, pctBetterOff: 0, pctWorseOff: 0 },
-          ]}
-          pctBetterOff={0}
-          pctWorseOff={0}
-          avgImpactForAffected={0}
-          baselineScenario={baselineScenario}
-        />
+        <Card style={{ padding: spacing.xl, textAlign: 'center' }}>
+          <Text style={{ color: colors.text.secondary }}>
+            No distributional data available for the selected reform configuration. Try adjusting the policy options.
+          </Text>
+        </Card>
       );
+    }
 
     case 16:
       return <KeyTakeawaysSlide />;

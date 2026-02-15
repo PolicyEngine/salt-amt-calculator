@@ -9,6 +9,7 @@ import {
   AMT_EXEMPTION_OPTIONS,
   AMT_PHASEOUT_OPTIONS,
   SALT_PHASEOUT_OPTIONS,
+  OTHER_TCJA_OPTIONS,
   BaselineScenario,
 } from '@/types';
 import { colors, spacing, typography } from '@/designTokens';
@@ -26,6 +27,9 @@ export function PolicyConfigInputs() {
     setBaselineScenario,
   } = useStore();
 
+  const saltDisabled = policyConfig.saltRepealed;
+  const amtDisabled = policyConfig.amtRepealed;
+
   return (
     <Stack gap={spacing.md}>
       <Text
@@ -37,7 +41,7 @@ export function PolicyConfigInputs() {
           letterSpacing: '0.05em',
         }}
       >
-        Baseline Scenario
+        Baseline scenario
       </Text>
 
       <Select
@@ -48,6 +52,13 @@ export function PolicyConfigInputs() {
         searchable
       />
 
+      <Checkbox
+        label="Behavioral responses"
+        checked={policyConfig.behavioralResponses}
+        onChange={(e) => setPolicyConfig({ behavioralResponses: e.currentTarget.checked })}
+        description="Include behavioral responses to tax changes"
+      />
+
       <Text
         style={{
           fontSize: typography.fontSize.sm,
@@ -58,8 +69,14 @@ export function PolicyConfigInputs() {
           marginTop: spacing.md,
         }}
       >
-        SALT Reform Options
+        SALT reform options
       </Text>
+
+      <Checkbox
+        label="Repeal SALT deduction"
+        checked={policyConfig.saltRepealed}
+        onChange={(e) => setPolicyConfig({ saltRepealed: e.currentTarget.checked })}
+      />
 
       <Select
         label="SALT cap"
@@ -67,6 +84,15 @@ export function PolicyConfigInputs() {
         value={policyConfig.saltCap}
         onChange={(value) => value && setPolicyConfig({ saltCap: value })}
         searchable
+        disabled={saltDisabled}
+      />
+
+      <Checkbox
+        label="SALT marriage bonus"
+        checked={policyConfig.saltMarriageBonus}
+        onChange={(e) => setPolicyConfig({ saltMarriageBonus: e.currentTarget.checked })}
+        disabled={saltDisabled || policyConfig.saltCap === 'Current Law (Uncapped)'}
+        description="Double the SALT cap for married filers"
       />
 
       <Select
@@ -75,18 +101,7 @@ export function PolicyConfigInputs() {
         value={policyConfig.saltPhaseout}
         onChange={(value) => value && setPolicyConfig({ saltPhaseout: value })}
         searchable
-      />
-
-      <Checkbox
-        label="SALT marriage bonus"
-        checked={policyConfig.saltMarriageBonus}
-        onChange={(e) => setPolicyConfig({ saltMarriageBonus: e.currentTarget.checked })}
-      />
-
-      <Checkbox
-        label="Repeal SALT deduction"
-        checked={policyConfig.saltRepealed}
-        onChange={(e) => setPolicyConfig({ saltRepealed: e.currentTarget.checked })}
+        disabled={saltDisabled || policyConfig.saltCap === 'Current Law (Uncapped)'}
       />
 
       <Text
@@ -99,8 +114,14 @@ export function PolicyConfigInputs() {
           marginTop: spacing.md,
         }}
       >
-        AMT Reform Options
+        AMT reform options
       </Text>
+
+      <Checkbox
+        label="Repeal AMT"
+        checked={policyConfig.amtRepealed}
+        onChange={(e) => setPolicyConfig({ amtRepealed: e.currentTarget.checked })}
+      />
 
       <Select
         label="AMT exemption"
@@ -108,6 +129,7 @@ export function PolicyConfigInputs() {
         value={policyConfig.amtExemption}
         onChange={(value) => value && setPolicyConfig({ amtExemption: value })}
         searchable
+        disabled={amtDisabled}
       />
 
       <Select
@@ -116,18 +138,36 @@ export function PolicyConfigInputs() {
         value={policyConfig.amtPhaseout}
         onChange={(value) => value && setPolicyConfig({ amtPhaseout: value })}
         searchable
+        disabled={amtDisabled}
       />
 
       <Checkbox
         label="Eliminate AMT marriage penalty"
         checked={policyConfig.amtEliminateMarriagePenalty}
         onChange={(e) => setPolicyConfig({ amtEliminateMarriagePenalty: e.currentTarget.checked })}
+        disabled={amtDisabled}
+        description="Double the AMT exemption and phaseout thresholds for joint filers"
       />
 
-      <Checkbox
-        label="Repeal AMT"
-        checked={policyConfig.amtRepealed}
-        onChange={(e) => setPolicyConfig({ amtRepealed: e.currentTarget.checked })}
+      <Text
+        style={{
+          fontSize: typography.fontSize.sm,
+          fontWeight: typography.fontWeight.semibold,
+          color: colors.text.secondary,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          marginTop: spacing.md,
+        }}
+      >
+        General
+      </Text>
+
+      <Select
+        label="Other TCJA provisions"
+        data={[...OTHER_TCJA_OPTIONS].map((opt: string) => ({ value: opt, label: opt }))}
+        value={policyConfig.otherTcjaProvisionsExtended}
+        onChange={(value) => value && setPolicyConfig({ otherTcjaProvisionsExtended: value })}
+        description="Whether non-SALT/AMT TCJA provisions are extended"
       />
     </Stack>
   );

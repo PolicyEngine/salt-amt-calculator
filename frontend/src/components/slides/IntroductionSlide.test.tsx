@@ -14,10 +14,12 @@ const renderWithMantine = (component: React.ReactNode) => {
 describe('IntroductionSlide', () => {
   it('renders the title', () => {
     renderWithMantine(<IntroductionSlide />);
-    expect(screen.getByText('The SALTernative')).toBeInTheDocument();
+    // "SALT" is in a colored span, so match the parent element directly
+    expect(screen.getByText(/What/)).toBeInTheDocument();
+    expect(screen.getByText('SALT')).toBeInTheDocument();
   });
 
-  it('renders the subtitle or description', () => {
+  it('renders the description about SALT and AMT', () => {
     renderWithMantine(<IntroductionSlide />);
     expect(screen.getByText(/alternative minimum tax/i)).toBeInTheDocument();
   });
@@ -27,8 +29,8 @@ describe('IntroductionSlide', () => {
     expect(screen.getByText('PolicyEngine')).toBeInTheDocument();
   });
 
-  it('provides instructions for getting started', () => {
+  it('describes TCJA expiration context', () => {
     renderWithMantine(<IntroductionSlide />);
-    expect(screen.getByText(/how to use this calculator/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tax Cuts and Jobs Act/i)).toBeInTheDocument();
   });
 });

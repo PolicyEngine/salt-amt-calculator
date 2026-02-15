@@ -7,6 +7,7 @@ import { theme } from './theme';
 import { useStore } from './store';
 import { SlideNavigation } from './components/layout/SlideNavigation';
 import { SlideContainer } from './components/layout/SlideContainer';
+import { NotesFooter } from './components/layout/NotesFooter';
 import { HouseholdInputs } from './components/inputs/HouseholdInputs';
 import { PolicyConfigInputs } from './components/inputs/PolicyConfigInputs';
 import { useUrlSync } from './hooks/useUrlSync';
@@ -181,6 +182,7 @@ export default function App() {
             />
           </div>
           <SlideNavigation />
+          <NotesFooter />
         </AppShell.Main>
       </AppShell>
     </MantineProvider>
