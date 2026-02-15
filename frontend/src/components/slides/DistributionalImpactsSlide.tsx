@@ -3,7 +3,16 @@
  */
 
 import { Box, Text, Stack, Card, SimpleGrid } from '@mantine/core';
-import Plot from 'react-plotly.js';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 import { colors, spacing, typography } from '@/designTokens';
 
 interface DistributionData {
@@ -21,6 +30,12 @@ interface DistributionalImpactsSlideProps {
   baselineScenario: string;
 }
 
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+
 export function DistributionalImpactsSlide({
   distributionData,
   pctBetterOff,
@@ -31,35 +46,10 @@ export function DistributionalImpactsSlide({
   const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
   const formatCurrency = (value: number) => `$${Math.abs(value).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 
-  const deciles = distributionData.map((d) => d.decile);
-  const impacts = distributionData.map((d) => d.avgImpact);
-
-  const data: Plotly.Data[] = [
-    {
-      x: deciles,
-      y: impacts,
-      type: 'bar',
-      marker: {
-        color: impacts.map((v) => (v >= 0 ? colors.success : colors.error)),
-      },
-      hovertemplate: '%{x}<br>Average Impact: $%{y:,.0f}<extra></extra>',
-    },
-  ];
-
-  const layout: Partial<Plotly.Layout> = {
-    xaxis: {
-      title: { text: 'Income Decile' },
-      tickangle: -45,
-    },
-    yaxis: {
-      title: { text: 'Average Impact ($)' },
-      tickformat: '$,.0f',
-    },
-    margin: { t: 40, b: 120, l: 80, r: 40 },
-    plot_bgcolor: 'white',
-    paper_bgcolor: 'white',
-    font: { family: 'Inter, sans-serif' },
-  };
+  const data = distributionData.map((d) => ({
+    decile: d.decile,
+    avgImpact: d.avgImpact,
+  }));
 
   return (
     <Stack gap={spacing.lg}>
@@ -144,13 +134,35 @@ export function DistributionalImpactsSlide({
       </SimpleGrid>
 
       <Box style={{ width: '100%', minHeight: '400px' }}>
-        <Plot
-          data={data}
-          layout={layout}
-          useResizeHandler={true}
-          style={{ width: '100%', height: '400px' }}
-          config={{ responsive: true, displayModeBar: false }}
-        />
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={data} margin={{ top: 20, right: 40, left: 80, bottom: 80 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+            <XAxis
+              dataKey="decile"
+              angle={-45}
+              textAnchor="end"
+              label={{ value: 'Income Decile', position: 'insideBottom', offset: -20, style: { fontFamily: 'Inter, sans-serif', fontSize: 14 } }}
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }}
+            />
+            <YAxis
+              tickFormatter={(v: number) => currencyFormatter.format(v)}
+              label={{ value: 'Average Impact ($)', angle: -90, position: 'insideLeft', dx: -20, style: { fontFamily: 'Inter, sans-serif', fontSize: 14, textAnchor: 'middle' } }}
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: 12 }}
+            />
+            <Tooltip
+              formatter={(value) => [value != null ? currencyFormatter.format(Number(value)) : '', 'Average Impact']}
+              contentStyle={{ fontFamily: 'Inter, sans-serif' }}
+            />
+            <Bar dataKey="avgImpact">
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.avgImpact >= 0 ? colors.success : colors.error}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </Box>
 
       <Text

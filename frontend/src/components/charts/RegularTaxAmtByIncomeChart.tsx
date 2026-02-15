@@ -2,7 +2,7 @@
  * Regular Tax and AMT by Income chart - shows regular tax and AMT by income level.
  */
 
-import Plot from 'react-plotly.js';
+import { BaseLineChart } from './BaseLineChart';
 import { colors } from '@/designTokens';
 import type { AxisResult } from '@/types';
 
@@ -27,125 +27,55 @@ export function RegularTaxAmtByIncomeChart({
   userAmtPolicy,
   showCurrentPolicy = true,
 }: RegularTaxAmtByIncomeChartProps) {
-  const data: Plotly.Data[] = [
-    // Current Law lines (in foreground)
+  const lines = [
     {
       x: currentLawData.axisValues,
       y: currentLawData.regularTax,
-      type: 'scatter',
-      mode: 'lines',
       name: 'Regular Tax (Current Law)',
-      line: { color: colors.primary[500], width: 2 },
-      hovertemplate: 'Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>',
+      color: colors.primary[500],
     },
     {
       x: currentLawData.axisValues,
       y: currentLawData.amt,
-      type: 'scatter',
-      mode: 'lines',
       name: 'AMT (Current Law)',
-      line: { color: colors.primary[500], width: 2, dash: 'dot' },
-      hovertemplate: 'Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>',
+      color: colors.primary[500],
+      dash: 'dot' as const,
     },
-    // Current Policy lines (in background, legendonly)
     {
       x: currentPolicyData.axisValues,
       y: currentPolicyData.regularTax,
-      type: 'scatter',
-      mode: 'lines',
       name: 'Regular Tax (Current Policy)',
-      line: { color: colors.gray[400], width: 2 },
-      visible: showCurrentPolicy ? 'legendonly' : false,
-      hovertemplate: 'Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>',
+      color: colors.gray[400],
+      visible: showCurrentPolicy ? ('legendonly' as const) : (false as const),
     },
     {
       x: currentPolicyData.axisValues,
       y: currentPolicyData.amt,
-      type: 'scatter',
-      mode: 'lines',
       name: 'AMT (Current Policy)',
-      line: { color: colors.gray[400], width: 2, dash: 'dot' },
-      visible: showCurrentPolicy ? 'legendonly' : false,
-      hovertemplate: 'Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>',
+      color: colors.gray[400],
+      dash: 'dot' as const,
+      visible: showCurrentPolicy ? ('legendonly' as const) : (false as const),
     },
-    // User markers - Current Law
-    {
-      x: [userIncome],
-      y: [userRegularTaxLaw],
-      type: 'scatter',
-      mode: 'markers',
-      name: 'Your household regular tax (Current Law)',
-      marker: { color: colors.primary[500], size: 10 },
-      hovertemplate: 'Your household (Current Law)<br>Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>',
-    },
-    {
-      x: [userIncome],
-      y: [userAmtLaw],
-      type: 'scatter',
-      mode: 'markers',
-      name: 'Your household AMT (Current Law)',
-      marker: { color: colors.primary[500], size: 10 },
-      hovertemplate: 'Your household (Current Law)<br>Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>',
-    },
-    // User markers - Current Policy (legendonly)
-    ...(showCurrentPolicy ? [
-      {
-        x: [userIncome],
-        y: [userRegularTaxPolicy],
-        type: 'scatter' as const,
-        mode: 'markers' as const,
-        name: 'Your household regular tax (Current Policy)',
-        marker: { color: colors.gray[400], size: 10 },
-        visible: 'legendonly' as const,
-        hovertemplate: 'Your household (Current Policy)<br>Income: $%{x:,.0f}<br>Regular Tax: $%{y:,.0f}<extra></extra>',
-      },
-      {
-        x: [userIncome],
-        y: [userAmtPolicy],
-        type: 'scatter' as const,
-        mode: 'markers' as const,
-        name: 'Your household AMT (Current Policy)',
-        marker: { color: colors.gray[400], size: 10 },
-        visible: 'legendonly' as const,
-        hovertemplate: 'Your household (Current Policy)<br>Income: $%{x:,.0f}<br>AMT: $%{y:,.0f}<extra></extra>',
-      },
-    ] : []),
   ];
 
-  const layout: Partial<Plotly.Layout> = {
-    xaxis: {
-      title: { text: 'Wages and salaries' },
-      tickformat: '$,.0f',
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-      range: [0, 1000000],
-    },
-    yaxis: {
-      title: { text: 'Tax Amount (assuming no SALT, 2026)' },
-      tickformat: '$,.0f',
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-    },
-    margin: { t: 40, b: 80, l: 80, r: 40 },
-    hovermode: 'closest',
-    plot_bgcolor: 'white',
-    paper_bgcolor: 'white',
-    legend: {
-      yanchor: 'top',
-      y: 0.99,
-      xanchor: 'right',
-      x: 0.99,
-    },
-    font: { family: 'Inter, sans-serif' },
-  };
+  const markers = [
+    { x: userIncome, y: userRegularTaxLaw, name: 'You Tax (Law)', color: colors.primary[500] },
+    { x: userIncome, y: userAmtLaw, name: 'You AMT (Law)', color: colors.primary[500] },
+    ...(showCurrentPolicy
+      ? [
+          { x: userIncome, y: userRegularTaxPolicy, name: 'You Tax (Policy)', color: colors.gray[400] },
+          { x: userIncome, y: userAmtPolicy, name: 'You AMT (Policy)', color: colors.gray[400] },
+        ]
+      : []),
+  ];
 
   return (
-    <Plot
-      data={data}
-      layout={layout}
-      useResizeHandler={true}
-      style={{ width: '100%', height: '400px' }}
-      config={{ responsive: true, displayModeBar: false }}
+    <BaseLineChart
+      lines={lines}
+      markers={markers}
+      xAxisTitle="Wages and salaries"
+      yAxisTitle="Tax Amount (assuming no SALT, 2026)"
+      xRange={[0, 1000000]}
     />
   );
 }

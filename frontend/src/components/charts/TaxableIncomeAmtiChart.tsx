@@ -2,7 +2,7 @@
  * Taxable Income and AMTI chart - shows taxable income and AMTI by SALT level.
  */
 
-import Plot from 'react-plotly.js';
+import { BaseLineChart } from './BaseLineChart';
 import { colors } from '@/designTokens';
 import type { AxisResult } from '@/types';
 
@@ -27,125 +27,55 @@ export function TaxableIncomeAmtiChart({
   userAmtiPolicy,
   showCurrentPolicy = true,
 }: TaxableIncomeAmtiChartProps) {
-  const data: Plotly.Data[] = [
-    // Current Policy lines (in background, legendonly)
-    {
-      x: currentPolicyData.axisValues,
-      y: currentPolicyData.taxableIncome,
-      type: 'scatter',
-      mode: 'lines',
-      name: 'Taxable Income (Current Policy)',
-      line: { color: colors.gray[400], width: 2 },
-      visible: showCurrentPolicy ? 'legendonly' : false,
-      hovertemplate: 'SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>',
-    },
-    {
-      x: currentPolicyData.axisValues,
-      y: currentPolicyData.amtIncome,
-      type: 'scatter',
-      mode: 'lines',
-      name: 'AMTI (Current Policy)',
-      line: { color: colors.gray[400], width: 2, dash: 'dot' },
-      visible: showCurrentPolicy ? 'legendonly' : false,
-      hovertemplate: 'SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>',
-    },
-    // Current Law lines (in foreground)
+  const lines = [
     {
       x: currentLawData.axisValues,
       y: currentLawData.taxableIncome,
-      type: 'scatter',
-      mode: 'lines',
       name: 'Taxable Income (Current Law)',
-      line: { color: colors.primary[500], width: 2 },
-      hovertemplate: 'SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>',
+      color: colors.primary[500],
     },
     {
       x: currentLawData.axisValues,
       y: currentLawData.amtIncome,
-      type: 'scatter',
-      mode: 'lines',
       name: 'AMTI (Current Law)',
-      line: { color: colors.primary[500], width: 2, dash: 'dot' },
-      hovertemplate: 'SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>',
-    },
-    // User markers - Current Law
-    {
-      x: [userSalt],
-      y: [userTaxableIncomeLaw],
-      type: 'scatter',
-      mode: 'markers',
-      name: 'Your household taxable income (Current Law)',
-      marker: { color: colors.primary[500], size: 10 },
-      hovertemplate: 'Your household (Current Law)<br>SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>',
+      color: colors.primary[500],
+      dash: 'dot' as const,
     },
     {
-      x: [userSalt],
-      y: [userAmtiLaw],
-      type: 'scatter',
-      mode: 'markers',
-      name: 'Your household AMTI (Current Law)',
-      marker: { color: colors.primary[500], size: 10 },
-      hovertemplate: 'Your household (Current Law)<br>SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>',
+      x: currentPolicyData.axisValues,
+      y: currentPolicyData.taxableIncome,
+      name: 'Taxable Income (Current Policy)',
+      color: colors.gray[400],
+      visible: showCurrentPolicy ? ('legendonly' as const) : (false as const),
     },
-    // User markers - Current Policy (legendonly)
-    ...(showCurrentPolicy ? [
-      {
-        x: [userSalt],
-        y: [userTaxableIncomePolicy],
-        type: 'scatter' as const,
-        mode: 'markers' as const,
-        name: 'Your household taxable income (Current Policy)',
-        marker: { color: colors.gray[400], size: 10 },
-        visible: 'legendonly' as const,
-        hovertemplate: 'Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>Taxable Income: $%{y:,.0f}<extra></extra>',
-      },
-      {
-        x: [userSalt],
-        y: [userAmtiPolicy],
-        type: 'scatter' as const,
-        mode: 'markers' as const,
-        name: 'Your household AMTI (Current Policy)',
-        marker: { color: colors.gray[400], size: 10 },
-        visible: 'legendonly' as const,
-        hovertemplate: 'Your household (Current Policy)<br>SALT: $%{x:,.0f}<br>AMTI: $%{y:,.0f}<extra></extra>',
-      },
-    ] : []),
+    {
+      x: currentPolicyData.axisValues,
+      y: currentPolicyData.amtIncome,
+      name: 'AMTI (Current Policy)',
+      color: colors.gray[400],
+      dash: 'dot' as const,
+      visible: showCurrentPolicy ? ('legendonly' as const) : (false as const),
+    },
   ];
 
-  const layout: Partial<Plotly.Layout> = {
-    xaxis: {
-      title: { text: 'Reported SALT' },
-      tickformat: '$,.0f',
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-      range: [0, 100000],
-    },
-    yaxis: {
-      title: { text: 'Taxable Income (2026)' },
-      tickformat: '$,.0f',
-      showgrid: true,
-      gridcolor: 'rgba(0,0,0,0.1)',
-    },
-    margin: { t: 40, b: 80, l: 80, r: 40 },
-    hovermode: 'closest',
-    plot_bgcolor: 'white',
-    paper_bgcolor: 'white',
-    legend: {
-      yanchor: 'bottom',
-      y: 0.01,
-      xanchor: 'right',
-      x: 0.55,
-    },
-    font: { family: 'Inter, sans-serif' },
-  };
+  const markers = [
+    { x: userSalt, y: userTaxableIncomeLaw, name: 'You TI (Law)', color: colors.primary[500] },
+    { x: userSalt, y: userAmtiLaw, name: 'You AMTI (Law)', color: colors.primary[500] },
+    ...(showCurrentPolicy
+      ? [
+          { x: userSalt, y: userTaxableIncomePolicy, name: 'You TI (Policy)', color: colors.gray[400] },
+          { x: userSalt, y: userAmtiPolicy, name: 'You AMTI (Policy)', color: colors.gray[400] },
+        ]
+      : []),
+  ];
 
   return (
-    <Plot
-      data={data}
-      layout={layout}
-      useResizeHandler={true}
-      style={{ width: '100%', height: '400px' }}
-      config={{ responsive: true, displayModeBar: false }}
+    <BaseLineChart
+      lines={lines}
+      markers={markers}
+      xAxisTitle="Reported SALT"
+      yAxisTitle="Taxable Income (2026)"
+      xRange={[0, 100000]}
     />
   );
 }

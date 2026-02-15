@@ -16,10 +16,9 @@
     "@mantine/core": "^8.3.10",
     "@mantine/hooks": "^8.3.10",
     "@tabler/icons-react": "^3.36.0",
-    "plotly.js": "^3.3.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-plotly.js": "^2.6.0",
+    "recharts": "^3.7.0",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
@@ -28,10 +27,8 @@
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.10.1",
-    "@types/plotly.js": "^3.0.9",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@types/react-plotly.js": "^2.6.4",
     "@vitejs/plugin-react": "^5.1.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
