@@ -1,30 +1,31 @@
 /**
  * Slide navigation component with prev/next buttons.
+ * Uses a 3-column grid so buttons stay in fixed positions regardless of title length.
  */
 
-import { Button, Group, Text, Box } from '@mantine/core';
+import { Button, Text, Box } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { useStore } from '@/store';
 import { colors, spacing, typography } from '@/designTokens';
 
 const SLIDE_TITLES = [
   'Introduction',
-  'SALT and Federal Income Tax',
-  'SALT Deduction Comparison',
-  'Taxable Income and AMTI',
-  'Regular Tax and AMT',
-  'Income Tax Comparison',
-  'How Does This Vary with Wages',
-  'Effective SALT Cap',
-  'Regular Tax and AMT by Income',
-  'Gap Chart',
-  'Marginal Tax Rate',
-  'Effective SALT Cap Formula',
-  'Tax Savings from SALT',
-  'How Would You Reform SALT/AMT?',
-  'Budgetary Impacts',
-  'Distributional Impacts',
-  'Key Takeaways',
+  'SALT and federal income tax',
+  'SALT deduction comparison',
+  'Taxable income and AMTI',
+  'Regular tax and AMT',
+  'Income tax comparison',
+  'How does this vary with wages',
+  'Effective SALT cap',
+  'Regular tax and AMT by income',
+  'Gap chart',
+  'Marginal tax rate',
+  'Effective SALT cap formula',
+  'Tax savings from SALT',
+  'How would you reform SALT/AMT?',
+  'Budgetary impacts',
+  'Distributional impacts',
+  'Key takeaways',
 ];
 
 const TOTAL_SLIDES = SLIDE_TITLES.length;
@@ -38,31 +39,37 @@ export function SlideNavigation() {
   return (
     <Box
       style={{
-        display: 'flex',
-        justifyContent: 'space-between',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
-        padding: spacing.md,
-        backgroundColor: colors.background.primary,
-        borderRadius: spacing.radius.lg,
-        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.05)',
+        padding: `${spacing.sm} ${spacing.lg}`,
+        maxWidth: '900px',
+        width: '100%',
+        margin: '0 auto',
       }}
     >
-      <Button
-        variant="subtle"
-        leftSection={<IconChevronLeft size={20} />}
-        onClick={prevSlide}
-        disabled={!canGoBack}
-        style={{
-          color: canGoBack ? colors.primary[600] : colors.gray[400],
-        }}
-      >
-        Previous
-      </Button>
+      <div style={{ justifySelf: 'start' }}>
+        <Button
+          variant="subtle"
+          leftSection={<IconChevronLeft size={18} />}
+          onClick={prevSlide}
+          disabled={!canGoBack}
+          color="teal"
+          styles={{
+            root: {
+              fontWeight: typography.fontWeight.medium,
+              fontSize: typography.fontSize.sm,
+            },
+          }}
+        >
+          Previous
+        </Button>
+      </div>
 
-      <Group gap="xs">
+      <div style={{ textAlign: 'center' }}>
         <Text
           style={{
-            fontSize: typography.fontSize.md,
+            fontSize: typography.fontSize.sm,
             fontWeight: typography.fontWeight.medium,
             color: colors.text.primary,
           }}
@@ -71,25 +78,31 @@ export function SlideNavigation() {
         </Text>
         <Text
           style={{
-            fontSize: typography.fontSize.sm,
+            fontSize: typography.fontSize.xs,
             color: colors.text.tertiary,
           }}
         >
-          ({slideIndex + 1}/{TOTAL_SLIDES})
+          {slideIndex + 1} of {TOTAL_SLIDES}
         </Text>
-      </Group>
+      </div>
 
-      <Button
-        variant="subtle"
-        rightSection={<IconChevronRight size={20} />}
-        onClick={nextSlide}
-        disabled={!canGoForward}
-        style={{
-          color: canGoForward ? colors.primary[600] : colors.gray[400],
-        }}
-      >
-        Next
-      </Button>
+      <div style={{ justifySelf: 'end' }}>
+        <Button
+          variant="subtle"
+          rightSection={<IconChevronRight size={18} />}
+          onClick={nextSlide}
+          disabled={!canGoForward}
+          color="teal"
+          styles={{
+            root: {
+              fontWeight: typography.fontWeight.medium,
+              fontSize: typography.fontSize.sm,
+            },
+          }}
+        >
+          Next
+        </Button>
+      </div>
     </Box>
   );
 }
