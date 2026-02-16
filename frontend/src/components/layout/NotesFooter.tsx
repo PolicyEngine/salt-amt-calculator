@@ -10,7 +10,7 @@ export function NotesFooter() {
     <Accordion
       variant="contained"
       styles={{
-        root: { maxWidth: '900px', margin: `${spacing.md} auto`, width: '100%' },
+        root: { width: '100%', padding: `0 ${spacing.lg}` },
         label: { fontSize: typography.fontSize.sm, fontWeight: typography.fontWeight.medium },
         content: { padding: spacing.md },
       }}

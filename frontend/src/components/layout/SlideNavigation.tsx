@@ -43,9 +43,7 @@ export function SlideNavigation() {
         gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
         padding: `${spacing.sm} ${spacing.lg}`,
-        maxWidth: '900px',
         width: '100%',
-        margin: '0 auto',
       }}
     >
       <div style={{ justifySelf: 'start' }}>
