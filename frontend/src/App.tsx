@@ -7,6 +7,7 @@ import { theme } from './theme';
 import { useStore } from './store';
 import { SlideNavigation } from './components/layout/SlideNavigation';
 import { SlideContainer } from './components/layout/SlideContainer';
+import { NotesFooter } from './components/layout/NotesFooter';
 import { HouseholdInputs } from './components/inputs/HouseholdInputs';
 import { PolicyConfigInputs } from './components/inputs/PolicyConfigInputs';
 import { useUrlSync } from './hooks/useUrlSync';
@@ -119,7 +120,7 @@ export default function App() {
               leftSection={isCalculating ? <Loader size={16} color="white" /> : <IconCalculator size={18} />}
               onClick={handleCalculate}
               disabled={isCalculating}
-              color="teal"
+              color="primary"
             >
               {isCalculating ? 'Calculating...' : 'Calculate'}
             </Button>
@@ -173,14 +174,19 @@ export default function App() {
             minHeight: 'calc(100vh - 60px)',
           }}
         >
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
             <SlideContainer
               slideIndex={slideIndex}
               hasCalculated={hasCalculated}
               isCalculating={isCalculating}
             />
           </div>
-          <SlideNavigation />
+          <div style={{ width: '100%' }}>
+            <SlideNavigation />
+          </div>
+          <div style={{ width: '100%' }}>
+            <NotesFooter />
+          </div>
         </AppShell.Main>
       </AppShell>
     </MantineProvider>

@@ -12,7 +12,7 @@ import type {
 } from '@/types';
 
 // Modal API endpoints - each function has its own URL
-const MODAL_BASE = 'https://maxghenis--salt-amt-api';
+const MODAL_BASE = 'https://policyengine--salt-amt-api';
 const ENDPOINTS = {
   health: `${MODAL_BASE}-health.modal.run`,
   calculateSingle: `${MODAL_BASE}-calculate-single.modal.run`,
