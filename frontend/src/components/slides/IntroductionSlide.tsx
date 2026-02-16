@@ -26,15 +26,15 @@ export function IntroductionSlide() {
             }}
           >
             What&apos;s the{' '}
-            <Text
-              component="span"
+            <span
               style={{
                 color: colors.primary[500],
                 fontWeight: typography.fontWeight.bold,
+                fontSize: 'inherit',
               }}
             >
               SALT
-            </Text>
+            </span>
             ernative?
           </Text>
         </Box>
