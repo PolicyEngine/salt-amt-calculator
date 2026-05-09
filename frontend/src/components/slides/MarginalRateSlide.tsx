@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Marginal Rate Chart slide.
  */

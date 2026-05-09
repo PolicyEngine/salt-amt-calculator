@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Hook for syncing state with URL parameters and postMessage for iframe embedding.
  */

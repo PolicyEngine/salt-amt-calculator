@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Effective SALT Cap chart - shows effective SALT cap by income level.
  */

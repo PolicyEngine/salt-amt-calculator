@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Household input form component.
  */

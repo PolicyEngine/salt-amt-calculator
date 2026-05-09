@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Hook for running API calculations.
  */

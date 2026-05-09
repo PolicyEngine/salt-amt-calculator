@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Budgetary Impacts slide - shows 10-year budget window impacts.
  */

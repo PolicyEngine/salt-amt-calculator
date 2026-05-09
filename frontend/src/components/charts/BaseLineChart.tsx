@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Base reusable line chart component for SALT/AMT analysis.
  * Handles common patterns: Current Law vs Current Policy, user markers.

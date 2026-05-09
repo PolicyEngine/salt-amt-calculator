@@ -1,4 +1,6 @@
-module.exports = {
+// Mantine v8 needs postcss-preset-mantine and postcss-simple-vars.
+// Tailwind v4 + ui-kit theme tokens layer on top.
+const config = {
   plugins: {
     'postcss-preset-mantine': {},
     'postcss-simple-vars': {
@@ -10,5 +12,8 @@ module.exports = {
         'mantine-breakpoint-xl': '88em',
       },
     },
+    '@tailwindcss/postcss': {},
   },
 };
+
+export default config;

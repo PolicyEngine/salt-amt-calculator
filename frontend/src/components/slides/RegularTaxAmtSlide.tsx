@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Regular Tax and AMT Comparison slide.
  */

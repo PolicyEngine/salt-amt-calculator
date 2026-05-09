@@ -1,18 +1,19 @@
+'use client';
+
 import { useState } from 'react';
 import { MantineProvider, AppShell, Burger, Group, Text, Button, Loader, Tabs, Box, ScrollArea } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconHome, IconSettings, IconCalculator } from '@tabler/icons-react';
-import '@mantine/core/styles.css';
-import { theme } from './theme';
-import { useStore } from './store';
-import { SlideNavigation } from './components/layout/SlideNavigation';
-import { SlideContainer } from './components/layout/SlideContainer';
-import { NotesFooter } from './components/layout/NotesFooter';
-import { HouseholdInputs } from './components/inputs/HouseholdInputs';
-import { PolicyConfigInputs } from './components/inputs/PolicyConfigInputs';
-import { useUrlSync } from './hooks/useUrlSync';
-import { calculateSinglePoint, calculateSaltAxis, calculateIncomeAxis } from './api/client';
-import { colors, spacing, typography } from './designTokens';
+import { theme } from '@/theme';
+import { useStore } from '@/store';
+import { SlideNavigation } from '@/components/layout/SlideNavigation';
+import { SlideContainer } from '@/components/layout/SlideContainer';
+import { NotesFooter } from '@/components/layout/NotesFooter';
+import { HouseholdInputs } from '@/components/inputs/HouseholdInputs';
+import { PolicyConfigInputs } from '@/components/inputs/PolicyConfigInputs';
+import { useUrlSync } from '@/hooks/useUrlSync';
+import { calculateSinglePoint, calculateSaltAxis, calculateIncomeAxis } from '@/api/client';
+import { colors, spacing, typography } from '@/designTokens';
 
 export default function App() {
   const [opened, { toggle }] = useDisclosure(true);

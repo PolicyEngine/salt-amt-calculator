@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Policy configuration input form component.
  */

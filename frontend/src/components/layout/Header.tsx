@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Header component with branding and controls.
  */

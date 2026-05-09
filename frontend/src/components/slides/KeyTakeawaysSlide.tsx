@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Key Takeaways slide - summary of key points.
  */

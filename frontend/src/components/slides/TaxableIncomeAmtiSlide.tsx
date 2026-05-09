@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Taxable Income and AMTI Comparison slide.
  */

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Distributional Impacts slide - shows income distribution impacts.
  */

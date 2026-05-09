@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Transition slide component - simple text-based slide for section transitions.
  */
