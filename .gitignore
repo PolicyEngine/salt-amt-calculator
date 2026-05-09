@@ -35,3 +35,5 @@ coverage/
 .pytest_cache/
 
 # Build artifacts (keep lock files for reproducibility)
+.vercel
+.env*.local

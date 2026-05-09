@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * SALT Deduction Comparison slide.
  */

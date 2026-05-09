@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Introduction slide component - the landing page of the calculator.
  */

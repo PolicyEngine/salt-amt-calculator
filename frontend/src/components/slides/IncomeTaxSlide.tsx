@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Income Tax Comparison slide.
  */

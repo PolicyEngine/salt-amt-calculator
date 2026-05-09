@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Regular Tax and AMT chart - shows regular tax and AMT by SALT level.
  */

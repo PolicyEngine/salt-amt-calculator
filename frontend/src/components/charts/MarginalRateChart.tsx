@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Marginal Rate chart - shows marginal tax rate by income level.
  */

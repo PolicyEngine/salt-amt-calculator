@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Gap chart - shows gap between Regular Tax and AMT by income level.
  */

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Taxable Income and AMTI chart - shows taxable income and AMTI by SALT level.
  */

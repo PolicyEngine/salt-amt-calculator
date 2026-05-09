@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Drawer component for household and policy inputs.
  */

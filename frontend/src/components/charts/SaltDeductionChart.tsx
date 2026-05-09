@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * SALT Deduction comparison chart component.
  * Shows SALT deduction vs reported SALT for Current Law and Current Policy.

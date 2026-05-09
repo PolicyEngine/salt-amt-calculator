@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Notes footer with technical notes and documentation links.
  */

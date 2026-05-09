@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Income Tax chart - shows federal income tax by SALT level.
  */

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * SALT and Federal Income Tax slide - shows SALT breakdown and federal tax comparison.
  */

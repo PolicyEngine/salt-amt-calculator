@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Slide navigation component with prev/next buttons.
  * Uses a 3-column grid so buttons stay in fixed positions regardless of title length.

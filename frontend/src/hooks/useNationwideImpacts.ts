@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Hook for loading nationwide impacts data from JSON files.
  */

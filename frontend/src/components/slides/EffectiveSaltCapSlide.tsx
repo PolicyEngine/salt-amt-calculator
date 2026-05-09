@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Effective SALT Cap slide.
  */

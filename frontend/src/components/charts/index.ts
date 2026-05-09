@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Chart components exports.
  */

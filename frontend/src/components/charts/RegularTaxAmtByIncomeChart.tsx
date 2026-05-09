@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Regular Tax and AMT by Income chart - shows regular tax and AMT by income level.
  */

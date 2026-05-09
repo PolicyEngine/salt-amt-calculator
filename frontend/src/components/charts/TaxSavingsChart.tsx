@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Tax Savings chart - shows tax savings by income level.
  */

@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * Container that renders the appropriate slide based on index.
  */
