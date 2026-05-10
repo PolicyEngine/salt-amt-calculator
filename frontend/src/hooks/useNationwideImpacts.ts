@@ -94,7 +94,7 @@ export function useNationwideImpacts(): NationwideImpactsData & {
     async function loadData() {
       try {
         // Load single year impacts
-        const singleYearResponse = await fetch('/data/impacts_2026.json');
+        const singleYearResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/impacts_2026.json`);
         if (singleYearResponse.ok) {
           const singleYearData: ImpactRecord[] = await singleYearResponse.json();
           setSingleYearImpacts(singleYearData.map(parseImpactRecord));
