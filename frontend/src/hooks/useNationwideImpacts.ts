@@ -103,7 +103,7 @@ export function useNationwideImpacts(): NationwideImpactsData & {
         // Load budget window impacts (2026-2035)
         const budgetMap = new Map<number, ParsedImpact[]>();
         for (let year = 2026; year <= 2035; year++) {
-          const response = await fetch(`/data/impacts_${year}.json`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/impacts_${year}.json`);
           if (response.ok) {
             const yearData: ImpactRecord[] = await response.json();
             budgetMap.set(year, yearData.map(parseImpactRecord));
