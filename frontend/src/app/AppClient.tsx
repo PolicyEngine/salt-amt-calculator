@@ -11,6 +11,7 @@ import { SlideContainer } from '@/components/layout/SlideContainer';
 import { NotesFooter } from '@/components/layout/NotesFooter';
 import { HouseholdInputs } from '@/components/inputs/HouseholdInputs';
 import { PolicyConfigInputs } from '@/components/inputs/PolicyConfigInputs';
+import PolicyEngineHeader from '@/components/PolicyEngineHeader';
 import { useUrlSync } from '@/hooks/useUrlSync';
 import { calculateSinglePoint, calculateSaltAxis, calculateIncomeAxis } from '@/api/client';
 import { colors, spacing, typography } from '@/designTokens';
@@ -89,7 +90,7 @@ export default function App() {
   return (
     <MantineProvider theme={theme}>
       <AppShell
-        header={{ height: 60 }}
+        header={{ height: 118 }}
         navbar={{
           width: 320,
           breakpoint: 'sm',
@@ -99,7 +100,8 @@ export default function App() {
       >
         {/* Header */}
         <AppShell.Header>
-          <Group h="100%" px="md" justify="space-between">
+          <PolicyEngineHeader />
+          <Group h={60} px="md" justify="space-between">
             <Group>
               <Burger opened={opened} onClick={toggle} size="sm" />
               <div>
@@ -172,7 +174,7 @@ export default function App() {
             backgroundColor: colors.background.secondary,
             display: 'flex',
             flexDirection: 'column',
-            minHeight: 'calc(100vh - 60px)',
+            minHeight: 'calc(100vh - 118px)',
           }}
         >
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
