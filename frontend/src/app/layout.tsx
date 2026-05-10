@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import PolicyEngineHeader from '@/components/PolicyEngineHeader';
 
 const SITE_URL = 'https://salt-amt-calculator.vercel.app';
 const TITLE = 'SALT AMT Calculator | PolicyEngine';
@@ -42,7 +43,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <PolicyEngineHeader />
+        {children}
+      </body>
     </html>
   );
 }
