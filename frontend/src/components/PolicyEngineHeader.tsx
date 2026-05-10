@@ -4,7 +4,10 @@ import { PolicyEngineHeader as ShellHeader } from "@policyengine/ui-kit/layout";
 
 export default function PolicyEngineHeader() {
   return (
-    <div aria-label="PolicyEngine site header">
+    <div
+      aria-label="PolicyEngine site header"
+      style={{ minHeight: "var(--spacing-header, 58px)" }}
+    >
       <ShellHeader country="us" />
     </div>
   );
