@@ -1,3 +1,6 @@
+import { PolicyEngineShell } from "@policyengine/ui-kit/layout";
+import "@policyengine/ui-kit/styles.css";
+
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
@@ -43,7 +46,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <PolicyEngineShell country="us">
         {children}
+              </PolicyEngineShell>
       </body>
     </html>
   );
