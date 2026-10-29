@@ -5,7 +5,9 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Script from 'next/script';
 
-const SITE_URL = 'https://salt-amt-calculator.vercel.app';
+// The canonical address: policyengine.org serves this app through a zone
+// rewrite, so links and link previews name it, not the Vercel deployment.
+const SITE_URL = 'https://policyengine.org/us/salternative';
 const TITLE = 'SALT AMT Calculator | PolicyEngine';
 const DESCRIPTION =
   'Interactive calculator for the State and Local Tax (SALT) deduction interaction with the Alternative Minimum Tax (AMT).';
